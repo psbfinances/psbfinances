@@ -26,7 +26,7 @@ Personal and Small Businesses Financial Manager
 
 psbFinances is an open-source web application to manage personal and small business finances "under one roof". Think of it as a combination of [Mint](https://mint.intuit.com/) and [QuickBooks Self-Employed](https://quickbooks.intuit.com/self-employed/). 
 
-![](https://raw.githubusercontent.com/pbsfinances/website/main/uploads/psbFinances.png)
+![](http://psbfinances.com/uploads/psbFinances.png)
 
 ### Purpose
 psbFiances allows managing personal and small business finances in a single application. Users who will get the most benefit from it are those who:
