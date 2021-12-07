@@ -1,0 +1,38 @@
+{
+  "name": "@psbfinances/shared",
+  "version": "0.1.0",
+  "description": "psbfinances shared code",
+  "homepage": "https://psbfinances.com",
+  "type": "module",
+  "types": "../typeDef/*.d.ts",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "keywords": [
+    "accounting",
+    "bookkeeping",
+    "cash-flow",
+    "finance",
+    "fintech",
+    "money",
+    "psbf",
+    "psbfinances"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/psbfinances/psbfinances.git",
+    "directory": "shared"
+  },
+  "devDependencies": {
+  },
+  "dependencies": {
+    "axios": "^0.24.0",
+    "cuid": "^2.1.8",
+    "qs": "^6.10.1",
+    "query-string": "^7.0.1",
+    "rrule": "^2.6.8",
+    "store": "^2.0.12",
+    "validator": "^13.6.0"
+  }
+}

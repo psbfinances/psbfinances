@@ -1,0 +1,10 @@
+*.pbxproj -text
+
+* text eol=lf
+
+# Denote all files that are truly binary and should not be modified.
+*.ttf binary
+*.png binary
+*.gif binary
+*.jpg binary
+*.jpeg binary

@@ -1,0 +1,7 @@
+routes:
+  layout-plain:
+    - /
+    - /login
+    - /sign-up
+    - /reset-password
+    - /forget-passwod

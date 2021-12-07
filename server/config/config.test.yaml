@@ -1,0 +1,11 @@
+logLevel: debug
+mysql:
+  server: 127.0.0.1
+  user: psbUser
+  password: psbUserPassword
+  database: psb-finance
+morganLevel: dev
+jwt:
+  secret: xxx
+  expirationPeriod: '15d'
+filesFolder: '/app/files/'

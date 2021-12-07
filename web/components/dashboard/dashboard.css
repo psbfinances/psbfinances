@@ -1,0 +1,40 @@
+.dashboardDataContainer {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.dashboardWidgetContainer {
+  margin-right: 5px;
+  border: 1px solid #ecd0bdeb;
+  border-radius: 4px;
+  box-shadow: #ecd0bdeb 0 2px 2px 0;
+  margin-bottom: 10px;
+}
+h5 {
+  height: 25px;
+  padding-top: 5px;
+  padding-left: 5px;
+  color: #b88766;
+  background-color: white;
+  font-size: 14px;
+}
+.totalBorder {
+  border-top: 1px solid #ecd0bdeb !important;
+  font-weight: 600;
+}
+.totalBorder td {
+  border-top: 1px solid #ecd0bdeb !important;
+  font-weight: 600 !important;
+}
+.dashboardDataContainer .dataTable th {
+  border-bottom: 1px solid #ecd0bdeb;
+  border-top: 1px solid #ecd0bdeb;
+}
+.dashboardDataContainer .dataTable {
+  border: 0;
+}
+.tdDescription {
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

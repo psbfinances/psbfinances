@@ -1,0 +1,43 @@
+#
+architecture
+historyData
+backup
+
+# local config
+server/config/config.dev.yaml
+server/config/config.prod.yaml
+server/logs
+logs
+server/data
+
+# OSX
+.DS_Store
+
+build
+node_modules/
+npm-debug.log
+
+.idea/httpRequests
+
+# Misc
+web/public
+files
+server/coverage
+web/coverage
+coverage
+
+# Elastic Beanstalk Files
+#.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+
+# local config
+#mobile/core/globals.local.js
+
+.idea
+.idea/workspace.xml
+.vscode
+
+# Misc
+.babelrc
+

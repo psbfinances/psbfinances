@@ -1,0 +1,67 @@
+{
+  "name": "@psbfinances/server",
+  "version": "0.1.0",
+  "description": "psbfinances web",
+  "homepage": "https://psbfinances.com",
+  "main": "app.js",
+  "type": "module",
+  "types": "../typeDef/*.d.ts",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "scripts": {
+    "start": "NODE_ENV=prod PORT=443 node server.js"
+  },
+
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/psbfinances/psbfinances.git",
+    "directory": "server"
+  },
+  "jest": {
+    "testEnvironment": "jest-environment-node",
+    "transform": {},
+    "verbose": true,
+    "testRegex": "(/tests/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "transformIgnorePatterns": [
+      "<rootDir>/node_modules/(?!(validator/es/lib)/)"
+    ],
+    "globals": {
+      "window": {}
+    },
+    "clearMocks": true
+  },
+  "devDependencies": {
+    "@jest/globals": "^27.1.0",
+    "jest": "^27.1.0",
+    "node-mocks-http": "^1.10.1"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "compression": "^1.7.4",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "crypto-js": "^4.1.1",
+    "csv-parse": "^4.16.3",
+    "cuid": "^2.1.8",
+    "errorhandler": "^1.5.1",
+    "event-stream": "^4.0.1",
+    "express": "^4.17.1",
+    "express-async-handler": "^1.1.4",
+    "express-fileupload": "^1.2.1",
+    "express-rate-limit": "^5.3.0",
+    "express-winston": "^4.2.0",
+    "fuzzball": "^2.0.2",
+    "helmet": "^4.6.0",
+    "JSONStream": "^1.3.5",
+    "jsonwebtoken": "^8.5.1",
+    "knex": "^0.95.10",
+    "mock-knex": "^0.4.10",
+    "mysql": "^2.18.1",
+    "object-hash": "^2.2.0",
+    "winston": "^3.3.3",
+    "winston-daily-rotate-file": "^4.5.5",
+    "yamljs": "^0.3.0"
+  }
+}

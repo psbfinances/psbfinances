@@ -1,0 +1,69 @@
+{
+  "name": "psbfinances",
+  "version": "0.1.0",
+  "description": "Personal and Small Business Finances",
+  "homepage": "https://psbfinances.com",
+  "workspaces": ["web", "server", "shared"],
+  "main": "server/app.js",
+  "type": "module",
+  "types": "typeDef/*.d.ts",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "keywords": [
+    "accounting",
+    "bookkeeping",
+    "cash-flow",
+    "finance",
+    "fintech",
+    "money",
+    "psbf",
+    "psbfinances"
+  ],
+  "scripts": {
+    "build": "npm run build:clean && npm run build:server && npm run build:shared && npm run build:package-json && npm run build:web",
+    "build:clean": "rm -R ./build && mkdir build",
+    "build:server": "rsync -av --progress server build --exclude __tests__ --exclude node_modules --exclude config.dev.yaml && rsync -av --progress .db build ",
+    "build:shared": "rsync -av --progress shared build --exclude __tests__ --exclude node_modules",
+    "build:package-json": "cp ./package.json build/",
+    "build:web": "cd web && ../node_modules/.bin/webpack --config=webpack.prod.cjs && cd .. && cp -r web/public/ build/server/public/",
+    "build:npm-install": "npm install --only=prod",
+
+    "deploy": "./scripts/deploy.sh",
+    "start:web": "cd web && ../node_modules/.bin/webpack serve --config=webpack.dev.cjs",
+    "start:server": "cd server && NODE_ENV=dev node --experimental-vm-modules --no-warnings server.js",
+    "start": "cd server && NODE_ENV=prod PORT=443 node server.js",
+    "test": "npm run test:server && npm run test:web",
+    "test:server": "NODE_ENV=dev node --experimental-vm-modules --no-warnings ./node_modules/jest/bin/jest.js --colors",
+    "test:web": "NODE_ENV=dev cd web && node ../node_modules/jest/bin/jest.js --colors && cd ..",
+    "unused": "npx depcheck",
+    "webpack": "cd web && ../node_modules/.bin/webpack --config=webpack.dev.cjs && cp index.html public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/psbfinances/psbfinances.git"
+  },
+  "jest": {
+    "projects": ["<rootDir>/server", "<rootDir>/shared"]
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.14.8",
+    "@babel/core": "^7.15.0",
+    "@babel/node": "^7.14.9",
+    "@babel/plugin-proposal-class-properties": "^7.14.5",
+    "@babel/plugin-transform-runtime": "^7.15.0",
+    "@babel/preset-env": "^7.15.0",
+    "@babel/preset-react": "^7.14.5",
+    "@types/store": "^2.0.2",
+    "babel-eslint": "^10.1.0",
+    "babel-jest": "^27.0.6",
+    "babel-loader": "^8.2.2",
+    "babel-plugin-transform-remove-console": "^6.9.4",
+    "jest": "^27.0.6",
+    "regenerator-runtime": "^0.13.9",
+    "standard": "^16.0.3"
+  },
+  "dependencies": {
+  }
+}

@@ -1,0 +1,11 @@
+logLevel: info
+mysql:
+  server: localhost
+  user: psbf
+  password: xxxxxx
+  database: psbf
+morganLevel: dev
+jwt:
+  secret: xxx
+  expirationPeriod: '15d'
+filesFolder: '/app/files/'
