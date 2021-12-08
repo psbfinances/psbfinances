@@ -23,6 +23,7 @@ const businessModel = {
   validate: (business) => {
     let errors = {}
     if (validator.isEmpty(business.nickname, { ignore_whitespace: true })) errors.nickname = 'Please enter nickname'
+    if (!validator.isByteLength(business.nickname, { min: 0, max: 10 })) errors.nickname = 'Nickname is too long'
     if (validator.isEmpty(business.fullName, { ignore_whitespace: true })) errors.fullName = 'Please enter full name'
 
     return errors
