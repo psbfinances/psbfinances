@@ -1,6 +1,9 @@
 'use strict'
 
 import Db from './db.js'
+import { getLogger } from '../core/index.js'
+
+const logger = getLogger(import.meta.url)
 
 const columns = {
   id: '',
@@ -95,16 +98,11 @@ export default class TransactionDb extends Db {
           })
         } else {
           const amount = parseFloat(value) * 100
-          const hasDecimals = search.includes('.')
-          if (!hasDecimals) {
-            query.where('amount', '=', amount)
-          } else {
-            const condition = amount < 0 ? 'CEILING(amount) = ?' : 'FLOOR(amount) = ?'
-            query.whereRaw(condition, amount)
-          }
+          query.whereRaw('ABS(amount) = ?', amount)
         }
       }
     }
+    logger.debug('listByAccountDatesWithSearch', { query: query.toSQL().toNative() })
     return query
   }
 
