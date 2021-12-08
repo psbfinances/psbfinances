@@ -140,6 +140,8 @@ class ImportForm extends React.Component {
       formData.append('accountId', this.state.accountId || this.state.accountOptions[0].value)
     }
     await api.importApi.post(formData)
+    await rootStore.masterDataStore.getAccounts()
+    await rootStore.masterDataStore.getCategories()
   }
 
   /**

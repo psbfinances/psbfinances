@@ -7,6 +7,9 @@ import utils from './utils.js'
 import { businessModel } from '../../shared/models/index.js'
 import cuid from 'cuid'
 import DataChangeLogic, { ops } from './dataChangeLogic.js'
+import { getLogger } from '../core/index.js'
+
+const logger = getLogger(import.meta.url)
 
 const controller = {
   /**
@@ -33,6 +36,7 @@ const controller = {
    * @return {Business|Object}
    */
   insert: async (req, res) => {
+    logger.debug('insert', {body: req.body})
     const { tenantId, userId, id } = utils.getBasicRequestData(req)
 
     const business = req.body
@@ -57,6 +61,7 @@ const controller = {
    * @return {Car|Object}
    */
   update: async (req, res) => {
+    logger.debug('update', {body: req.body})
     const { tenantId, userId, id } = utils.getBasicRequestData(req)
     /** @type {Business} */
     const business = req.body

@@ -71,6 +71,7 @@ export default class UserListModel {
     if (Object.keys(this.formErrors).length > 0) return Promise.resolve()
 
     const result = await rootStore.masterDataStore.saveUser(this.editItem)
+    await rootStore.masterDataStore.getUsers()
     if (!result.errors) {
       this.formErrors = {}
       await this.getData()

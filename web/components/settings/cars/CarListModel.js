@@ -72,6 +72,7 @@ export default class CarListModel {
     if (Object.keys(this.formErrors).length > 0) return Promise.resolve()
 
     const result = await rootStore.masterDataStore.saveCar(this.editItem)
+    await rootStore.masterDataStore.getCars()
     if (!result.errors) {
       this.formErrors = {}
       await this.getData()

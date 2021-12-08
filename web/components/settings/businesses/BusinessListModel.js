@@ -72,6 +72,7 @@ export default class BusinessListModel {
     if (Object.keys(this.formErrors).length > 0) return Promise.resolve()
 
     const result = await rootStore.masterDataStore.saveBusiness(this.editItem)
+    await rootStore.masterDataStore.getBusinesses()
     if (!result.errors) {
       this.formErrors = {}
       await this.getData()

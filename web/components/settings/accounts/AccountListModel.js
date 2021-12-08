@@ -82,6 +82,7 @@ export default class AccountListModel {
     if (Object.keys(this.formErrors).length > 0) return Promise.resolve()
 
     const result = await rootStore.masterDataStore.saveAccount(this.editItem)
+    await rootStore.masterDataStore.getAccounts()
     if (!result.errors) {
       this.formErrors = {}
       await this.getData()
