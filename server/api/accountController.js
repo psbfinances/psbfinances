@@ -8,6 +8,9 @@ import utils from './utils.js'
 import DataChangeLogic, { ops } from './dataChangeLogic.js'
 import { accountModel } from '../../shared/models/index.js'
 import cuid from 'cuid'
+import { getLogger } from '../core/index.js'
+
+const logger = getLogger(import.meta.url)
 
 const controller = {
   /**
@@ -35,6 +38,7 @@ const controller = {
    * @return {FinancialAccount|Object}
    */
   insert: async (req, res) => {
+    logger.debug('insert', {body: req.body})
     const { tenantId, userId, id } = utils.getBasicRequestData(req)
 
     const account = req.body
@@ -61,9 +65,10 @@ const controller = {
    * @return {FinancialAccount|Object}
    */
   update: async (req, res) => {
+    logger.debug('insert', {body: req.body})
     const { tenantId, userId, id } = utils.getBasicRequestData(req)
     /** @type {FinancialAccount} */
-    const account = req.body
+    const { createdAt, ...account } = { ...req.body }
     const errors = accountModel.validate(account)
     if (Object.keys(errors).length > 0) return res.json({ errors })
 
