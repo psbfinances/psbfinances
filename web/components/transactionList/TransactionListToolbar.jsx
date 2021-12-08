@@ -58,11 +58,30 @@ let TransactionListToolbar = ({ model }) => {
         <SearchEntry value={rootStore.transactionsStore.filter.search} handleChange={handleSearchChange}
                      handleKey={handleSearchKey} />
 
-        <IconButton label='add' icon='fas fa-plus-square' disabled={model.addDisabled} handleClick={handleAddClick} />
-        <IconButton label='clone' icon='fas fa-clone' disabled={model.cloneDisabled} handleClick={handleCloneClick} />
-        <IconButton label='refresh' icon='fas fa-sync' handleClick={handleRefreshClick} />
+        <IconButton
+          label='add'
+          tooltip='Add new transaction'
+          icon='fas fa-plus-square'
+          disabled={model.addDisabled}
+          handleClick={handleAddClick} />
+        <IconButton
+          label='clone'
+          tooltip='Clone transaction'
+          icon='fas fa-clone'
+          disabled={model.cloneDisabled}
+          handleClick={handleCloneClick} />
+        <IconButton
+          label='refresh'
+          tooltip='Reload transactions'
+          icon='fas fa-sync'
+          handleClick={handleRefreshClick} />
         {model.loading && <Loader type='ThreeDots' color='#B88766' height={40} width={40} />}
-        <IconButton label='refresh' icon='fas fa-object-group' disabled={model.mergeDisabled} handleClick={handleMerge} />
+        <IconButton
+          label='mapManual'
+          tooltip='Map transactions'
+          icon='fas fa-object-group'
+          disabled={model.mergeDisabled}
+          handleClick={handleMerge} />
         {model.loading && <Loader type='ThreeDots' color='#B88766' height={40} width={40} />}
       </div>
     </div>
