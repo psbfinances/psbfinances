@@ -1,20 +1,23 @@
 'use strict'
 
 import jwt from 'jsonwebtoken'
+import crypto from 'crypto'
+import NodeCache from 'node-cache'
+import {c} from '../core/index.js'
 import { config } from '../config/index.js'
 import { getLogger } from '../core/index.js'
 import { ExpiredTokenDb, UserDb } from '../db/index.js'
-import crypto from 'crypto'
 
 const logger = getLogger(import.meta.url)
+const cache = new NodeCache()
 
 export default {
   /**
    *
    * @param {AppRequest} req
-   * @param {Response} res
+   * @param {e.Response} res
    * @param {function} next
-   * @return {Promise<void>}
+   * @return {Promise<void> | Promise<e.Response>}
    */
   authenticate: async (req, res, next) => {
     logger.debug('authenticate', {token: req.headers['authorization'], cookieToken: req.cookies['psbf']})
@@ -31,9 +34,15 @@ export default {
       if (expiredTokens.length > 0) return res.sendStatus(401)
 
       const user = await jwt.verify(token, config.jwt.secret)
-      const userDb = new UserDb()
-      const dbUser = await userDb.getByEmail(user.email)
-      const { password, ...userData } = dbUser[0]
+      let userData = cache.get(c.cacheKey.USER)
+      if (userData === undefined) {
+        const userDb = new UserDb()
+        const dbUser = await userDb.getByEmail(user.email)
+        userData = dbUser[0]
+        delete userData.password
+        cache.set(c.cacheKey.USER, userData, 120)
+      }
+      if (!userData.hasAccess) return res.sendStatus(401)
       req.user = userData
       next()
     } catch (e) {

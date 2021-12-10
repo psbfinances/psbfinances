@@ -6,5 +6,8 @@ export const c = {
     DEV: 'dev',
     STAGE: 'stage',
     PROD: 'prod'
+  },
+  cacheKey: {
+    USER: 'user'
   }
 }

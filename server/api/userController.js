@@ -2,12 +2,15 @@
 
 import express from 'express'
 import asyncHandler from 'express-async-handler'
-
+import cuid from 'cuid'
+import  NodeCache from 'node-cache'
 import { UserDb } from '../db/index.js'
 import utils from './utils.js'
 import DataChangeLogic, { ops } from './dataChangeLogic.js'
 import { userModel } from '../../shared/models/index.js'
-import cuid from 'cuid'
+import { c } from '../core/index.js'
+
+const cache = new NodeCache()
 
 const controller = {
   /**
@@ -62,6 +65,8 @@ const controller = {
 
     const userDb = new UserDb()
     await userDb.update({ id, tenantId, ...user })
+
+    cache.del(c.cacheKey.USER)
 
     const dataChangeLogic = new DataChangeLogic(tenantId, userId)
     await dataChangeLogic.insert(userDb.tableName, id, ops.UPDATE, user)

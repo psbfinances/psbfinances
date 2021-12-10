@@ -1,8 +1,6 @@
 'use strict'
 
 /**
- * @typedef {import('express').Request} AppRequest
- * @property {Object} params
- * @property {Object} body
+ * @typedef {e.Request} AppRequest
  * @property {User} user
  */
