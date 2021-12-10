@@ -92,9 +92,15 @@ export const api = (baseUrl = '/api/') => {
   })
 
   result.interceptors.response.use(undefined, error => {
-    if (error && error.response && error.response.status && error.response.status === 401) {
-      appController.logout()
-      if (error.config.url !== '/auth/login') return window.location = '/'
+    if (error && error.response && error.response.status) {
+      switch (error.response.status) {
+        case 401:
+          appController.logout()
+          if (error.config.url !== '/auth/login') return window.location = '/'
+          break
+        case 500:
+          return window.location = 'error'
+      }
     }
   })
 

@@ -20,6 +20,7 @@ import {
   CategoryList,
   ImportRuleList
 } from '../../settings/index.js'
+import { ErrorPage } from '../../core/index.js'
 import { useEffect } from 'react'
 import * as api from '../../../../shared/apiClient'
 import { rootStore } from '../../../stores/rootStore.js'
@@ -49,6 +50,7 @@ const BusinessLayout = observer(
                 <Header />
                 <div id='dataContainer' className='dataContainer'>
                   <Routes>
+                    <Route path='error' element={<ErrorPage />} />
                     <Route path='overview' element={<Overview />} />
                     <Route path='tenants' element={<TenantList />} />
                     <Route path='transactions' element={<TransactionList />} />

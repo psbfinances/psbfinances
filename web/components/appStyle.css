@@ -343,3 +343,20 @@ table, .form-control, .col-form-label-sm {
   font-size: 19px;
   cursor: pointer
 }
+.error500 .errorDiv {
+  margin: 50px auto 0 auto;
+  width: 600px;
+}
+.error500 h2 {
+  float: left;
+  font-size: 100px;
+  font-weight: 300;
+}
+.error500 h3 {
+  padding-top: 22px;
+}
+.error500 .errorContent {
+  display: block;
+  margin-left: 190px;
+}
+
