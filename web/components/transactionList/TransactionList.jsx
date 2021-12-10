@@ -82,7 +82,7 @@ export class ListModel {
     const selectedId = rootStore.transactionsStore.editItem ? rootStore.transactionsStore.editItem.id : null
     yield rootStore.transactionsStore.getData()
     if (selectedId) yield rootStore.transactionsStore.setSelectedItemById(selectedId)
-    this.formModel.setToolbarId()
+    this.setFormDetailedView()
   }
 
   * merge () {
@@ -133,6 +133,7 @@ export class ListModel {
 
   setFormDetailedView () {
     this.formModel.setToolbarId('details')
+    this.formModel.resetErrors()
   }
 
   async setPeriod (field, value) {

@@ -13,8 +13,6 @@ import Splits from './Splits'
 import Attachments from './Attachments'
 import { transactionModel } from '../../../shared/models'
 
-// import { Error } from '../core'
-
 /**
  * Transaction form model.
  */
@@ -38,6 +36,10 @@ export class FormModel {
 
   setErrors (value) {
     this.errors = value
+  }
+
+  resetErrors () {
+    this.errors = {}
   }
 
   get tripEntryVisible () {
