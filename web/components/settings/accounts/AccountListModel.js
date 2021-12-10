@@ -12,6 +12,8 @@ export default class AccountListModel {
   /** @type {FinancialAccount[]} */ items = []
   /** @type {?FinancialAccount} */ selectedItem
   /** @type {?FinancialAccount} */ editItem
+  currentBalance = 0
+  balanceCalculatorVisible = false
   formErrors = {}
 
   constructor () {
@@ -74,7 +76,23 @@ export default class AccountListModel {
     this.editItem = editItem
   }
 
+  handleCalculatorIconClick = () => {
+    this.balanceCalculatorVisible = true
+  }
+
+  handleCancelBalanceCalculator = () => {
+    this.balanceCalculatorVisible = false
+  }
+
+  handleCalculateBalanceCalculator = async () => {
+    const result = await rootStore.masterDataStore.getAccount(this.editItem.id, this.currentBalance)
+    this.editItem.openingBalance = result.openingBalance
+    this.balanceCalculatorVisible = false
+  }
+
   handleAmountChange = value => this.editItem.openingBalance = value
+
+  handleCurrentBalanceChange = value => this.currentBalance = value
 
   save = async () => {
     const isNew = this.editItem.id.includes('new')

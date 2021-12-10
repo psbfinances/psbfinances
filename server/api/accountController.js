@@ -3,7 +3,7 @@
 import express from 'express'
 import asyncHandler from 'express-async-handler'
 
-import { AccountDb } from '../db/index.js'
+import { AccountDb, TransactionDb } from '../db/index.js'
 import utils from './utils.js'
 import DataChangeLogic, { ops } from './dataChangeLogic.js'
 import { accountModel } from '../../shared/models/index.js'
@@ -30,6 +30,34 @@ const controller = {
     res.json(rows)
   },
 
+  get: async (req, res) => {
+    const { tenantId, userId, id } = utils.getBasicRequestData(req)
+    const result = await controller.processGet(tenantId, userId, id, req.query)
+    res.json(result)
+  },
+
+  /**
+   * Handles GET request.
+   * @param {string} tenantId
+   * @param {string} userId
+   * @param {string} id
+   * @param {Object} query
+   * @param {string} [query.currentBalance]
+   * @return {Promise<FinancialAccount>}
+   */
+  processGet: async (tenantId, userId, id, query) => {
+    const db = new AccountDb()
+    const accounts = await db.get(id, tenantId)
+    const account = accounts[0]
+    const currentBalance = query.currentBalance
+    if (currentBalance !== undefined) {
+      const transactionDb = new TransactionDb()
+      const totals = await transactionDb.getTotalAmountByAccount(id, tenantId)
+      account.openingBalance = Math.round(currentBalance * 100 - totals[0].total) / 100
+    }
+    return account
+  },
+
   /**
    * Saves a new accounts.
    * @property {AppRequest} req
@@ -38,7 +66,7 @@ const controller = {
    * @return {FinancialAccount|Object}
    */
   insert: async (req, res) => {
-    logger.debug('insert', {body: req.body})
+    logger.debug('insert', { body: req.body })
     const { tenantId, userId, id } = utils.getBasicRequestData(req)
 
     const account = req.body
@@ -65,7 +93,7 @@ const controller = {
    * @return {FinancialAccount|Object}
    */
   update: async (req, res) => {
-    logger.debug('insert', {body: req.body})
+    logger.debug('update', { body: req.body })
     const { tenantId, userId, id } = utils.getBasicRequestData(req)
     /** @type {FinancialAccount} */
     const { createdAt, ...account } = { ...req.body }
@@ -93,8 +121,10 @@ const controller = {
 
 /** @type {import('express').Router} */
 const router = express.Router()
+router.route('/:id').get(asyncHandler(controller.get))
 router.route('/').get(asyncHandler(controller.list))
 router.route('/').post(asyncHandler(controller.insert))
 router.route('/:id').put(asyncHandler(controller.update))
 
 export default router
+export { controller }

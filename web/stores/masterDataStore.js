@@ -76,6 +76,18 @@ export default class MasterDataStore {
     this.accounts = new Map([...accounts].map(x => [x.id, x]))
   }
 
+  /**
+   * Gets account.
+   * @param {string} id
+   * @param {number} [currentBalance]
+   * @return {Promise<FinancialAccount>}
+   */
+  * getAccount (id, currentBalance) {
+    return currentBalance !== undefined
+      ? yield api.accountApi.get(id, {currentBalance})
+      : yield api.accountApi.get(id)
+  }
+
   * getCategories () {
     const categories = yield api.categoryApi.list()
     this.categories = new Map(categories.map(x => [x.id, x]))
@@ -151,6 +163,7 @@ export default class MasterDataStore {
   get hasCars () {
     return this.cars.size > 0
   }
+
   /**
    * @return {FinancialAccount}
    */

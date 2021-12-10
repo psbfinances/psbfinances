@@ -142,6 +142,10 @@ export default class TransactionDb extends Db {
     return this.knex.columns(['id']).where({ externalUid, tenantId }).select()
   }
 
+  async getTotalAmountByAccount (accountId, tenantId) {
+    return this.knex.where({tenantId, accountId}).sum('amount as total')
+  }
+
   async getDuplicate ({ id, ...rest }) {
     return this.knex.where(rest).whereNot({ id }).select(columns.id)
   }

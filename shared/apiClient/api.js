@@ -2,6 +2,7 @@
 
 import axios from 'axios'
 import { appController } from '../../shared/core/index.js'
+import qs from 'qs'
 
 export const endpoint = {
   ACCOUNTS: 'accounts',
@@ -39,8 +40,12 @@ export class Api {
     return (await this.api.get(this.endPoint)).data
   }
 
-  async get(id) {
+  async get(id, query) {
     if (!id) return (await this.api.get(this.endPoint)).data
+    if (query) {
+      const q = qs.stringify(query)
+      return (await this.api.get(`${itemEndpoint(this.endPoint, id)}?${q}`)).data
+    }
     return (await this.api.get(itemEndpoint(this.endPoint, id))).data
   }
 

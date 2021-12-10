@@ -4,6 +4,7 @@ import React from 'react'
 import classNames from 'classnames'
 import { AmountField } from '../../core'
 import { observer } from 'mobx-react'
+import ReactTooltip from 'react-tooltip'
 
 /**
  * Account form.
@@ -60,6 +61,16 @@ let AccountForm = ({ model }) => {
           <label htmlFor='inputOpeningBalance' className='form-label'>Opening balance</label>
           <AmountField fieldAmount={model.editItem.openingBalance} setValue={model.handleAmountChange} />
         </div>
+        <BalanceCalculator model={model} />
+
+        {!model.balanceCalculatorVisible && <div className='mb-3'>
+          <i
+            onClick={model.handleCalculatorIconClick}
+            data-tip='Calculate opening balance based on the current balance'
+            className='fas fa-calculator' />
+          <ReactTooltip />
+        </div>}
+
         <div className='form-check mb-3'>
           <input
             name='isDefault'
@@ -121,8 +132,7 @@ let AccountForm = ({ model }) => {
             value={model.editItem.note || ''} />
         </div>
 
-
-        <div className='col-form-label-sm'>
+        {!model.balanceCalculatorVisible && <div className='col-form-label-sm'>
           <div className='mt-4 mb-3'>
             <div className='form-group mb-3'>
               <button onClick={model.save} className='btn btn-primary'>
@@ -133,11 +143,33 @@ let AccountForm = ({ model }) => {
               </button>
             </div>
           </div>
-        </div>
+        </div>}
       </div>
     </div>
   </div>
 }
 AccountForm = observer(AccountForm)
+
+let BalanceCalculator = ({ model }) => {
+  if (!model.balanceCalculatorVisible) return null
+
+  return <div style={{backgroundColor: '#f6f8fb'}}>
+    <hr />
+    <div className='mb-3'>
+      <label htmlFor='inputCurrentBalance' className='form-label'>Current balance</label>
+      <AmountField fieldAmount={model.currentBalance} setValue={model.handleAmountChange} />
+    </div>
+    <div className='form-group mb-3'>
+      <button onClick={model.handleCalculateBalanceCalculator} className='btn btn-primary'>
+        Calculate
+      </button>
+      <button onClick={model.handleCancelBalanceCalculator} className='btn btn-outline-danger ms-2'>
+        Cancel
+      </button>
+    </div>
+    <hr />
+  </div>
+}
+BalanceCalculator = observer(BalanceCalculator)
 
 export default AccountForm

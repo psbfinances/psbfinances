@@ -338,3 +338,8 @@ table, .form-control, .col-form-label-sm {
   font: 300 15px/29px 'Open Sans',Helvetica,Arial,sans-serif;
   cursor: pointer;
 }
+.fa-calculator {
+  color: #B88766;
+  font-size: 19px;
+  cursor: pointer
+}
