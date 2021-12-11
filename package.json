@@ -23,7 +23,7 @@
   ],
   "scripts": {
     "build": "npm run build:clean && npm run build:server && npm run build:shared && npm run build:package-json && npm run build:web",
-    "build:clean": "rm -R ./build && mkdir build",
+    "build:clean": "rm -R ./build || mkdir build",
     "build:server": "rsync -av --progress server build --exclude __tests__ --exclude node_modules --exclude config.dev.yaml && rsync -av --progress .db build ",
     "build:shared": "rsync -av --progress shared build --exclude __tests__ --exclude node_modules",
     "build:package-json": "cp ./package.json build/",
