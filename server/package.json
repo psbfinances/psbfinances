@@ -13,7 +13,6 @@
   "scripts": {
     "start": "NODE_ENV=prod PORT=443 node server.js"
   },
-
   "repository": {
     "type": "git",
     "url": "https://github.com/psbfinances/psbfinances.git",
@@ -34,6 +33,7 @@
   },
   "devDependencies": {
     "@jest/globals": "^27.1.0",
+    "@types/express": "^4.17.13",
     "jest": "^27.1.0",
     "node-mocks-http": "^1.10.1"
   },
@@ -59,6 +59,7 @@
     "knex": "^0.95.10",
     "mock-knex": "^0.4.10",
     "mysql": "^2.18.1",
+    "node-cache": "^5.1.2",
     "object-hash": "^2.2.0",
     "winston": "^3.3.3",
     "winston-daily-rotate-file": "^4.5.5",

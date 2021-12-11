@@ -7,6 +7,7 @@ import { c } from '../../../../shared/core/index.js'
 import { SelectField } from '../../core'
 import { rootStore } from '../../../stores/rootStore'
 import * as api from '../../../../shared/apiClient/index.js'
+import Loader from 'react-loader-spinner'
 
 const dateFormat = { month: 'short', day: 'numeric', year: 'numeric' }
 
@@ -31,6 +32,7 @@ const formatOptions = importFormats.map(x => ({ value: x.id, label: x.name }))
  */
 export default class ImportList extends React.Component {
   state = {
+    running: false,
     items: []
   }
 
@@ -51,17 +53,44 @@ export default class ImportList extends React.Component {
     await this.getData()
   }
 
+  /**
+   * Auto-reload import records after import was submitted.
+   * @return {Promise<void>}
+   */
+  reload = async () => {
+    this.setState({running: true})
+    const lastId = this.state.items.length > 0 ? this.state.items[0].id : null
+    let counter = 0
+    const reloadId = setInterval(async () => {
+      await this.getData()
+      const newLastId = this.state.items.length > 0 ? this.state.items[0].id : null
+      if (newLastId !== lastId || counter++ >= 40) {
+        clearInterval(reloadId)
+        await rootStore.masterDataStore.getAccounts()
+        await rootStore.masterDataStore.getCategories()
+        this.setState({running: false})
+      }
+    }, 1000)
+  }
+
   render () {
     return <div id='dataContainer' className='dataContainer'>
       <ImportListToolbar handleRefreshClick={this.handleRefreshClick} />
       <div id='transactions' className='tableAndForm'>
         <ImportsTable items={this.state.items} handleUndoClick={this.handleUndoClick}/>
-        <ImportForm />
+        <ImportForm reload={this.reload} running={this.state.running}/>
       </div>
     </div>
   }
 }
 
+/**
+ * Import table.
+ * @param {Object[]} items
+ * @param {function} handleUndoClick
+ * @return {JSX.Element}
+ * @constructor
+ */
 const ImportsTable = ({ items, handleUndoClick }) => {
   return (
     <div className='tbl'>
@@ -139,9 +168,8 @@ class ImportForm extends React.Component {
     if (this.state.accountOptionVisible) {
       formData.append('accountId', this.state.accountId || this.state.accountOptions[0].value)
     }
+    this.props.reload()
     await api.importApi.post(formData)
-    await rootStore.masterDataStore.getAccounts()
-    await rootStore.masterDataStore.getCategories()
   }
 
   /**
@@ -195,7 +223,8 @@ class ImportForm extends React.Component {
 
         <div className='mt-4 mb-3'>
           <div className='form-group mb-3'>
-            <button onClick={this.handleImport} className='btn btn-primary'> Import</button>
+            {!this.props.running && <button onClick={this.handleImport} className='btn btn-primary'> Import</button>}
+            {this.props.running && <Loader type='ThreeDots' color='#B88766' height={40} width={40} />}
           </div>
         </div>
       </div>
