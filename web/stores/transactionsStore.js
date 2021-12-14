@@ -239,7 +239,7 @@ export class TransactionsStore {
     toItem.description = fromItem.description
     toItem.businessId = fromItem.businessId
     toItem.categoryId = fromItem.categoryId
-    toItem.note = `${toItem.note} ${fromItem.note}`
+    toItem.note = `${toItem.note} ${fromItem.note}`.trim()
     if (fromItem.tripId) toItem.tripId = fromItem.tripId
 
     yield api.transactionApi.delete(fromItem.id)
