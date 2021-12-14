@@ -24,7 +24,6 @@ export default class AccountListModel {
     await rootStore.masterDataStore.getAccounts(false)
 
     const items = [...rootStore.masterDataStore.accounts.values()]
-    items.shift()
     this.selectedItem = !this.selectedItem
       ? this.selectedItem = items[0]
       : rootStore.masterDataStore.accounts.get(this.selectedItem.id)
