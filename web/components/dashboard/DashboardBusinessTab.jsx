@@ -139,14 +139,14 @@ const BusinessCategoriesTable = ({ categories, businessId, title }) => {
  * @constructor
  */
 const BusinessCategoriesTableRow = ({ category, businessId, yearExpenses }) => {
-  let history = useNavigate()
+  let navigate = useNavigate()
 
   const handleClick = e => {
     const categoryId = e.target.parentNode.id
     rootStore.transactionsStore.filter.reset()
     rootStore.transactionsStore.filter.categoryId = categoryId
     rootStore.transactionsStore.filter.businessId = businessId
-    history.push('/app/transactions')
+    navigate('/app/transactions')
   }
 
   const isIncome = category.categoryType === c.transactionType.INCOME
