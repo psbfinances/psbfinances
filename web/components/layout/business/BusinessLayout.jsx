@@ -10,6 +10,7 @@ import appController from '../../../../shared/core/appController.js'
 import TenantList from '../../tenants/TenantList.jsx'
 import TransactionList from '../../transactionList/TransactionList.jsx'
 import Dashboard from '../../dashboard/Dashboard.jsx'
+import Budget from '../../budget/Budget.jsx'
 import { observer } from 'mobx-react'
 import {
   Settings,
@@ -55,6 +56,7 @@ const BusinessLayout = observer(
                     <Route path='tenants' element={<TenantList />} />
                     <Route path='transactions' element={<TransactionList />} />
                     <Route path='dashboard' element={<Dashboard />} />
+                    <Route path='budget' element={<Budget />} />
                     <Route exact path='settings' element={<Settings />} />
                     <Route path='settings/accounts' element={<AccountList />} />
                     <Route path='settings/businesses' element={<BusinessList />} />
@@ -125,6 +127,7 @@ const NavItems = () => {
   return <ul className='nav justify-content-center'>
     <HeaderNavItem label='Transactions' icon='fa-table' url='/app/transactions' />
     <HeaderNavItem label='Dashboard' icon='fa-tachometer-alt' url='/app/dashboard' />
+    <HeaderNavItem label='Budget' icon='fa-book' url='/app/budget' />
     <HeaderNavItem label='Settings' icon='fa-cog' url='/app/settings' />
   </ul>
 }

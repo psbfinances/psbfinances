@@ -302,6 +302,17 @@ table, .form-control, .col-form-label-sm {
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 4px;
 }
+.formDataContainer1 {
+  align-self: stretch;
+  overflow-x: auto;
+  align-items: stretch;
+  overflow-y : auto;
+  background-color: white;
+  width: 600px;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-radius: 4px;
+  padding: 10px;
+}
 .formContainer {
   padding: 10px 10px 10px 10px;
   width: 250px;
