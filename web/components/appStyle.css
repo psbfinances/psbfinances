@@ -240,16 +240,57 @@ table, .form-control, .col-form-label-sm {
   width: 50%;
 }
 .categoryCol {
+  min-width: 50px;
   width: 40%;
 }
 .businessCol {
   color: #B88766;
   margin-left: 0;
 }
-.amountCol {
+#budgetForm td:nth-child(2) {
   width: 100px;
+  text-align: right;
+}
+.corn {
+  padding: 10px !important;
+  position: relative;
+}
+.corn:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  display: block;
+  border-left: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+
+  border-top: 10px solid #B88766;
+}
+#budgetForm tr:first-child td {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+}
+#budgetForm input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+#budgetForm input[type=number] {
+  text-align: right;
+}
+.amountCol, .amountColBudget {
   vertical-align: baseline;
   text-align: right;
+}
+.amountColBudget {
+  width: 70px;
+}
+.amountCol {
+  width: 100px;
+}
+.budgetTotal {
+  font-weight: 500 !important;
+  border-bottom: 1px solid #B88766;
 }
 .otherCol {
   width: 60px;

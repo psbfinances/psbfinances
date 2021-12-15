@@ -10,12 +10,15 @@ import { observer } from 'mobx-react'
 class BudgetModel {
   formModel
   items = []
+  total = {}
   formVisible = false
 
   constructor () {
     makeAutoObservable(this)
     this.formVisible = false
-    this.items = [
+    this.total = { id: 'total', category: 'TOTAL', total: 1400 * 12, amount: 1400 },
+
+      this.items = [
       { id: '1', category: 'Food', total: 1100 * 12, amount: 1100 },
       { id: '2', category: 'Misc expenses', total: 100 * 12, amount: 100 },
       { id: '3', category: 'Shopping', total: 200 * 12, amount: 200 }

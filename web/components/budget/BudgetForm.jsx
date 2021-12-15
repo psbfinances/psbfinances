@@ -2,6 +2,8 @@
 
 import React from 'react'
 import { observer } from 'mobx-react'
+import ReactTooltip from 'react-tooltip'
+import CurrencyInput from 'react-currency-input-field'
 
 const BudgetForm = observer(
   class BudgetForm extends React.Component {
@@ -19,72 +21,85 @@ const BudgetForm = observer(
 
       return <div id='dataContainer' className='frm formDataContainer1'>
         <div id='formContainer' data-testid='formContainer' className='formContainer1' style={{ width: '100%' }}>
-          <table style={{ width: '100%' }}>
+          <table id='budgetForm' style={{ width: '100%' }}>
             <tbody>
-              <tr style={{ borderBottom: '1px solid grey' }}>
+              <tr>
                 <th>Total</th>
-                <th><input type='number' className='form-control' placeholder='10,000' /></th>
-                <th><input type='text' className='form-control' placeholder='Note' /></th>
+                <td><input type='number' className='form-control' placeholder='10,000' /></td>
+                <td>
+                  <button className='btn btn-primary' data-tip='Fill each month by splitting year total'><i
+                    className='fas fa-fill' /></button>
+                </td>
               </tr>
               <tr>
-                <th>Jan</th>
-                <th><input type='number' className='form-control' /></th>
-                <th><input type='text' className='form-control' placeholder='Note' /></th>
+                <td>Jan</td>
+                <td>
+                  <CurrencyInput
+                    id='jan-am'
+                    name='jan-am'
+                    aria-label='January budget'
+                    className='form-control text-right'
+                    intlConfig={{ locale: 'en-US', currency: 'USD' }}
+                    defaultValue={0}
+                    fixedDecimalLength={0}
+                  />
+                </td>
+                <td><input type='text' className='form-control' placeholder='Note' /></td>
               </tr>
               <tr>
-                <th>Feb</th>
-                <th><input type='number' className='form-control' /></th>
-                <th><input type='text' className='form-control' placeholder='Note' /></th>
+                <td>Feb</td>
+                <td><input type='number' className='form-control' placeholder={0} pattern='[0-9]' /></td>
+                <td><input type='text' className='form-control' placeholder='Note' /></td>
               </tr>
               <tr>
-                <th>Feb</th>
-                <th><input type='number' className='form-control' /></th>
-                <th><input type='text' className='form-control' placeholder='Note' /></th>
+                <td>Feb</td>
+                <td><input type='number' className='form-control' /></td>
+                <td><input type='text' className='form-control' placeholder='Note' /></td>
               </tr>
               <tr>
-                <th>Feb</th>
-                <th><input type='number' className='form-control' /></th>
-                <th><input type='text' className='form-control' placeholder='Note' /></th>
+                <td>Feb</td>
+                <td><input type='number' className='form-control' /></td>
+                <td><input type='text' className='form-control' placeholder='Note' /></td>
               </tr>
               <tr>
-                <th>Feb</th>
-                <th><input type='number' className='form-control' /></th>
-                <th><input type='text' className='form-control' placeholder='Note' /></th>
+                <td>Feb</td>
+                <td><input type='number' className='form-control' /></td>
+                <td><input type='text' className='form-control' placeholder='Note' /></td>
               </tr>
               <tr>
-                <th>Feb</th>
-                <th><input type='number' className='form-control' /></th>
-                <th><input type='text' className='form-control' placeholder='Note' /></th>
+                <td>Feb</td>
+                <td><input type='number' className='form-control' /></td>
+                <td><input type='text' className='form-control' placeholder='Note' /></td>
               </tr>
               <tr>
-                <th>Feb</th>
-                <th><input type='number' className='form-control' /></th>
-                <th><input type='text' className='form-control' placeholder='Note' /></th>
+                <td>Feb</td>
+                <td><input type='number' className='form-control' /></td>
+                <td><input type='text' className='form-control' placeholder='Note' /></td>
               </tr>
               <tr>
-                <th>Feb</th>
-                <th><input type='number' className='form-control' /></th>
-                <th><input type='text' className='form-control' placeholder='Note' /></th>
+                <td>Feb</td>
+                <td><input type='number' className='form-control' /></td>
+                <td><input type='text' className='form-control' placeholder='Note' /></td>
               </tr>
               <tr>
-                <th>Feb</th>
-                <th><input type='number' className='form-control' /></th>
-                <th><input type='text' className='form-control' placeholder='Note' /></th>
+                <td>Feb</td>
+                <td><input type='number' className='form-control' /></td>
+                <td><input type='text' className='form-control' placeholder='Note' /></td>
               </tr>
               <tr>
-                <th>Feb</th>
-                <th><input type='number' className='form-control' /></th>
-                <th><input type='text' className='form-control' placeholder='Note' /></th>
+                <td>Feb</td>
+                <td><input type='number' className='form-control' /></td>
+                <td><input type='text' className='form-control' placeholder='Note' /></td>
               </tr>
               <tr>
-                <th>Feb</th>
-                <th><input type='number' className='form-control' /></th>
-                <th><input type='text' className='form-control' placeholder='Note' /></th>
+                <td>Feb</td>
+                <td><input type='number' className='form-control' /></td>
+                <td><input type='text' className='form-control' placeholder='Note' /></td>
               </tr>
               <tr>
-                <th>Feb</th>
-                <th><input type='number' className='form-control' /></th>
-                <th><input type='text' className='form-control' placeholder='Note' /></th>
+                <td>Feb</td>
+                <td><input type='number' className='form-control' /></td>
+                <td><input type='text' className='form-control' placeholder='Note' /></td>
               </tr>
             </tbody>
           </table>
@@ -102,6 +117,7 @@ const BudgetForm = observer(
 
 
         </div>
+        <ReactTooltip />
       </div>
     }
 
