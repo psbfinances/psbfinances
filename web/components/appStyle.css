@@ -1,15 +1,18 @@
 html {
   height: 100%;
   font-size: 13px !important;
-  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Helvetica,Arial,sans-serif !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif !important;
   line-height: normal;
 }
+
 body {
   margin: 0;
   overflow: hidden;
 }
+
 table, .form-control, .col-form-label-sm {
 }
+
 .appFullPage {
   bottom: 0;
   display: flex;
@@ -20,11 +23,13 @@ table, .form-control, .col-form-label-sm {
   right: 0;
   top: 0;
 }
+
 .mainLayer {
   display: flex;
   flex: 1 1 0;
   min-height: 1px;
 }
+
 .appContent {
   display: flex;
   flex: 1;
@@ -32,6 +37,7 @@ table, .form-control, .col-form-label-sm {
   /*min-width: 768px;*/
   position: relative;
 }
+
 .header {
   align-items: center;
   background: #B88766;
@@ -46,6 +52,7 @@ table, .form-control, .col-form-label-sm {
   position: relative;
   z-index: 200;
 }
+
 .nav-link {
   font-size: 13px;
   /*font-weight: 400;*/
@@ -53,11 +60,13 @@ table, .form-control, .col-form-label-sm {
   cursor: pointer;
   border-bottom: solid 2px #B88766;
 }
+
 .nav-link:hover {
   /*color: #9f6138 !important;*/
   border-bottom: solid 2px white;
   color: white !important;
 }
+
 .nav-link-2 {
   font-size: 13px;
   font-weight: 400;
@@ -65,9 +74,11 @@ table, .form-control, .col-form-label-sm {
   cursor: pointer;
   text-decoration: none;
 }
+
 .nav-link-2:hover {
   color: #9f6138 !important;
 }
+
 .logo-div {
   font-weight: bold;
   /*font-family: fantasy;*/
@@ -83,19 +94,23 @@ table, .form-control, .col-form-label-sm {
   /*background-color: #9f6138;*/
   /*padding-left: 10px;*/
 }
+
 .active {
   /*color: #9f6138;*/
   background-color: #9f6138;
   border-bottom: solid 2px #9f6138 !important;
   /*box-shadow: inset 0 -1px 2px white;*/
 }
+
 .active1 {
   color: #9f6138;
   box-shadow: inset 0 -1px #B88766;
 }
+
 #navRight {
   margin-left: auto;
 }
+
 .dataContainer {
   display: flex;
   flex: 1 1 auto;
@@ -103,6 +118,7 @@ table, .form-control, .col-form-label-sm {
   min-height: 1px;
   position: relative;
 }
+
 .pageToolbar {
   align-items: center;
   background-color: #fff;
@@ -116,6 +132,7 @@ table, .form-control, .col-form-label-sm {
   justify-content: space-between;
   z-index: 300;
 }
+
 .tableAndForm {
   display: flex;
   flex-direction: row;
@@ -124,26 +141,31 @@ table, .form-control, .col-form-label-sm {
   flex: 1 1 0;
   padding: 5px 5px 5px 5px;
 }
+
 .tbl {
   align-self: stretch;
   flex: 1 1 0;
   overflow-x: auto;
   align-items: stretch;
 }
+
 .frm {
   margin-left: 5px;
   display: flex;
   width: 400px;
 }
+
 .pageDataHeader {
   font-size: 18px;
   align-self: center;
   color: #b88766
 }
+
 .selectedTableRow {
   background-color: #6697b86b !important;
   -webkit-transition: all 500ms linear;
 }
+
 .newMonth {
   border-bottom: 5px rgba(184, 135, 102, 0.4) solid !important;
 }
@@ -152,31 +174,39 @@ table, .form-control, .col-form-label-sm {
   background-color: #b88766;
   border-color: #b88766;
 }
+
 .form-control, .form-control-sm, .form-select {
   border-color: #b88766;
 }
+
 .input-group-text {
   background-color: #b88766;
   border-color: #b88766;
 }
+
 .btn-primary:hover {
   border-color: #b88766;
 }
+
 .btn-outline-primary {
   color: #b88766;
   border-color: #b88766;
 }
+
 .btn-outline-primary:hover, .btn-outline-primary:active {
   background-color: #b88766 !important;
   color: white;
   border-color: #b88766;
 }
+
 .btn-icon {
   color: #b88766;
 }
+
 .btn-link {
   color: #b88766;
 }
+
 .btn-link:hover {
   color: #b88766;
 }
@@ -192,16 +222,20 @@ table, .form-control, .col-form-label-sm {
   border-left: 1px solid rgba(0, 0, 0, 0.125);
   border-right: 1px solid rgba(0, 0, 0, 0.125);
 }
+
 .dataTable tr {
   cursor: pointer;
 }
+
 .trRow td {
   border-bottom: 1px solid rgba(184, 135, 102, 0.4);
   vertical-align: baseline;;
 }
+
 .trRow.newMonth td {
   border-bottom: 4px rgba(184, 135, 102, 0.4) solid !important;
 }
+
 .dataTable th {
   font-weight: 400;
   background-color: white;
@@ -212,15 +246,20 @@ table, .form-control, .col-form-label-sm {
   border-top: 1px solid rgba(0, 0, 0, 0.125);
   vertical-align: baseline;
 }
+
 .dataTable tr {
   cursor: pointer;
   color: #444444;
   z-index: 200;
 }
+
 .dataTable tr:nth-child(odd) {
   background-color: #fcf9f8;
 }
-.dataTable tr:hover {background-color: #6697b8c7;}
+
+.dataTable tr:hover {
+  background-color: #6697b8c7;
+}
 
 .dataTable tbody {
   background-color: white;
@@ -230,63 +269,79 @@ table, .form-control, .col-form-label-sm {
   padding: 8px 4px 8px 12px;
   font-weight: normal;
 }
+
 .dateCol {
   width: 75px;
 }
+
 .accountCol {
   width: 130px;
 }
+
 .descriptionCol {
   width: 50%;
 }
+
 .categoryCol {
   width: 40%;
 }
+
 .businessCol {
   color: #B88766;
   margin-left: 0;
 }
+
 .amountCol {
   width: 100px;
   vertical-align: baseline;
   text-align: right;
 }
+
 .otherCol {
   width: 60px;
   vertical-align: baseline;
 }
+
 .otherCol2 {
   width: 120px;
   vertical-align: baseline;
 }
+
 .react-datepicker-wrapper {
   width: 100%;
 }
+
 .w100 {
   width: 100%;
 }
+
 .text-trim {
   line-height: 18px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .manual {
   color: #6685b8;
 }
+
 .truncate {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .scrollable-menu {
   height: auto;
   max-height: 400px;
   overflow-x: hidden;
 }
+
 .text-right {
   text-align: right;
 }
+
 #formContainer .navbar {
   padding-top: 0 !important;
   border-bottom: 1px solid #e8ecee;
@@ -296,38 +351,45 @@ table, .form-control, .col-form-label-sm {
   align-self: stretch;
   overflow-x: auto;
   align-items: stretch;
-  overflow-y : auto;
+  overflow-y: auto;
   background-color: white;
   width: 250px;
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 4px;
 }
+
 .formContainer {
   padding: 10px 10px 10px 10px;
   width: 250px;
 }
+
 .fileIcon {
   font-size: 30px;
   color: #b88766;
   cursor: pointer
 }
+
 .fileDeleteIcon {
   font-size: 20px;
   margin-top: 4px;
   cursor: pointer
 }
+
 .tooltip-wrap {
   z-index: 999;
 }
+
 .icon {
   color: #B88766
 }
+
 .error {
   width: 100%;
   margin-top: .25rem;
   font-size: .875em;
   color: #dc3545;
 }
+
 #loginButton {
   height: 31px;
   margin: 10px 0 0 5px;
@@ -335,28 +397,77 @@ table, .form-control, .col-form-label-sm {
   background-color: #B88766;
   color: white;
   width: 100%;
-  font: 300 15px/29px 'Open Sans',Helvetica,Arial,sans-serif;
+  font: 300 15px/29px 'Open Sans', Helvetica, Arial, sans-serif;
   cursor: pointer;
 }
+
 .fa-calculator {
   color: #B88766;
   font-size: 19px;
   cursor: pointer
 }
+
 .error500 .errorDiv {
   margin: 50px auto 0 auto;
   width: 600px;
 }
+
 .error500 h2 {
   float: left;
   font-size: 100px;
   font-weight: 300;
 }
+
 .error500 h3 {
   padding-top: 22px;
 }
+
 .error500 .errorContent {
   display: block;
   margin-left: 190px;
 }
 
+.authFooter {
+  padding: 7px 14px 15px;
+  border-bottom: 1px solid rgba(0, 0, 0, .1);
+  background: rgba(248, 248, 248, .9);
+}
+
+.authFieldSet {
+  display: block;
+  padding: 25px 14px 5px;
+  border: none;
+  background: rgba(255, 255, 255, .9);
+  position: relative;
+}
+
+.authLoginContainer {
+  margin-top: 15px;
+  border: 1px solid #ddd;
+  background-color: #fbfbfb;
+}
+
+.authFormHeader {
+  border-bottom: 1px dashed rgba(0, 0, 0, .2);
+  background-color: #f7f7f7;
+  font-size: 16px;
+  font-weight: 300;
+  color: #B88766;
+  padding: 10px 14px 10px;
+}
+
+.introContainer {
+  height: 422px;
+  background-size: cover;
+  /*background-image: url('/images/landing-page-background.jpg');*/
+}
+.introContainer h1 {
+  margin-top: 15px;
+  font-size: 24px !important;
+  color: #B88766;
+  text-align: center;
+}
+.introContainer h3 {
+  text-align: center;
+  margin-top: 27px;
+}
