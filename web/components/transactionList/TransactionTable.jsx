@@ -145,7 +145,6 @@ let Row = ({ item, model }) => {
       {item.businessId !== c.PERSONAL_TYPE_ID && <div className='businessCol'>{item.businessDescription}</div>}
     </td>
 
-    {/*<td className={amountClass}>{formatCurrency(item.amount)}</td>*/}
     <AmountTd amount={item.amount} tdClass={amountClass} />
 
     {model.balanceColumnVisible && <AmountTd amount={item.balance} showValue={!isChildRow} tdClass={balanceClass} />}

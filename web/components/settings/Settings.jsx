@@ -18,6 +18,7 @@ export default function Settings () {
     <div className='row mt-3'>
       <Card title='Imports' text='Import financial data' url='imports' />
       <Card title='Import Rules' text='Import formats and rules' url='importRules' />
+      <Card title='Duplicate Transactions' text='Show transactions marked as duplicate' url='duplicateTransactions' />
     </div>
   </div>
 }
