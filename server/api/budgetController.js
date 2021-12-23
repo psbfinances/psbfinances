@@ -97,7 +97,7 @@ const controller = {
           await budgetDb.insert({ tenantId, ...item })
         }
       }
-      await dataChangeLogic.insert(budgetDb.tableName, data.year.toString(), ops.INSERT, data)
+      await dataChangeLogic.insert(budgetDb.tableName, item.year.toString(), ops.INSERT, data)
     }
     return result
   }
