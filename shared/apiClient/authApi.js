@@ -29,7 +29,19 @@ export default class AuthApi extends Api {
     return this.api.post(`${this.endPoint}/signup`, params)
   }
 
+  async resetPassword (email) {
+    return this.api.post(`${this.endPoint}/password-reset`, {email})
+  }
+
   async logout () {
     return this.api.post(`${this.endPoint}/logout`)
+  }
+
+  async validateToken (token) {
+    return this.api.post(`${this.endPoint}/token-validate`, {token})
+  }
+
+  async savePassword (token, password) {
+    return this.api.post(`${this.endPoint}/password`, {token, password})
   }
 }

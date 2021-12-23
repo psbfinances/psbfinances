@@ -60,7 +60,7 @@ CategoriesTable = observer(CategoriesTable)
 let Header = ({}) => <thead>
   <tr className='sticky-top'>
     <th style={{ width: '200px' }}>Name</th>
-    <th style={{ width: '300px' }}>Business</th>
+    <th style={{ width: '300px' }}>Personal / business</th>
     <th className='otherCol'>Type</th>
   </tr>
 </thead>

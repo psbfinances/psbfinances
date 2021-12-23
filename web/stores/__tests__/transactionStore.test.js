@@ -1,6 +1,6 @@
 'use strict'
 
-import { jest } from '@jest/globals'
+import { beforeEach, jest } from '@jest/globals'
 import { rootStore } from '../rootStore'
 import { amazonCardTransactions, businesses } from '../../components/__tests__/data'
 import { setupRootStore } from '../../components/__tests__/helper'
@@ -61,7 +61,7 @@ describe('saveSplits', () => {
 /** delete */
 describe('delete', () => {
   it('should deletes row', async () => {
-    const transactions = amazonCardTransactions.splice(0, 5)
+    const transactions = [...amazonCardTransactions].splice(0, 5)
     const openingBalance = 1000
     await rootStore.transactionsStore.setItems(transactions, openingBalance)
     const deleteApiMock = jest.fn().mockResolvedValueOnce()
@@ -84,8 +84,10 @@ describe('delete', () => {
 
 /** merge */
 describe('merge', () => {
+  beforeEach(() => jest.clearAllMocks())
+
   it('does nothing if items not of different type', async () => {
-    const transactions = amazonCardTransactions.splice(0, 5)
+    const transactions = [...amazonCardTransactions].splice(0, 5)
     const openingBalance = 1000
 
     /** @type {psbf.Transaction} */
@@ -100,7 +102,7 @@ describe('merge', () => {
   })
 
   it('removes manual transaction', async () => {
-    const transactions = amazonCardTransactions.splice(0, 5)
+    const transactions = [...amazonCardTransactions].splice(0, 5)
     const openingBalance = 1000
 
     /** @type {psbf.Transaction} */

@@ -27,6 +27,7 @@ import * as api from '../../../../shared/apiClient'
 import { rootStore } from '../../../stores/rootStore.js'
 import classNames from 'classnames'
 import CarList from '../../settings/cars/CarList.jsx'
+import DuplicateList from '../../settings/duplicateTransactions/DuplicateList.jsx'
 
 const MustBeAuthenticated = ({ children }) => {
   const navigate = useNavigate()
@@ -62,6 +63,7 @@ const BusinessLayout = observer(
                     <Route path='settings/businesses' element={<BusinessList />} />
                     <Route path='settings/categories' element={<CategoryList />} />
                     <Route path='settings/cars' element={<CarList />} />
+                    <Route path='settings/duplicateTransactions' element={<DuplicateList />} />
                     <Route path='settings/imports' element={<ImportList />} />
                     <Route path='settings/importRules' element={<ImportRuleList />} />
                     <Route path='settings/users' element={<UserList />} />

@@ -70,6 +70,16 @@ export declare namespace psbf {
     importId: string
     createdAt: Date
   }
+
+  interface Budget {
+    id?: number
+    tenantId?: string
+    year: number
+    monthNo: number
+    categoryId: string
+    amount: number
+    comment?: string
+  }
 }
 
 export default psbf

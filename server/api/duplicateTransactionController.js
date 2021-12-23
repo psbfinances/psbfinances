@@ -10,6 +10,31 @@ import utils from './utils.js'
 const logger = getLogger(import.meta.url)
 
 const controller = {
+  getList: async (req, res) => {
+    const { tenantId } = utils.getBasicRequestData(req)
+    const result = await controller.list(tenantId)
+    res.json(result)
+  },
+
+  /**
+   *
+   * @param {string} tenantId
+   * @return {Promise<*[][]|*[]>}
+   */
+  async list (tenantId) {
+    const duplicateTransactionDb = new DuplicateTransactionDb()
+    const dbItems = await duplicateTransactionDb.list(tenantId)
+    if (dbItems.length === 0) return []
+
+    return dbItems.map(x => {
+      let transaction = JSON.parse(x.transactionData)
+      if (Array.isArray(transaction)) transaction = transaction[0]
+      const { postedDate, description, amount, id, accountId } = transaction
+      return { id: x.id, transactionId: id, postedDate, accountId,description, amount: amount / 100 }
+    })
+  },
+
+
   /**
    * Gets duplicates by parent id.
    * @param {AppRequest} req
@@ -25,7 +50,7 @@ const controller = {
   },
 
   /**
-   * Handles request to gets duplicates by parent id.
+   * Handles request to get duplicates by parent id.
    * @param {string} id
    * @param {string} tenantId
    * @return {Promise<*[][]|*[]>}
@@ -172,10 +197,12 @@ const controller = {
     const duplicateTransactionDb = new DuplicateTransactionDb()
     const transactionDb = new TransactionDb()
 
-    const duplicate = await duplicateTransactionDb.get(id, tenantId)
-    if (!duplicate) return {}
+    const duplicates = await duplicateTransactionDb.get(id, tenantId)
+    if (duplicates.length === 0) return {}
+    const duplicate = duplicates[0]
 
-    const transaction = JSON.parse(duplicate.transactionData)
+    let transaction = JSON.parse(duplicate.transactionData)
+    if (Array.isArray(transaction)) transaction = transaction[0]
     transaction.postedDate = transaction.postedDate.substr(0, 10)
     await transactionDb.insert(transaction)
     await duplicateTransactionDb.delete({ id, tenantId })
@@ -220,6 +247,7 @@ const controller = {
 
 /** @type {import('express').Router} */
 const router = express.Router()
+router.route('/').get(asyncHandler(controller.getList))
 router.route('/:id').get(asyncHandler(controller.listByParentId))
 router.route('/:id').put(asyncHandler(controller.put))
 router.route('/:id/resolve').patch(asyncHandler(controller.resolve))

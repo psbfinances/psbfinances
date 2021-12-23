@@ -8,6 +8,7 @@ export const endpoint = {
   ACCOUNTS: 'accounts',
   AUTH: 'auth',
   ATTACHMENTS: 'attachments',
+  BUDGET: 'budget',
   BUSINESSES: 'businesses',
   CARS: 'cars',
   CATEGORIES: 'categories',
@@ -37,10 +38,11 @@ export class Api {
    * @return {Promise<*>}
    */
   async list (params) {
-    return (await this.api.get(this.endPoint)).data
+    const query = params ? `?${qs.stringify(params)}` : ''
+    return (await this.api.get(`${this.endPoint}${query}`)).data
   }
 
-  async get(id, query) {
+  async get (id, query) {
     if (!id) return (await this.api.get(this.endPoint)).data
     if (query) {
       const q = qs.stringify(query)
@@ -49,19 +51,19 @@ export class Api {
     return (await this.api.get(itemEndpoint(this.endPoint, id))).data
   }
 
-  async post(data) {
+  async post (data) {
     return (await this.api.post(this.endPoint, data)).data
   }
 
-  async put(id, data) {
+  async put (id, data) {
     return (await this.api.put(itemEndpoint(this.endPoint, id), data)).data
   }
 
-  async patch(id, data) {
+  async patch (id, data) {
     return (await this.api.patch(itemEndpoint(this.endPoint, id), data)).data
   }
 
-  async delete(id) {
+  async delete (id) {
     return (await this.api.delete(itemEndpoint(this.endPoint, id))).data
   }
 }

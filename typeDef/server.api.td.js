@@ -31,3 +31,26 @@
  * @property {string} [error]
  */
 
+/** @module psbf/api/budget **/
+/**
+ * @typedef {Object} ListResponse
+ * @property {CategoryAmount[]} categoryMonthAmounts
+ * @property {Object} monthTotals
+ * @property {Number[]} monthTotals.amounts
+ * @property {boolean} hasBudget
+ */
+
+/**
+ * @typedef {Object} CategoryAmount
+ * @property {string} categoryId
+ * @property {string} categoryName
+ * @property {MonthAmount[]} amounts
+ */
+
+/**
+ * @typedef {Object} MonthAmount
+ * @property {?number} [id]
+ * @property {number} month
+ * @property {number} amount
+ * @property {?string} note
+ */

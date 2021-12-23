@@ -63,6 +63,7 @@
     "http-methods-constants": "^1.1.0",
     "mobx": "^6.3.6",
     "mobx-react": "^7.2.1",
+    "mobx-utils": "^6.0.4",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.34",
     "node-fetch": "^3.1.0",

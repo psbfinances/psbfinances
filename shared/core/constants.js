@@ -27,6 +27,8 @@ const c = {
     CLONE: 'clone',
     EXISTING: 'existing'
   },
+  months: [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
   importFormatId: {
     MINT_CSV: 'mint',
     APPLE_CARD_CSV: 'appleCard',

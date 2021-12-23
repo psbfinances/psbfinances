@@ -37,7 +37,7 @@ describe('processGet', () => {
       note: null,
       createdAt: '2021-12-08T16:27:58.000Z'
     }
-    AccountDb.prototype.get = jest.fn().mockResolvedValueOnce(account)
+    AccountDb.prototype.get = jest.fn().mockResolvedValueOnce([account])
   })
 
   it('returns opening balance if current balance of 0 is passed', async () => {
