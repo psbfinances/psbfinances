@@ -18,8 +18,7 @@ import {
 } from 'recharts'
 import { c } from '@psbfinances/shared/core'
 
-const months = [
-  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const months = c.months
 
 const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
 const formatterP = new Intl.NumberFormat('en-US',
@@ -139,14 +138,14 @@ const BusinessCategoriesTable = ({ categories, businessId, title }) => {
  * @constructor
  */
 const BusinessCategoriesTableRow = ({ category, businessId, yearExpenses }) => {
-  let history = useNavigate()
+  let navigate = useNavigate()
 
   const handleClick = e => {
     const categoryId = e.target.parentNode.id
     rootStore.transactionsStore.filter.reset()
     rootStore.transactionsStore.filter.categoryId = categoryId
     rootStore.transactionsStore.filter.businessId = businessId
-    history.push('/app/transactions')
+    navigate('/app/transactions')
   }
 
   const isIncome = category.categoryType === c.transactionType.INCOME

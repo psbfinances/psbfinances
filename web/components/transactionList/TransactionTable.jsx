@@ -39,19 +39,22 @@ function TransactionTable ({ model }) {
  * @return {JSX.Element}
  * @constructor
  */
-let Header = ({ model }) => <thead>
-  <tr className='sticky-top'>
-    <th className='dateCol text-right'>Date</th>
-    {model.accountColumnVisible && <th className='accountCol'>Account</th>}
-    <th className='descriptionCol'>Description</th>
-    <th className='categoryCol'>Category / Business</th>
-    <th className='amountCol'>Amount</th>
-    {model.balanceColumnVisible && <th className='amountCol'>Balance</th>}
-    {model.scheduledColumnVisible && <th className='otherCol text-center'>Sch.</th>}
-    <th className='otherCol text-center'>Rec.</th>
-    <th className='otherCol'>Meta</th>
-  </tr>
-</thead>
+let Header = ({ model }) => {
+  const categoryHeader = rootStore.masterDataStore.hasBusinesses ? 'Category / Business' : 'Category'
+  return <thead>
+    <tr className='sticky-top'>
+      <th className='dateCol text-right'>Date</th>
+      {model.accountColumnVisible && <th className='accountCol'>Account</th>}
+      <th className='descriptionCol'>Description</th>
+      <th className='categoryCol'>{categoryHeader}</th>
+      <th className='amountCol'>Amount</th>
+      {model.balanceColumnVisible && <th className='amountCol'>Balance</th>}
+      {model.scheduledColumnVisible && <th className='otherCol text-center'>Sch.</th>}
+      <th className='otherCol text-center'>Rec.</th>
+      <th className='otherCol'>Meta</th>
+    </tr>
+  </thead>
+}
 Header = observer(Header)
 
 /**
@@ -142,7 +145,6 @@ let Row = ({ item, model }) => {
       {item.businessId !== c.PERSONAL_TYPE_ID && <div className='businessCol'>{item.businessDescription}</div>}
     </td>
 
-    {/*<td className={amountClass}>{formatCurrency(item.amount)}</td>*/}
     <AmountTd amount={item.amount} tdClass={amountClass} />
 
     {model.balanceColumnVisible && <AmountTd amount={item.balance} showValue={!isChildRow} tdClass={balanceClass} />}

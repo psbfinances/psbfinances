@@ -1,82 +1,105 @@
 'use strict'
 
 import React from 'react'
-import { td } from '../core/index.js'
 import numeral from 'numeral'
 import { observer } from 'mobx-react'
 import classNames from 'classnames'
-
-const BudgetTable = observer(
-class BudgetTable extends React.Component {
-
-  render () {
-    const model = this.props.model
-    console.log(model.formVisible)
-    return <div className='tbl'>
-      <table id='budgetTable' data-testid='budgetTable' className='dataTable' aria-label='Budget'>
-        <Header model={this.props.model} />
-        <tbody>
-          <Row model={this.props.model} item={this.props.model.total} />
-          <Rows model={this.props.model} />
-        </tbody>
-      </table>
-    </div>
-  }
-})
-export default BudgetTable
-
-let Header = ({ model }) => <thead>
-  <tr className='sticky-top'>
-    <th className='categoryCol'>Category</th>
-    <th className='amountCol'>Total</th>
-    {!model.formVisible && <th className='amountColBudget'>Jan</th>}
-    {!model.formVisible && <th className='amountColBudget'>Feb</th>}
-    {!model.formVisible && <th className='amountColBudget'>Mar</th>}
-    {!model.formVisible && <th className='amountColBudget'>Apr</th>}
-    {!model.formVisible && <th className='amountColBudget'>May</th>}
-    {!model.formVisible && <th className='amountColBudget'>Jun</th>}
-    {!model.formVisible && <th className='amountColBudget'>Jul</th>}
-    {!model.formVisible && <th className='amountColBudget'>Aug</th>}
-    {!model.formVisible && <th className='amountColBudget'>Sep</th>}
-    {!model.formVisible && <th className='amountColBudget'>Oct</th>}
-    {!model.formVisible && <th className='amountColBudget'>Nov</th>}
-    {!model.formVisible && <th className='amountColBudget'>Dec</th>}
-  </tr>
-</thead>
-Header = observer(Header)
-
-let Rows = ({ model }) => {
-  return model.items.map(x => <Row key={x.id} item={x} model={model} />)
-}
-Rows = observer(Rows)
-
+import { c } from '@psbfinances/shared/core/index.js'
 
 const formatCurrency = amount => numeral(amount).format('0,0')
 
-let Row = ({ item, model }) => {
-  function handleRowClick () {
-    if (item.id !== 'total') model.setFormVisible(true)
+/**
+ * Budget table.
+ * @param {BudgetModel} model
+ */
+const BudgetTable = observer(({ model }) => {
+  return <div className='tbl'>
+    <table id='budgetTable' data-testid='budgetTable' className='dataTable' aria-label='Budget'>
+      <Header model={model} />
+      <tbody>
+        <TotalRow model={model} item={model.totals} />
+        <Rows model={model} />
+      </tbody>
+    </table>
+  </div>
+})
+export default BudgetTable
+
+/**
+ * Table header.
+ * @param {BudgetModel} model
+ */
+const Header = observer(({ model }) => <thead>
+    <tr className='sticky-top'>
+      <th className='categoryCol'>Category</th>
+      <th className='amountCol budgetTotal'>Total</th>
+      {!model.formVisible && c.months.map(x => <th key={x} className='amountColBudget'>{x}</th>)}
+    </tr>
+  </thead>
+)
+
+/**
+ * Table rows
+ * @param {BudgetModel} model
+ * @constructor
+ */
+const Rows = observer(({ model }) => {
+  return model.items.map(x => <Row key={x.categoryId} item={x} model={model} />)
+})
+
+/**
+ * Table row.
+ * {@link module:psbf/api/budget}
+ * @param {CategoryAmount} item
+ * @param {BudgetModel} model
+ * @return {JSX.Element|null}
+ * @constructor
+ */
+const Row = observer(({ item, model }) => {
+  if (!item) return null
+
+  const handleRowClick = e => {
+    if (!Boolean(item.categoryId)) return
+
+    model.selectedId = e.currentTarget.id
+    model.setFormVisible(true)
+
   }
 
-  const isTotal = item.id === 'total'
-  const cN = classNames(['text-right', 'corn', {budgetTotal: isTotal}])
-  const cN1 = classNames(['truncate',  'categoryCol', {budgetTotal: isTotal}])
+  const hasNote = (note, amount) => (Boolean(note) && amount > 0)
 
-  return <tr id={item.id} onClick={handleRowClick}>
-    <td className={cN1}>{item.category}</td>
-    <td className={cN} >{formatCurrency(item.total)}</td>
-    {!model.formVisible && <td className={cN}>{formatCurrency(item.amount)}</td>}
-    {!model.formVisible && <td className={cN}>{formatCurrency(item.amount)}</td>}
-    {!model.formVisible && <td className={cN}>{formatCurrency(item.amount)}</td>}
-    {!model.formVisible && <td className={cN}>{formatCurrency(item.amount)}</td>}
-    {!model.formVisible && <td className={cN}>{formatCurrency(item.amount)}</td>}
-    {!model.formVisible && <td className={cN}>{formatCurrency(item.amount)}</td>}
-    {!model.formVisible && <td className={cN}>{formatCurrency(item.amount)}</td>}
-    {!model.formVisible && <td className={cN}>{formatCurrency(item.amount)}</td>}
-    {!model.formVisible && <td className={cN}>{formatCurrency(item.amount)}</td>}
-    {!model.formVisible && <td className={cN}>{formatCurrency(item.amount)}</td>}
-    {!model.formVisible && <td className={cN}>{formatCurrency(item.amount)}</td>}
-    {!model.formVisible && <td className={cN}>{formatCurrency(item.amount)}</td>}
+  return <tr id={item.categoryId} onClick={handleRowClick}>
+    <td className='truncate categoryCol'>{item.categoryName}</td>
+    {model.formVisible
+      ? <td key={`${item.categoryId}-0`} className='text-right budgetTotal'>{formatCurrency(
+        item.amounts[0].amount)}</td>
+      : item.amounts.map((x, i) => <td
+        key={`${item.categoryId}-${i}`}
+        className={classNames(['text-right', { budgetTotal: i === 0 }, { corn: hasNote(x.note, x.amount) }])}>
+        {formatCurrency(x.amount)}
+      </td>)}
+  </tr>
+})
+
+/**
+ * Totals row.
+ * {@link module:psbf/api/budget}
+ * @param {{amounts: Number[]}} item
+ * @param {BudgetModel} model
+ * @return {JSX.Element|null}
+ * @constructor
+ */
+let TotalRow = ({ item, model }) => {
+  if (item.amounts.length === 0) return null
+
+  const classes = 'text-right font-weight-bold border-bottom'
+
+  return <tr id='total'>
+    <td className='budgetTotal font-weight-bold border-bottom'>Total</td>
+    {model.formVisible
+      ? <td key={`total-${0}`} className={classes}>{formatCurrency(item.amounts[0])}</td>
+      : item.amounts.map((x, i) => <td key={`total-${i}`} className={classes}>{formatCurrency(x)}</td>)
+    }
   </tr>
 }
-Row = observer(Row)
+TotalRow = observer(TotalRow)

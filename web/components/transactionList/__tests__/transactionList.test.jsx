@@ -80,7 +80,7 @@ describe('TransactionList', () => {
     expectDropdown(select, accounts.length + 1, [1, accounts[0].shortName], [2, accounts[1].shortName])
 
     select = await screen.findByLabelText('yearSelect')
-    expectDropdown(select, 9, [0, 'This year'], [1, '2020'])
+    expectDropdown(select, 10, [1, 'This year'], [2, '2020'])
 
     select = await screen.findByLabelText('monthSelect')
     expectDropdown(select, 13, [0, 'All months'], [1, 'Jan'])

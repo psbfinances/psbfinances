@@ -1,23 +1,35 @@
 'use strict'
 
 import React from 'react'
-import { IconButton } from '../core/index.js'
+import { IconButton, PeriodSelector } from '../core/index.js'
+import { observer } from 'mobx-react'
 
-export default class BudgetToolbar extends React.Component {
+/**
+ * Budget toolbar.
+ * @param {BudgetModel} model
+ * @return {JSX.Element}
+ * @constructor
+ */
+const BudgetToolbar = observer(({model}) => {
 
-  render () {
-    return <div id='toolbar' className='pageToolbar'>
-      <div>
-        <div className='row row-cols-md-auto g-3 align-items-center'>
-          <IconButton
-            label='add'
-            tooltip='Add new budget'
-            icon='fas fa-plus-square'
-            // disabled={model.addDisabled}
-            // handleClick={handleAddClick}
-          />
-        </div>
+  return <div id='toolbar' className='pageToolbar'>
+    <div>
+      <div className='row row-cols-md-auto g-3 align-items-center'>
+        <PeriodSelector
+          selectedYear={model.year.toString()}
+          handleChange={model.handleYearChange} />
+
+        <IconButton
+          label='add'
+          tooltip='Copy budget from previous year'
+          icon='fas fa-plus-square'
+          disabled={model.hasBudget}
+          handleClick={model.handleAddClick}
+        />
       </div>
     </div>
-  }
-}
+  </div>
+
+})
+
+export default BudgetToolbar

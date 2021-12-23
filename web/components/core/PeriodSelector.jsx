@@ -53,14 +53,13 @@ const PeriodSelector = ({ selectedYear, selectedMonth, handleChange }) => <>
         <a
           id={x.id}
           className={classNames('dropdown-item', { 'active': x.id === selectedYear })}
-          href='#'
           name='yearSelect'
           onClick={handleChange}>{x.label}</a>
       </li>)}
     </ul>
   </div>
 
-  <div className='dropdown'>
+  {Boolean(selectedMonth) && <div className='dropdown'>
     <DropdownButton id='monthSelect' items={months} selectedId={selectedMonth || 'all'} labelName='label' />
     <ul className='dropdown-menu' aria-label='monthSelect'>
       {months.map(x => <li key={x.id}>
@@ -72,7 +71,7 @@ const PeriodSelector = ({ selectedYear, selectedMonth, handleChange }) => <>
           onClick={handleChange}>{x.label}</a>
       </li>)}
     </ul>
-  </div>
+  </div>}
 </>
 
 export default PeriodSelector

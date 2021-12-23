@@ -16,6 +16,7 @@ import importRuleTransactionController from './importRuleTransactionController.j
 import transactionController from './transactionController.js'
 import tripController from './tripController.js'
 import userController from './userController.js'
+import budgetController from './budgetController.js'
 
 /** @type {import('express').Router} */
 const router = express.Router()
@@ -28,6 +29,7 @@ router.use(access.authorize)
 router.use('/accounts', accountController)
 router.use('/attachments', attachmentController)
 router.use('/businesses', businessController)
+router.use('/budget', budgetController)
 router.use('/categories', categoryController)
 router.use('/cars', carController)
 router.use('/dashboard', dashboardController)
