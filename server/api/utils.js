@@ -1,5 +1,7 @@
 'use strict'
 
+import { c } from '../core/constants.js'
+
 const utils = {
   /**
    * Returns common request fields.
@@ -19,7 +21,9 @@ const utils = {
    */
   sendError: (res, errors, title = 'Invalid data') => {
     return res.status(400).json({ title, invalidParams: errors })
-  }
+  },
+
+  getUserCacheKey: email => `${c.cacheKey.USER}|${email}`
 
 }
 export default utils

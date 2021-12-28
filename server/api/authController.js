@@ -52,9 +52,9 @@ const controller = {
     const psw = sha256(password).toString()
     if (rows[0].password !== psw) throw new Error('Invalid credentials')
 
-    const { id, nickname } = rows[0]
+    const { nickname } = rows[0]
     const token = jsonwebtoken.sign({ email }, config.jwt.secret, { expiresIn: config.jwt.expirationPeriod })
-    return { user: { id, nickname, email }, token }
+    return { user: { nickname, email }, token }
   },
 
   postSignUp: async (req, res, next) => {

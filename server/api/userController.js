@@ -8,7 +8,6 @@ import { UserDb } from '../db/index.js'
 import utils from './utils.js'
 import DataChangeLogic, { ops } from './dataChangeLogic.js'
 import { userModel } from '../../shared/models/index.js'
-import { c } from '../core/index.js'
 
 const cache = new NodeCache()
 
@@ -66,7 +65,7 @@ const controller = {
     const userDb = new UserDb()
     await userDb.update({ id, tenantId, ...user })
 
-    cache.del(c.cacheKey.USER)
+    cache.del(utils.getUserCacheKey(user.email))
 
     const dataChangeLogic = new DataChangeLogic(tenantId, userId)
     await dataChangeLogic.insert(userDb.tableName, id, ops.UPDATE, user)
