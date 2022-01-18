@@ -20,7 +20,7 @@ export default class Dashboard extends React.Component {
     hasData: false,
     data: {},
     period: `${(new Date()).getMonth() + 1}`,
-    year: '2021'
+    year: (new Date()).getFullYear().toString()
   }
 
   constructor (props) {

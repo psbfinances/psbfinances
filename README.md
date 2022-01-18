@@ -181,6 +181,6 @@ And now have Fun.
 
 ## License
 
-Copyright © 2020–2021
+Copyright © 2020–2022
 
 psbFinances is open-source under the GNU Affero General Public License Version 3 (AGPLv3). Check it [here](/LICENSE.md).
