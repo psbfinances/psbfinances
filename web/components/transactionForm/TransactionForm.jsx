@@ -52,7 +52,7 @@ export class FormModel {
   }
 
   get originalDescriptionVisible () {
-    return !rootStore.transactionsStore.isNew && !this.isManual
+    return !rootStore.transactionsStore.isNew && !this.isManual && rootStore.transactionsStore.editItem.originalDescription
   }
 
   get isManual () {

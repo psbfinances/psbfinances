@@ -35,7 +35,7 @@ const DashboardBusinessTab = (props) => {
         categories={props.categories}
         businessId={props.businessId} />
       <BusinessCategoriesTable
-        title=' (year)'
+        title=' (YTD)'
         categories={props.categoriesYear}
         businessId={props.businessId} />
     </div>

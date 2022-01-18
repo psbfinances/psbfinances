@@ -58,7 +58,8 @@ const periodOptions = [
 ]
 
 const yearOptions = [
-  { id: '2021', label: 'This year' },
+  { id: '2022', label: 'This year' },
+  { id: '2021', label: '2021' },
   { id: '2020', label: '2020' },
   { id: '2019', label: '2019' },
   { id: '2018', label: '2018' }

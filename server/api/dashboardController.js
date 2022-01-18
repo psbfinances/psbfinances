@@ -4,6 +4,9 @@ import express from 'express'
 import asyncHandler from 'express-async-handler'
 import { DashboardDb, CategoryDb, BudgetDb } from '../db/index.js'
 import { c } from '@psbfinances/shared/core/index.js'
+import getLogger from '../core/logger.js'
+
+const logger = getLogger(import.meta.url)
 
 const controller = {
   /**
@@ -40,7 +43,7 @@ const controller = {
       tasks = await dashboardDb.listTransactionsWithTasks(tenantId)
     } else {
       businessPL = await dashboardDb.listBusinessPL(tenantId, businessId, year)
-      businessPLCurrentMonth = await dashboardDb.listBusinessPLCurrentMonth(tenantId, businessId, period)
+      businessPLCurrentMonth = await dashboardDb.listBusinessPLCurrentMonth(tenantId, businessId, period, year)
       businessPLCurrentYear = await dashboardDb.listBusinessPLCurrentYear(tenantId, businessId, year)
       businessPL.forEach(x => {
         const hasMonthData = pl.has(x.month)
@@ -73,10 +76,8 @@ const controller = {
    * @return {Promise<*>}
    */
   getBudget: async (tenantId, period, selectedYear, monthOnly = true) => {
-    let now = new Date()
-    if (period === 'lm') now.setMonth(now.getMonth() - 1)
+    logger.debug('getBudget', {tenantId, period, selectedYear, monthOnly})
     const year = Number.parseInt(selectedYear)
-    // const month = now.getMonth() + 1
     const month = period
     const categoryDb = new CategoryDb()
     const dashboardDb = new DashboardDb()
@@ -86,7 +87,9 @@ const controller = {
     const expenses = await dashboardDb.listBudgetCurrentMonth(tenantId, year, month, monthOnly)
     const budgets = await budgetDb.listByYearAndMonth(tenantId, year, month, monthOnly)
 
-    return categories.filter(x => x.isPersonal === 1 && x.type === 'e').map(x => {
+    logger.debug('getBudget', {c: categories.length, e: expenses.length, b: budgets.length})
+
+    return categories.filter(x => Boolean(x.isPersonal) && x.type === 'e').map(x => {
       const expense = expenses.find(e => e.categoryId === x.id)
       const budget = budgets.filter(b => b.categoryId === x.id).reduce((t, x) => t + x.amount, 0)
       const expenseAmount = expense ? -1 * expense.amount : 0

@@ -18,7 +18,7 @@ const DashboardPersonalTab = (props) => {
     </div>
     <div className='col-sm-12 col-md-6 col-lg-6'>
       <CategoriesTable categories={props.categories} title='month'/>
-      <CategoriesTable categories={props.categoriesYear} title='year'/>
+      <CategoriesTable categories={props.categoriesYear} title='YTD'/>
     </div>
   </div>
 }

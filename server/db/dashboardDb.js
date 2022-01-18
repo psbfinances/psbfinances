@@ -84,10 +84,7 @@ export default class DashboardDb extends Db {
       [tenantId, businessId, dateFrom, dateTo])
   }
 
-  async listBusinessPLCurrentMonth (tenantId, businessId, period) {
-    let now = new Date()
-    if (period === 'lm') now.setMonth(now.getMonth() - 1)
-    const year = now.getFullYear()
+  async listBusinessPLCurrentMonth (tenantId, businessId, period, year) {
     return this.raw(`SELECT c.type categoryType, categoryId, name, SUM(amount) amount
         FROM transactions
                  INNER JOIN accounts a on transactions.accountId = a.id
