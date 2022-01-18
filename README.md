@@ -1,14 +1,14 @@
 <h1 align="center">
 <div>
-<img  style='border: 1px solid #B88766; border-radius: 15px' src="https://avatars.githubusercontent.com/u/95427778?s=200&v=4" width="100" height="100" alt="pbsfinances">
+<div style='margin-bottom: 10px; color: #B88766'>psbFinances</div>
+<img  style='border: 1px solid #B88766; border-radius: 15px' src="https://psbfinances.com/uploads/psbFinances.png" alt="pbsfinances">
 </div>
-<div>psbFinances</div>
 </h1>
 <h2 align="center">
 Personal and Small Businesses Financial Manager
 </h2>
 
-[psbFinances](psbfinances.com) is an open source application to manage personal and small business finances.
+[psbFinances](https://psbfinances.com) is an open source application to manage personal and small business finances.
 
 - [Introduction](#introduction)
   - [Purpose](#purpose)
@@ -25,8 +25,6 @@ Personal and Small Businesses Financial Manager
 ## Introduction
 
 psbFinances is an open-source web application to manage personal and small business finances "under one roof". Think of it as a combination of [Mint](https://mint.intuit.com/) and [QuickBooks Self-Employed](https://quickbooks.intuit.com/self-employed/). 
-
-![](http://psbfinances.com/uploads/psbFinances.png)
 
 ### Purpose
 psbFiances allows managing personal and small business finances in a single application. Users who will get the most benefit from it are those who:
@@ -173,7 +171,7 @@ Another option is to import transactions from [Mint](https://mint.intuit.com/):
 - Select downloaded file with transactions
 - Select `Mint` as a format, and click `[Import]`
 
-This will import transactions and create accounts and categories. The table will show information about the imported file. Please note that you can undo the import by clicking [Undo](#) link, but this link is available for a short period of time after import.
+This will import transactions and create accounts and categories. The table will show information about the imported file. Please note that you can undo the import by clicking `[Undo]` button, but note that this button is available for a short period of time after import.
 
 ### 4. Final step
 
