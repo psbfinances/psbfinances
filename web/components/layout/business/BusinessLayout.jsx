@@ -28,6 +28,7 @@ import { rootStore } from '../../../stores/rootStore.js'
 import classNames from 'classnames'
 import CarList from '../../settings/cars/CarList.jsx'
 import DuplicateList from '../../settings/duplicateTransactions/DuplicateList.jsx'
+import ApplicationSettingsForm from '../../settings/application/ApplicationSettings.jsx'
 
 const MustBeAuthenticated = ({ children }) => {
   const navigate = useNavigate()
@@ -59,6 +60,7 @@ const BusinessLayout = observer(
                     <Route path='dashboard' element={<Dashboard />} />
                     <Route path='budget' element={<Budget />} />
                     <Route exact path='settings' element={<Settings />} />
+                    <Route path='settings/applicationSettings' element={<ApplicationSettingsForm />} />
                     <Route path='settings/accounts' element={<AccountList />} />
                     <Route path='settings/businesses' element={<BusinessList />} />
                     <Route path='settings/categories' element={<CategoryList />} />

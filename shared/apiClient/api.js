@@ -6,8 +6,9 @@ import qs from 'qs'
 
 export const endpoint = {
   ACCOUNTS: 'accounts',
-  AUTH: 'auth',
+  APPLICATION: 'application',
   ATTACHMENTS: 'attachments',
+  AUTH: 'auth',
   BUDGET: 'budget',
   BUSINESSES: 'businesses',
   CARS: 'cars',

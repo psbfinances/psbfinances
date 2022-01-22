@@ -3,6 +3,7 @@
 import express from 'express'
 import { auth, access } from '../middleware/index.js'
 import accountController from './accountController.js'
+import applicationController from './applicationController.js'
 import attachmentController from './attachmentController.js'
 import authController from './authController.js'
 import businessController from './businessController.js'
@@ -27,6 +28,7 @@ router.use(auth.authenticate)
 router.use(access.authorize)
 
 router.use('/accounts', accountController)
+router.use('/application', applicationController)
 router.use('/attachments', attachmentController)
 router.use('/businesses', businessController)
 router.use('/budget', budgetController)

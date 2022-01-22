@@ -26,6 +26,10 @@ const columns = {
   meta: ''
 }
 
+/**
+ * @class
+ * @extends Db
+ */
 export default class TransactionDb extends Db {
   constructor () {
     super('transactions')

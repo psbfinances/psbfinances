@@ -5,6 +5,9 @@ import { config } from '../config/index.js'
 
 let knexPool
 
+/**
+ * @class
+ */
 export default class Db {
   constructor (tableName) {
     if (!knexPool) {

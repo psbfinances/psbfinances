@@ -1,14 +1,16 @@
 'use strict'
 
 import { endpoint, Api } from './api.js'
+import ApplicationApi from './applicationApi.js'
+import AttachmentApi from './attachmentApi.js'
+import AuthApi from './authApi.js'
 import DashboardApi from './dashboardApi.js'
 import DuplicateTransactionApi from './duplicateTransactionApi.js'
-import TransactionApi from './transactionApi.js'
-import AuthApi from './authApi.js'
 import ImportApi from './importApi.js'
-import AttachmentApi from './attachmentApi.js'
+import TransactionApi from './transactionApi.js'
 
 export const accountApi = new Api(endpoint.ACCOUNTS)
+export const applicationApi = new ApplicationApi(endpoint.APPLICATION)
 export const attachmentApi = new AttachmentApi(endpoint.ATTACHMENTS)
 export const authApi = new AuthApi(endpoint.AUTH)
 export const businessApi = new Api(endpoint.BUSINESSES)

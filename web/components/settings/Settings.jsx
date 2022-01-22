@@ -6,13 +6,11 @@ import { Link } from 'react-router-dom'
 export default function Settings () {
   return <div className='dataContainer' style={{ padding: '10px' }}>
     <div className='row'>
-      {/*<Card title='Application' text='Application settings' url='app' />*/}
+      <Card title='Application' text='Application settings' url='applicationSettings' />
       <Card title='Account' text='Setup your financial account' url='accounts' />
       <Card title='Users' text='Application users' url='users' />
       <Card title='Businesses' text='Setup your businesses' url='businesses' />
       <Card title='Categories' text='Setup transaction categories' url='categories' />
-    </div>
-    <div className='row'>
       <Card title='Cars' text='Cars used for business' url='cars' />
     </div>
     <div className='row mt-3'>
