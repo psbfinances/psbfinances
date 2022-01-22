@@ -8,6 +8,9 @@ import utils from './utils.js'
 import { categoryModel } from '../../shared/models/index.js'
 import DataChangeLogic, { ops } from './dataChangeLogic.js'
 import { c } from '../../shared/core/index.js'
+import { getLogger } from '../core/index.js'
+
+const logger = getLogger(import.meta.url)
 
 const controller = {
   /**
@@ -54,14 +57,19 @@ const controller = {
   },
 
   insertDefaults: async (tenantId, userId) => {
-    const categoryDb = new CategoryDb()
-    for (let category of defaultCategories) {
-      category.id = cuid()
-      category.tenantId = tenantId
-      await categoryDb.insert(category)
+    logger.info('insertDefaults', {tenantId, userId})
+    try {
+      const categoryDb = new CategoryDb()
+      for (let category of defaultCategories) {
+        category.id = cuid()
+        category.tenantId = tenantId
+        await categoryDb.insert(category)
+      }
+      const dataChangeLogic = new DataChangeLogic(tenantId, userId)
+      await dataChangeLogic.insert(categoryDb.tableName, 'defaultCategories', ops.INSERT, [])
+    } catch (e) {
+      logger.error('insertDefaults', {tenantId, userId, e})
     }
-    const dataChangeLogic = new DataChangeLogic(tenantId, userId)
-    await dataChangeLogic.insert(categoryDb.tableName, 'defaultCategories', ops.INSERT, [])
   },
 
   /**

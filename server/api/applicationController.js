@@ -8,6 +8,7 @@ import { accounts, budget, businesses, cars, categories, transactions } from './
 import utils from './utils.js'
 import DataChangeLogic, { ops } from './dataChangeLogic.js'
 import { getLogger } from '../core/index.js'
+import { controller as categoryController } from './categoryController.js'
 
 const logger = getLogger(import.meta.url)
 
@@ -110,6 +111,9 @@ const controller = {
     await controller.deleteTenantData(tenantId, BusinessDb)
     await controller.deleteTenantData(tenantId, AccountDb)
     await controller.deleteTenantData(tenantId, CategoryDb)
+
+    await categoryController.insertDefaults(tenantId, userId)
+
     const dataChangeLogic = new DataChangeLogic(tenantId, userId)
     await dataChangeLogic.insert('transactions', 'demo-data', ops.DELETE, {})
     return Promise.resolve()
