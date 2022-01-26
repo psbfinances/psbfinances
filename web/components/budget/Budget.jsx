@@ -7,6 +7,7 @@ import BudgetForm from './BudgetForm.jsx'
 import { makeAutoObservable } from 'mobx'
 import { observer } from 'mobx-react'
 import { budgetApi } from '@psbfinances/shared/apiClient/index.js'
+import { rootStore } from '../../stores/rootStore.js'
 
 /**
  * Budget view model.
@@ -42,6 +43,7 @@ class BudgetModel {
   }
 
   async getData () {
+    await rootStore.masterDataStore.getData()
     /** @type {ListResponse} */
     const result = await budgetApi.list({ year: this.year })
     this.items = result.categoryMonthAmounts

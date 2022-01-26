@@ -162,6 +162,10 @@ export default class TransactionDb extends Db {
     return this.knex.where({ id, tenantId }).update({ meta: JSON.stringify(meta) })
   }
 
+  async getMinimumDate (tenantId) {
+    return this.knex.where({tenantId}).min(columns.postedDate, {as: 'minDate'})
+  }
+
   async deleteByParentId (parentId, tenantId) {
     return this.knex.where({ parentId, tenantId }).delete()
   }

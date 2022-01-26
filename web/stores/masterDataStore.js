@@ -32,6 +32,8 @@ export default class MasterDataStore {
   importRules
   /** @type {Map<string, Car>} */
   cars
+  /** @type {number[]} */
+  years
 
   constructor (rootStore) {
     makeAutoObservable(this)
@@ -52,6 +54,7 @@ export default class MasterDataStore {
     yield this.getCategories()
     yield this.getBusinesses()
     yield this.getCars()
+    yield this.getApplicationSettings()
     this.loading = false
     this.loaded = true
   }
@@ -101,6 +104,11 @@ export default class MasterDataStore {
   * getCars () {
     const cars = yield api.carApi.list()
     this.cars = new Map(cars.map(x => [x.id, x]))
+  }
+
+  * getApplicationSettings () {
+    const settings = yield api.applicationApi.get()
+    this.years = settings.years
   }
 
   * getUsers () {

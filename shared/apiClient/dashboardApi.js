@@ -8,7 +8,7 @@ export default class DashboardApi extends Api {
   }
 
   /**
-   * @param {'cm'|'lm'} period
+   * @param {string} period
    * @param {string} year
    * @param {string} businessId
    * @return {AxiosResponse<*>}

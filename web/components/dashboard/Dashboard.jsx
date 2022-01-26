@@ -19,7 +19,7 @@ export default class Dashboard extends React.Component {
   state = {
     hasData: false,
     data: {},
-    period: `${(new Date()).getMonth() + 1}`,
+    period: `${(new Date()).getMonth() + 1}`.padStart(2, '0'),
     year: (new Date()).getFullYear().toString()
   }
 
@@ -28,7 +28,7 @@ export default class Dashboard extends React.Component {
   }
 
   async getData () {
-    if (!rootStore.masterDataStore.businesses) await rootStore.masterDataStore.getBusinesses()
+    await rootStore.masterDataStore.getData()
     const businesses = rootStore.masterDataStore.businessOptions.map(x => ({ id: x.value, ...x }))
     businesses.shift()
     const selectedBusiness = businesses[0]
@@ -48,8 +48,16 @@ export default class Dashboard extends React.Component {
 
   handlePeriodChange = async e => {
     e.preventDefault()
-    const data = await api.dashboardApi.get(e.target.id, this.state.year, this.state.selectedBusiness.id)
-    this.setState({ period: e.target.id, data: data.data, hasData: true })
+    if (e.target.name === 'monthSelect') {
+      const period = e.target.id
+      const data = await api.dashboardApi.get(period, this.state.year, this.state.selectedBusiness.id)
+      this.setState({ period, data: data.data, hasData: true })
+
+    } else {
+      const year = e.target.id
+      const data = await api.dashboardApi.get(this.state.period, year, this.state.selectedBusiness.id)
+      this.setState({ year, data: data.data, hasData: true })
+    }
   }
 
   handleYearChange = async e => {

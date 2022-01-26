@@ -9,10 +9,35 @@ import utils from './utils.js'
 import DataChangeLogic, { ops } from './dataChangeLogic.js'
 import { getLogger } from '../core/index.js'
 import { controller as categoryController } from './categoryController.js'
+import { controller as transactionController } from './transactionController.js'
 
 const logger = getLogger(import.meta.url)
 
 const controller = {
+  /**
+   * Gets application settings for a tenant.
+   * @link module:psbf/api/application
+   * @property {AppRequest} req
+   * @property {import('express').Response} res
+   * @return {Promise<GetResponse>}
+   */
+  get: async (req, res) => {
+    const { tenantId, userId } = utils.getBasicRequestData(req)
+    logger.debug('get', { tenantId, userId })
+    res.json(await controller.getApplicationSettings(tenantId))
+  },
+
+  /**
+   * Gets application settings for a tenant.
+   * @param {string} tenantId
+   * @return {Promise<{years: number[]}>}
+   */
+  getApplicationSettings: async tenantId => {
+    const years = await transactionController.getYears(tenantId)
+
+    return { years }
+  },
+
   /**
    * Adds demo data
    * @property {AppRequest} req
@@ -118,11 +143,11 @@ const controller = {
     await dataChangeLogic.insert('transactions', 'demo-data', ops.DELETE, {})
     return Promise.resolve()
   }
-
 }
 
 /** @type {import('express').Router} */
 const router = express.Router()
+router.route('/').get(asyncHandler(controller.get))
 router.route('/demo-data').post(asyncHandler(controller.postDemoData))
 router.route('/demo-data').delete(asyncHandler(controller.deleteDemoData))
 

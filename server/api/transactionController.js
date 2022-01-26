@@ -579,8 +579,31 @@ const controller = {
     const oldPath = path.resolve('../files', fileName)
     const newPath = path.resolve('../files', 'deleted', fileName)
     await fs.promises.rename(oldPath, newPath)
-  }
+  },
 
+  /**
+   * Returns list of years for which tenant has transactions and the next year.
+   * @param {string} teantnId
+   * @return {Promise<number[]>}
+   */
+  getYears: async teantnId => {
+    const transactionDb = new TransactionDb()
+    const minDate = await transactionDb.getMinimumDate(teantnId)
+    let result = []
+    const thisYear = (new Date()).getFullYear()
+    const nextYear = thisYear + 1
+    if (!minDate[0].minDate) {
+      result = [thisYear, nextYear]
+    } else {
+      const minYear = minDate[0].minDate.getFullYear()
+      for (let i = 0; i <= nextYear - minYear; i++) {
+        result[i] = minYear + i
+      }
+    }
+    result = result.sort((a, b) => (a >= b ? -1 : 1))
+
+    return result
+  }
 }
 
 /** @type {import('express').Router} */

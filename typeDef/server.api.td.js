@@ -54,3 +54,9 @@
  * @property {number} amount
  * @property {?string} note
  */
+
+/** @module psbf/api/application **/
+/**
+ * @typedef {Object} GetResponse
+ * @property {number[]} years
+ */

@@ -410,3 +410,22 @@ describe('processUpdate', () => {
   })
 })
 
+/** getYears */
+describe('getYears', () => {
+  const tenantId = 'ten1'
+  const thisYear = (new Date()).getFullYear()
+
+  it('return this and next year if there are no transactions', async () => {
+    const actual = await controller.getYears(tenantId)
+    expect(actual).toStrictEqual([thisYear + 1, thisYear, ])
+  })
+
+  it('return 3 year if first transaction was last year', async () => {
+    const minDate = new Date(thisYear -1, 1, 12)
+    TransactionDb.prototype.getMinimumDate = jest.fn().mockResolvedValueOnce([{minDate}])
+    const actual = await controller.getYears(tenantId)
+    expect(actual).toStrictEqual([thisYear + 1, thisYear, thisYear - 1])
+  })
+})
+
+
