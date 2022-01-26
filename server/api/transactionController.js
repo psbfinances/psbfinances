@@ -592,7 +592,7 @@ const controller = {
     let result = []
     const thisYear = (new Date()).getFullYear()
     const nextYear = thisYear + 1
-    if (!minDate[0].minDate) {
+    if (minDate.length === 0) {
       result = [thisYear, nextYear]
     } else {
       const minYear = minDate[0].minDate.getFullYear()

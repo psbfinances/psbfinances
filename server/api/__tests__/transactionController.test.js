@@ -416,6 +416,7 @@ describe('getYears', () => {
   const thisYear = (new Date()).getFullYear()
 
   it('return this and next year if there are no transactions', async () => {
+    TransactionDb.prototype.getMinimumDate = jest.fn().mockResolvedValueOnce([])
     const actual = await controller.getYears(tenantId)
     expect(actual).toStrictEqual([thisYear + 1, thisYear, ])
   })

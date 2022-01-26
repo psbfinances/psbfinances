@@ -16,12 +16,15 @@ import {
 } from '../../__tests__/data.js'
 import { MemoryRouter } from 'react-router'
 import { rootStore } from '../../../stores/rootStore'
+import ApplicationApi from '@psbfinances/shared/apiClient/applicationApi.js'
 
 // jest.mock('axios')
 
 const listResponse = { openingBalance: 10, items: amazonCardTransactions }
 const citiCardListResponse = { openingBalance: -30000, items: citiCardTransactions }
 const emptyListResponse = { openingBalance: 0, items: [] }
+
+const thisYear = (new Date()).getFullYear()
 
 describe('TransactionList', () => {
   let handleChangeMock = jest.fn().mockImplementation(() => {})
@@ -31,6 +34,7 @@ describe('TransactionList', () => {
 
   beforeEach(() => {
     handleChangeMock = jest.fn().mockImplementation(() => {})
+    ApplicationApi.prototype.get = jest.fn().mockResolvedValueOnce({ years: [thisYear + 1, thisYear] })
   })
 
   afterEach(() => {
@@ -80,7 +84,7 @@ describe('TransactionList', () => {
     expectDropdown(select, accounts.length + 1, [1, accounts[0].shortName], [2, accounts[1].shortName])
 
     select = await screen.findByLabelText('yearSelect')
-    expectDropdown(select, 10, [1, 'This year'], [2, '2020'])
+    expectDropdown(select, 2, [0, (thisYear + 1).toString()], [1, 'This year'])
 
     select = await screen.findByLabelText('monthSelect')
     expectDropdown(select, 13, [0, 'All months'], [1, 'Jan'])
@@ -181,7 +185,7 @@ describe('TransactionList', () => {
       mockResolvedValueOnce(listResponse).
       mockResolvedValueOnce(citiCardListResponse)
     Api.prototype.list = getMasterDataApiMock()
-    Api.prototype.get = jest.fn().mockResolvedValueOnce({distance: 20})
+    Api.prototype.get = jest.fn().mockResolvedValueOnce({ distance: 20 })
     render(
       <MemoryRouter>
         <TransactionList />

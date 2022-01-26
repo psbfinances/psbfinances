@@ -15,7 +15,7 @@ beforeAll(async () => {
 /** undo */
 describe('processUndo', () => {
   it('returns empty object if duplicate id not found', async () => {
-    DuplicateTransactionDb.prototype.get = jest.fn().mockResolvedValueOnce(null)
+    DuplicateTransactionDb.prototype.get = jest.fn().mockResolvedValueOnce([])
 
     const actual = await controller.processUndo(100, tenantId, userId)
     expect(actual).toStrictEqual({})
@@ -30,7 +30,7 @@ describe('processUndo', () => {
       externalUid: 'a9f1d67ffd46e36d26c191e0f4cbb1f3588c1399',
       transactionData
     }
-    DuplicateTransactionDb.prototype.get = jest.fn().mockResolvedValueOnce(duplicateTransactionRow)
+    DuplicateTransactionDb.prototype.get = jest.fn().mockResolvedValueOnce([duplicateTransactionRow])
     DuplicateTransactionDb.prototype.delete = jest.fn().mockResolvedValueOnce()
     TransactionDb.prototype.insert = jest.fn().mockResolvedValueOnce({})
     DataChangeDb.prototype.insert = jest.fn().mockResolvedValue()
