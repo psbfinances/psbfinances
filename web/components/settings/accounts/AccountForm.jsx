@@ -28,7 +28,7 @@ let AccountForm = ({ model }) => {
             value={model.editItem ? model.editItem.shortName : ''}
             onChange={model.handleChange} />
           <div className='invalid-feedback'>
-            Please enter a short name.
+            {model.formErrors.shortName}
           </div>
         </div>
         <div className='mb-3'>

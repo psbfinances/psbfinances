@@ -30,6 +30,7 @@ const accountModel = {
   validate: (account) => {
     let errors = {}
     if (validator.isEmpty(account.shortName, { ignore_whitespace: true })) errors.shortName = 'Please enter short name'
+    if (!validator.isLength(account.shortName, { min: 3, max: 25 })) errors.shortName = 'Invalid short name'
     if (validator.isEmpty(account.fullName, { ignore_whitespace: true })) errors.fullName = 'Please enter full name'
 
     return errors
