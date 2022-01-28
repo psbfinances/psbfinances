@@ -78,7 +78,8 @@ const controller = {
   getBudget: async (tenantId, period, selectedYear, monthOnly = true) => {
     logger.debug('getBudget', {tenantId, period, selectedYear, monthOnly})
     const year = Number.parseInt(selectedYear)
-    const month = period
+    const currentYear = (new Date()).getFullYear()
+    const month = year === currentYear || monthOnly ? period : 12
     const categoryDb = new CategoryDb()
     const dashboardDb = new DashboardDb()
     const budgetDb = new BudgetDb()
