@@ -142,7 +142,9 @@ const BusinessCategoriesTableRow = ({ category, businessId, yearExpenses }) => {
 
   const handleClick = e => {
     const categoryId = e.target.parentNode.id
+    const year = rootStore.transactionsStore.filter.year
     rootStore.transactionsStore.filter.reset()
+    rootStore.transactionsStore.filter.year = year
     rootStore.transactionsStore.filter.categoryId = categoryId
     rootStore.transactionsStore.filter.businessId = businessId
     navigate('/app/transactions')

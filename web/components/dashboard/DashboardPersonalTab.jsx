@@ -68,7 +68,9 @@ const AccountTableRow = ({ account }) => {
   const handleClick = e => {
     const accountId = e.target.parentNode.id
     if (accountId === 'totalAccounts') return
+    const year = rootStore.transactionsStore.filter.year
     rootStore.transactionsStore.filter.reset()
+    rootStore.transactionsStore.filter.year = year
     rootStore.transactionsStore.filter.accountId = accountId
     navigate('/app/transactions')
   }
@@ -223,7 +225,9 @@ const CategoriesTableRow = ({ category }) => {
   const handleClick = e => {
     const categoryId = e.target.parentNode.id
     if (categoryId === 'total') return
+    const year = rootStore.transactionsStore.filter.year
     rootStore.transactionsStore.filter.reset()
+    rootStore.transactionsStore.filter.year = year
     rootStore.transactionsStore.filter.categoryId = categoryId
     rootStore.transactionsStore.filter.accountId = c.selectId.ALL
     navigate('/app/transactions')

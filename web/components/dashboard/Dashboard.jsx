@@ -55,15 +55,10 @@ export default class Dashboard extends React.Component {
 
     } else {
       const year = e.target.id
+      rootStore.transactionsStore.filter.year = year
       const data = await api.dashboardApi.get(this.state.period, year, this.state.selectedBusiness.id)
       this.setState({ year, data: data.data, hasData: true })
     }
-  }
-
-  handleYearChange = async e => {
-    const year = e.target.id
-    const data = await api.dashboardApi.get(this.state.period, year, this.state.selectedBusiness.id)
-    this.setState({ year, data: data.data, hasData: true })
   }
 
   handleBusinessChange = async e => {
@@ -84,17 +79,18 @@ export default class Dashboard extends React.Component {
         selectedYear={this.state.year}
         selectedBusiness={this.state.selectedBusiness}
         handleBusinessChange={this.handleBusinessChange}
-        handleYearChange={this.handleYearChange}
         handlePeriodChange={this.handlePeriodChange} />
       {this.state.selectedBusiness.id === 'p'
         ? <DashboardPersonalTab
           accounts={this.state.data.accounts}
+          year={this.state.year}
           categories={this.state.data.budget}
           categoriesYear={this.state.data.budgetYear}
           tasks={this.state.data.tasks}
           transactions={this.state.data.transactions} />
         : <DashboardBusinessTab
           pl={this.state.data.pl}
+          year={this.state.year}
           businessId={this.state.selectedBusiness.id}
           categoriesYear={this.state.data.businessPLCurrentYear}
           categories={this.state.data.businessPLCurrentMonth} />
