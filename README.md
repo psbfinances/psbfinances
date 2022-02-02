@@ -19,6 +19,7 @@ Personal and Small Businesses Financial Manager
   - [Requirements](#requirements)
   - [Installation steps](#installation-steps)
 - [Use psbFinances](#use-psbfinances)
+- [Acronyms](#acronyms)
 - [License](#license)
 
 
@@ -176,6 +177,12 @@ This will import transactions and create accounts and categories. The table will
 ### 4. Final step
 
 And now have Fun.
+
+## Acronyms
+
+**TL** - Transaction List   
+**TF** - Transaction From  
+
 
 ## License
 
