@@ -78,7 +78,7 @@ let TransactionListToolbar = ({ model }) => {
         {model.loading && <Loader type='ThreeDots' color='#B88766' height={40} width={40} />}
         <IconButton
           label='mapManual'
-          tooltip='Map transactions'
+          tooltip='Merge transactions'
           icon='fas fa-object-group'
           disabled={model.mergeDisabled}
           handleClick={handleMerge} />

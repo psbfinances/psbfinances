@@ -87,6 +87,7 @@ export class ListModel {
 
   * merge () {
     yield rootStore.transactionsStore.merge(this.secondSelectedId)
+    this.secondSelectedId = null
   }
 
   add () {

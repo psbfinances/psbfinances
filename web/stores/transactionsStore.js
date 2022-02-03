@@ -225,31 +225,23 @@ export class TransactionsStore {
 
   /**
    * Merges selected item with another one identified by secondId.
-   * @param {string}secondId
+   * @link module:psbf/api/transactions
+   * @param {string} secondId
    * @return {Promise}
    */
   * merge (secondId) {
     if (!secondId || !this.selectedItem || secondId === this.selectedItem.id) return Promise.resolve()
-    const secondItem = this.findById(secondId)
-    const sources = `${secondItem.source}${this.selectedItem.source}`
-    if (sources === 'mm' || sources === 'ii') return Promise.resolve()
-    const fromItem = secondItem.source === c.sources.MANUAL ? secondItem : this.selectedItem
-    const toItem = secondItem.source === c.sources.MANUAL ? this.selectedItem : secondItem
 
-    toItem.description = fromItem.description
-    toItem.businessId = fromItem.businessId
-    toItem.categoryId = fromItem.categoryId
-    toItem.note = `${toItem.note} ${fromItem.note}`.trim()
-    if (fromItem.tripId) toItem.tripId = fromItem.tripId
+    let result = yield api.transactionApi.patchMerge(this.selectedItem.id, secondId)
+    result = result.data
+    if (!result.transaction) return Promise.resolve()
 
-    yield api.transactionApi.delete(fromItem.id)
-    const { categoryId, businessId, description, note, postedDate, amount, tripId } = toItem
-    const updatedTransaction = { categoryId, businessId, description, note, postedDate, amount, tripId }
-    yield api.transactionApi.patch(toItem.id, updatedTransaction)
-    const fromItemIndex = this.items.findIndex(x => x.id === fromItem.id)
+    const fromItemIndex = this.items.findIndex(x => x.id === result.deletedId)
     this.items.splice(fromItemIndex, 1)
+    const toItemIndex = this.items.findIndex(x => x.id === result.transaction.id)
+    this.items[toItemIndex] = result.transaction
     this.setItemsMeta()
-    this.setSelectedItemById(toItem.id)
+    this.setSelectedItemById(result.transaction.id)
   }
 
   cancelAdd () {

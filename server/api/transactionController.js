@@ -104,14 +104,23 @@ const controller = {
 
     const attachmentDb = new AttachmentDb()
     const attachments = await attachmentDb.listByEntity(tenantId, id)
-    const items = attachments.map(x => {
-      const { id, fileInfo } = x
-      const { name: originalName } = fileInfo
-      const url = path.join(config.filesFolder, x.id)
-      return { id, url, originalName }
-    })
+    const items = controller.getAttachmentList(attachments)
     res.json(items)
   },
+
+  /**
+   * Returns list of attachments for a transactions.
+   * @param {psbf.Attachment[]} attachments
+   * @return {*}
+   */
+  getAttachmentList: attachments => {
+    return attachments.map(x => {
+      const { id } = x
+      const url = path.join(config.filesFolder, x.id)
+      return { id, url }
+    })
+  },
+
   /**
    * Calculates running balance and new month separators.
    * @param {string} tenantId
@@ -463,7 +472,7 @@ const controller = {
       const dataChangesDb = new DataChangeDb()
       await dataChangesDb.knex.insert(dataChanges)
     } catch (e) {
-      logger.error('renameSimilarDescriptions', {tenantId, userId, existingTransaction, description, error: e.stack})
+      logger.error('renameSimilarDescriptions', { tenantId, userId, existingTransaction, description, error: e.stack })
     }
   },
 
@@ -554,6 +563,95 @@ const controller = {
     await transactionDb.updateMeta(id, tenantId, meta)
   },
 
+  /**
+   * Handles merge manual and imported transactions request.
+   * @link module:psbf/api/transactions
+   * @param {AppRequest} req
+   * @param {UpdateMergeRequest} req.body
+   * @param {import('express').Response} res
+   * @param {UpdateMergeResponse} res.body
+   * @return {Promise<void>}
+   */
+  updateMerge: async (req, res) => {
+    const { tenantId, userId, id } = utils.getBasicRequestData(req)
+    const mergeId = req.body.mergeId
+    const result = await controller.mergeTransactions(id, tenantId, mergeId, userId)
+    res.json(result)
+  },
+
+  /**
+   * Merges manual and imported transactions.
+   * @link module:psbf/api/transactions
+   * @param {string} id first transaction id
+   * @param {string} tenantId tenantId
+   * @param {string} mergeId second transaction id
+   * @param {string} userId
+   * @return {Promise<{}|UpdateMergeResponse>}
+   */
+  mergeTransactions: async (id, tenantId, mergeId, userId) => {
+    logger.info('mergeTransactions', { id, tenantId, mergeId })
+    if (!id || !mergeId || id === mergeId) return Promise.resolve({})
+
+    const transactionDb = new TransactionDb()
+    const firstTransaction = await transactionDb.get(id, tenantId)
+    if (!firstTransaction) return Promise.resolve({})
+    const secondTransaction = await transactionDb.get(mergeId, tenantId)
+    if (!secondTransaction) return Promise.resolve({})
+
+    const sources = `${firstTransaction.source}${secondTransaction.source}`
+    if (sources === 'mm' || sources === 'ii') return Promise.resolve({})
+
+    const fromItem = secondTransaction.source === c.sources.MANUAL ? secondTransaction : firstTransaction
+    const toItem = secondTransaction.source === c.sources.MANUAL ? firstTransaction : secondTransaction
+
+    toItem.description = fromItem.description
+    toItem.businessId = fromItem.businessId
+    toItem.categoryId = fromItem.categoryId
+    toItem.note = `${toItem.note} ${fromItem.note}`.trim()
+    toItem.meta = null
+    if (fromItem.tripId) toItem.tripId = fromItem.tripId
+    const meta = controller.mergeMetas(fromItem.meta, toItem.meta)
+
+    await transactionDb.delete({id: fromItem.id, tenantId})
+    await transactionDb.update({ tenantId, ...toItem })
+    await transactionDb.updateMeta(toItem.id, tenantId, meta)
+
+    const dataChangeLogic = new DataChangeLogic(tenantId, userId)
+    const attachmentDb = new AttachmentDb()
+    /** @type {psbf.Attachment[]} */
+    const attachments = await attachmentDb.listByEntity(tenantId, fromItem.id)
+    for (const attachment of attachments) {
+      attachment.entityId = toItem.id
+      await attachmentDb.update(attachment)
+      await dataChangeLogic.insert(attachmentDb.tableName, attachment.id, ops.UPDATE, { attachment })
+    }
+    const attachmwentList = controller.getAttachmentList(attachments)
+
+    await dataChangeLogic.insert(transactionDb.tableName, fromItem.id, ops.DELETE, fromItem)
+    await dataChangeLogic.insert(attachmentDb.tableName, toItem.id, ops.UPDATE, { tenantId, ...toItem })
+    toItem.amount = toItem.amount / 100
+    toItem.meta = meta
+    return { transaction: toItem, attachments: attachmwentList, deletedId: fromItem.id }
+  },
+
+  /**
+   * Merges 2 transactions meta fields.
+   * @param {?string} meta1
+   * @param {?string} meta2
+   * @return {null|Object}
+   */
+  mergeMetas: (meta1, meta2) => {
+    if (!meta1 && !meta2) return null
+
+    const m1 = Boolean(meta1) ? JSON.parse(meta1) : null
+    const m2 = Boolean(meta2) ? JSON.parse(meta2) : null
+
+    if (m1 && !m2) return m1
+    if (!m1 && m2) return m2
+
+    return Object.assign(m1, m2)
+  },
+
   deleteAttachment: async (req, res) => {
     const { tenantId, userId, id } = utils.getBasicRequestData(req)
     const attachmentId = req.params.attachmentId
@@ -613,6 +711,7 @@ router.route('/:id/transactions').get(asyncHandler(controller.listChildren))
 router.route('/:id/attachments').get(asyncHandler(controller.listAttachments))
 router.route('/:id/attachments').post(asyncHandler(controller.insertAttachment))
 router.route('/:id/attachments/:attachmentId').delete(asyncHandler(controller.deleteAttachment))
+router.route('/:id/merge').patch(asyncHandler(controller.updateMerge))
 router.route('/:id').patch(asyncHandler(controller.update))
 router.route('/:id').delete(asyncHandler(controller.delete))
 router.route('/').post(asyncHandler(controller.insert))

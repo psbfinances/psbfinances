@@ -60,3 +60,14 @@
  * @typedef {Object} GetResponse
  * @property {number[]} years
  */
+
+/** @module psbf/api/transactions **/
+/**
+ * @typedef {Object} UpdateMergeRequest
+ * @property {string} mergeId
+ *
+ * @typedef {Object} UpdateMergeResponse
+ * @property {psbf.Transaction} transaction
+ * @property {psbf.Attachment[]} attachments
+ * @property {string} deletedId
+ */

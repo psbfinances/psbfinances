@@ -42,6 +42,16 @@ export default class TransactionApi extends Api {
     return this.api.post(`${this.endPoint}/${id}/attachments`, data)
   }
 
+  /**
+   * @link module:psbf/api/transactions
+   * @param {string} id first transaction id
+   * @param {string} mergeId second transaction id
+   * @return {Promise<UpdateMergeResponse>}
+   */
+  async patchMerge (id, mergeId) {
+    return this.api.patch(`${this.endPoint}/${id}/merge`, {mergeId})
+  }
+
   async deleteAttachment (id, attachmentId) {
     return this.api.delete(`${this.endPoint}/${id}/attachments/${attachmentId}`)
   }

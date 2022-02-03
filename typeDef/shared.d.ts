@@ -31,7 +31,7 @@ export declare namespace psbf {
     tripId?: string,
     meta?: {
       hasAttachment?: boolean
-    }
+    } | string
   }
 
   interface TransactionUI extends Transaction {

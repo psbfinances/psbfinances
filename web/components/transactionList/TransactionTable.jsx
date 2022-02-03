@@ -91,7 +91,6 @@ let Row = ({ item, model }) => {
     e.preventDefault()
     const transactionId = e.currentTarget.id
     if (e.metaKey && transactionId !== rootStore.transactionsStore.selectedItem.id) {
-      console.log(rootStore.transactionsStore.selectedItem.id, e.currentTarget.id)
       model.secondSelectedId = e.currentTarget.id
       return
     }

@@ -100,39 +100,4 @@ describe('merge', () => {
     await rootStore.transactionsStore.merge(secondTransaction.id)
     expect(expectedNumberOfItems).toBe(rootStore.transactionsStore.items.length)
   })
-
-  it('removes manual transaction', async () => {
-    const transactions = [...amazonCardTransactions].splice(0, 5)
-    const openingBalance = 1000
-
-    /** @type {psbf.Transaction} */
-    const secondTransaction = transactionModel.clone(transactions[0])
-    secondTransaction.id = 'secondItemId-01'
-    secondTransaction.source = c.sources.MANUAL
-    secondTransaction.description = 'new description'
-    secondTransaction.categoryId = 'cat-110'
-    transactions.push(secondTransaction)
-    const expectedNumberOfItems = transactions.length - 1
-
-    const deleteApiMock = jest.fn().mockResolvedValueOnce()
-    TransactionApi.prototype.delete = deleteApiMock
-    TransactionApi.prototype.patch = jest.fn().mockResolvedValueOnce()
-
-    await rootStore.transactionsStore.setItems(transactions, openingBalance)
-    rootStore.transactionsStore.setSelectedItemById(secondTransaction.id)
-
-    await rootStore.transactionsStore.merge(transactions[0].id)
-    expect(deleteApiMock).toHaveBeenCalled()
-    expect(deleteApiMock).toHaveBeenCalledWith(secondTransaction.id)
-    expect(TransactionApi.prototype.patch).toHaveBeenCalled()
-    expect(TransactionApi.prototype.patch).
-      toHaveBeenCalledWith(transactions[0].id, expect.objectContaining({
-        amount: transactions[0].amount,
-        businessId: secondTransaction.businessId,
-        categoryId: secondTransaction.categoryId,
-        description: secondTransaction.description,
-        note: `${transactions[0].note} ${secondTransaction.note}`}))
-    expect(expectedNumberOfItems).toBe(rootStore.transactionsStore.items.length)
-    expect(rootStore.transactionsStore.selectedItem.id).toBe(transactions[0].id)
-  })
 })

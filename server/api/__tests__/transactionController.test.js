@@ -3,7 +3,15 @@
 import httpMocks from 'node-mocks-http'
 import { beforeEach, expect, jest } from '@jest/globals'
 import { initConfig } from '../../config/index.js'
-import { BusinessDb, CategoryDb, DataChangeDb, Db, DuplicateCandidateDb, TransactionDb } from '../../db/index.js'
+import {
+  AttachmentDb,
+  BusinessDb,
+  CategoryDb,
+  DataChangeDb,
+  Db,
+  DuplicateCandidateDb,
+  TransactionDb
+} from '../../db/index.js'
 import { controller } from '../transactionController.js'
 import { c } from '../../../shared/core/index.js'
 import { transactionModel } from '../../../shared/models'
@@ -418,15 +426,154 @@ describe('getYears', () => {
   it('return this and next year if there are no transactions', async () => {
     TransactionDb.prototype.getMinimumDate = jest.fn().mockResolvedValueOnce([])
     const actual = await controller.getYears(tenantId)
-    expect(actual).toStrictEqual([thisYear + 1, thisYear, ])
+    expect(actual).toStrictEqual([thisYear + 1, thisYear])
   })
 
   it('return 3 year if first transaction was last year', async () => {
-    const minDate = new Date(thisYear -1, 1, 12)
-    TransactionDb.prototype.getMinimumDate = jest.fn().mockResolvedValueOnce([{minDate}])
+    const minDate = new Date(thisYear - 1, 1, 12)
+    TransactionDb.prototype.getMinimumDate = jest.fn().mockResolvedValueOnce([{ minDate }])
     const actual = await controller.getYears(tenantId)
     expect(actual).toStrictEqual([thisYear + 1, thisYear, thisYear - 1])
   })
 })
+
+/** mergeTransactions */
+describe('mergeTransactions', () => {
+  it('merges manual and imported transactions', async () => {
+    const tenantId = 'tenant01'
+    const manualTransaction = {
+      id: 'ckz5qnhie0036qwcu8hgd8wsw',
+      postedDate: new Date('2022-02-28T06:00:00.000Z'),
+      accountId: 'ckkfkydv00002tncud18w61em',
+      categoryId: 'ckkfnvaqf000e3e5ibzy2vt23',
+      amount: -40000,
+      businessId: 'p',
+      description: 'Magnolia Road',
+      originalDescription: null,
+      sourceOriginalDescription: null,
+      reconciled: 0,
+      deleted: 0,
+      source: 'm',
+      scheduled: 0,
+      parentId: null,
+      hasChildren: 0,
+      tripId: null,
+      note: 'HOA',
+      meta: '{"hasAttachment": true}'
+    }
+    const importedTransaction = {
+      id: 'ckz5qlu9k000eqwcub2k95azc',
+      postedDate: new Date('2022-01-26T06:00:00.000Z'),
+      accountId: 'ckkfkydv00002tncud18w61em',
+      categoryId: 'ckkfnvaqf000e3e5ibzy2vt23',
+      amount: -45000,
+      businessId: 'p',
+      description: 'Village fo Oak Creek Colony',
+      originalDescription: 'MAGNOLIA OF C',
+      sourceOriginalDescription: 'MAGNOLIA OF C DES:MAGNOLIA OF ID:HG36892               INDN:Joe Doe        CO ID:2HOA       WEB',
+      reconciled: 0,
+      deleted: 0,
+      source: 'i',
+      scheduled: 1,
+      parentId: null,
+      hasChildren: 0,
+      tripId: null,
+      note: 'HOA',
+      meta: { hasAttachment: true }
+    }
+    const attachments = [
+      {
+        id: 'ckz5qnqz80037qwcubdfb09yn',
+        tenantId,
+        entityId: 'ckz5qnhie0036qwcu8hgd8wsw',
+        fileName: `${tenantId}-ckz5qnhie0036qwcu8hgd8wsw-ckz5qnqz80037qwcubdfb09yn.png`,
+        uploadedDate: new Date('2022-02-02T16:02:53.000Z'),
+        meta: null,
+        fileInfo: '{"md5": "7e764fdd459e855b539ebcfcdb50b5cc", "name": "i2021.png", "size": 1326080, "encoding": "7bit", "mimetype": "image/png", "truncated": false, "tempFilePath": ""}'
+      }
+    ]
+    const mergedTransaction = {
+      accountId: 'ckkfkydv00002tncud18w61em',
+      amount: -45000,
+      businessId: 'p',
+      categoryId: 'ckkfnvaqf000e3e5ibzy2vt23',
+      deleted: 0,
+      description: 'Magnolia Road',
+      hasChildren: 0,
+      id: 'ckz5qlu9k000eqwcub2k95azc',
+      meta: null,
+      note: 'HOA HOA',
+      originalDescription: 'MAGNOLIA OF C',
+      parentId: null,
+      postedDate: new Date('2022-01-26T06:00:00.000Z'),
+      reconciled: 0,
+      scheduled: 1,
+      source: 'i',
+      sourceOriginalDescription: 'MAGNOLIA OF C DES:MAGNOLIA OF ID:HG36892               INDN:Joe Doe        CO ID:2HOA       WEB',
+      tripId: null
+    }
+    const meta = {hasAttachment: true}
+
+    TransactionDb.prototype.get = jest.fn().
+      mockResolvedValueOnce(manualTransaction).
+      mockResolvedValueOnce(importedTransaction)
+    TransactionDb.prototype.delete = jest.fn().mockResolvedValueOnce({})
+    TransactionDb.prototype.update = jest.fn().mockResolvedValueOnce({})
+    TransactionDb.prototype.updateMeta = jest.fn().mockResolvedValueOnce({})
+    AttachmentDb.prototype.listByEntity = jest.fn().mockResolvedValueOnce(attachments)
+    AttachmentDb.prototype.update = jest.fn().mockResolvedValue({})
+    DataChangeDb.prototype.insert = jest.fn().mockResolvedValue({})
+
+    const actual = await controller.mergeTransactions(manualTransaction.id, tenantId, importedTransaction.id)
+
+    expect(TransactionDb.prototype.delete).toHaveBeenCalledWith({ tenantId, id: manualTransaction.id })
+    expect(TransactionDb.prototype.update).toHaveBeenCalledWith({ tenantId, ...mergedTransaction })
+    expect(TransactionDb.prototype.updateMeta).
+      toHaveBeenCalledWith(importedTransaction.id, tenantId, meta)
+    expect(AttachmentDb.prototype.update).toHaveBeenCalledTimes(1)
+    expect(AttachmentDb.prototype.update).toHaveBeenCalledWith(expect.objectContaining({
+      entityId: importedTransaction.id,
+      fileName: attachments[0].fileName
+    }))
+
+    mergedTransaction.amount = mergedTransaction.amount / 100
+    mergedTransaction.meta = meta
+    expect(actual).toStrictEqual({
+      attachments: [
+        {
+          id: 'ckz5qnqz80037qwcubdfb09yn',
+          url: '/app/files/ckz5qnqz80037qwcubdfb09yn'
+        }
+      ],
+      transaction: mergedTransaction,
+      deletedId: manualTransaction.id
+    })
+  })
+})
+
+/** mergeMetas */
+describe('mergeMetas', () => {
+  const meta1 = '{"hasAttachment": true}'
+  const m1 = { hasAttachment: true }
+
+  it('returns null if metas empty', () => {
+    const actual = controller.mergeMetas(null, null)
+    expect(actual).toBeNull()
+  })
+  it('returns meta1 if no meta2', () => {
+    const actual = controller.mergeMetas(meta1, null)
+    expect(actual).toStrictEqual(m1)
+  })
+  it('returns meta2 if no meta1', () => {
+    const actual = controller.mergeMetas(null, meta1)
+    expect(actual).toStrictEqual(m1)
+  })
+  it('returns merged metas if they are both not null', () => {
+    const actual = controller.mergeMetas(meta1, '{"hasAttachment": false}')
+    expect(actual).toStrictEqual({ hasAttachment: false })
+  })
+})
+
+
 
 
