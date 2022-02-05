@@ -657,20 +657,37 @@ const controller = {
     const attachmentId = req.params.attachmentId
     logger.info('deleteAttachment', { id, tenantId, userId, attachmentId })
 
+    await controller.removeAttachment(id, tenantId, userId, attachmentId)
+
+    res.json({})
+  },
+
+  /**
+   * Deletes entity (transaction or other) attachment.
+   * @param {string} id transaction id
+   * @param {string} tenantId
+   * @param userId
+   * @param attachmentId
+   * @return {Promise<void>}
+   */
+  removeAttachment: async (id, tenantId, userId, attachmentId) => {
     const attachmentDb = new AttachmentDb()
     const attachments = await attachmentDb.get(attachmentId, tenantId)
     if (attachments.length === 0) return res.status(404).json({ error: 'Cannot find attachment' })
 
     await attachmentDb.delete({ id: attachmentId, tenantId })
-    await controller.moveFile(attachments[0].fileName)
+    try {
+      await controller.moveFile(attachments[0].fileName)
+    } catch (e) {
+      logger.error('removeAttachment', {id, tenantId, userId, attachmentId, e})
+    }
     const transactionAttachments = await attachmentDb.listByEntity(tenantId, id)
     if (transactionAttachments.length === 0) await controller.updateHasAttachment(id, tenantId, false)
 
     const dataChangeLogic = new DataChangeLogic(tenantId, userId)
     await dataChangeLogic.insert(attachmentDb.tableName, attachmentId, ops.DELETE, attachments[0])
-
-    res.json({})
   },
+
 
   async moveFile (fileName) {
     await fs.promises.mkdir(path.resolve('../files', 'deleted'), { recursive: true })
