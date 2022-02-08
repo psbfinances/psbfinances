@@ -67,6 +67,7 @@ const Row = observer(({ item, model }) => {
   }
 
   const hasNote = (note, amount) => (Boolean(note) && amount > 0)
+  if (!model.showZerros && item.amounts[0].amount === 0) return null
 
   return <tr id={item.categoryId} onClick={handleRowClick}>
     <td className='truncate categoryCol'>{item.categoryName}</td>

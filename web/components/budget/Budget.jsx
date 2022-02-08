@@ -20,6 +20,7 @@ class BudgetModel {
   formVisible = false
   year = (new Date()).getFullYear()
   hasBudget = false
+  showZerros = false
 
   /** @type {string} */ selectedId
   editItem
@@ -42,11 +43,14 @@ class BudgetModel {
     }
   }
 
+  handleSettingShowZerros = visible => this.showZerros = visible
+
   async getData () {
     await rootStore.masterDataStore.getData()
     /** @type {ListResponse} */
     const result = await budgetApi.list({ year: this.year })
     this.items = result.categoryMonthAmounts
+    this.items.forEach(x => x.visible = true)
     this.totals = result.monthTotals
     this.selectedId = this.items[0].categoryId
     this.hasBudget = result.hasBudget

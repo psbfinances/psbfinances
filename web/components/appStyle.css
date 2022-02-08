@@ -299,9 +299,9 @@ table, .form-control, .col-form-label-sm {
 }
 
 #budgetForm td:nth-child(2) {
-   width: 100px;
-   text-align: right;
- }
+  width: 100px;
+  text-align: right;
+}
 
 .amountCol {
   width: 100px;
@@ -312,6 +312,7 @@ table, .form-control, .col-form-label-sm {
   padding: 10px !important;
   position: relative;
 }
+
 .corn:after {
   content: "";
   position: absolute;
@@ -325,9 +326,11 @@ table, .form-control, .col-form-label-sm {
 
   border-top: 10px solid #B88766;
 }
+
 #budgetFormContainer {
   width: 100%;
 }
+
 #budgetFormContainer .budgetFormHeader {
   text-align: center;
   color: #B88766;
@@ -336,16 +339,20 @@ table, .form-control, .col-form-label-sm {
   padding-bottom: 6px;
   margin-bottom: 5px;
 }
+
 #budgetForm tr:first-child td {
   margin-bottom: 10px;
   padding-bottom: 10px;
 }
+
 #budgetForm input[type=number]::-webkit-inner-spin-button {
   -webkit-appearance: none;
 }
+
 #budgetForm input[type=number] {
   text-align: right;
 }
+
 .amountCol, .amountColBudget {
   vertical-align: baseline;
   text-align: right;
@@ -354,12 +361,15 @@ table, .form-control, .col-form-label-sm {
 .amountColBudget {
   width: 70px;
 }
+
 .amountCol {
   width: 100px;
 }
+
 .budgetTotal {
   font-weight: 500 !important;
 }
+
 .otherCol {
   width: 60px;
   vertical-align: baseline;
@@ -409,6 +419,7 @@ table, .form-control, .col-form-label-sm {
   padding-top: 0 !important;
   border-bottom: 1px solid #e8ecee;
 }
+
 .font-weight-bold {
   font-weight: 500 !important;
 }
@@ -423,11 +434,12 @@ table, .form-control, .col-form-label-sm {
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 4px;
 }
+
 .formDataContainer1 {
   align-self: stretch;
   overflow-x: auto;
   align-items: stretch;
-  overflow-y : auto;
+  overflow-y: auto;
   background-color: white;
   width: 600px;
   border: 1px solid rgba(0, 0, 0, 0.125);
@@ -538,13 +550,60 @@ table, .form-control, .col-form-label-sm {
   background-size: cover;
   /*background-image: url('/images/landing-page-background.jpg');*/
 }
+
 .introContainer h1 {
   margin-top: 15px;
   font-size: 24px !important;
   color: #B88766;
   text-align: center;
 }
+
 .introContainer h3 {
   text-align: center;
   margin-top: 27px;
+}
+
+.settingsModal {
+  position: absolute;
+  top: 55px;
+  padding: 15px;
+  border-left: 1px solid gray;
+  right: 0;
+  bottom: 0;
+  width: 380px;
+  background-color: white;
+}
+
+.settingsOverlay {
+  position: fixed;
+  z-index: 500;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(211, 211, 211, 0.3);
+}
+
+.settingsContainer {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.settingCloseButton {
+  margin-left: auto;
+}
+
+.settingsGroup {
+  display: flex;
+  margin-bottom: 20px;
+  border: 1px solid gainsboro;
+  border-radius: 15px;
+  padding: 7px;
+}
+.settingGroupLabel {
+  margin-bottom: auto;
+  margin-top: auto;
+}
+.settingsGroupValue {
+  margin-left: auto;
 }
