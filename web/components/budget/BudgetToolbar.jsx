@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import { IconButton, PeriodSelector } from '../core/index.js'
 import { observer } from 'mobx-react'
 import Modal from 'react-modal'
-import 'react-toggle/style.css'
 import Switch from 'react-switch'
 
 // noinspection JSUnresolvedFunction
