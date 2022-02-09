@@ -567,7 +567,7 @@ table, .form-control, .col-form-label-sm {
   position: absolute;
   top: 55px;
   padding: 15px;
-  border-left: 1px solid gray;
+  border-left: 1px solid gainsboro;
   right: 0;
   bottom: 0;
   width: 380px;

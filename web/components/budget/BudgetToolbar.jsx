@@ -1,7 +1,7 @@
 'use strict'
 
 import React, { useState } from 'react'
-import { IconButton, PeriodSelector } from '../core/index.js'
+import { IconButton, PeriodSelector, SettingsButton, SettingsContainer } from '../core/index.js'
 import { observer } from 'mobx-react'
 import Modal from 'react-modal'
 import Switch from 'react-switch'
@@ -16,17 +16,34 @@ Modal.setAppElement('#root')
  * @constructor
  */
 const BudgetToolbar = observer(({ model }) => {
-  const [modalVisible, setModalVisible] = useState(false)
+  const [settingsVisible, setSettingsVisible] = useState(false)
 
   const handleSettingsClick = () => {
-    setModalVisible(true)
+    setSettingsVisible(true)
     if (model.formVisible) model.setFormVisible(false)
   }
 
-  const handleSettingsCloseClick = () => setModalVisible(false)
+  const handleSettingsCloseClick = () => setSettingsVisible(false)
 
   return <div id='toolbar' className='pageToolbar'>
-    <Settings model={model} modalVisible={modalVisible} handleSettingsCloseClick={handleSettingsCloseClick} />
+    {/*<Settings model={model} modalVisible={modalVisible} handleSettingsCloseClick={handleSettingsCloseClick} />*/}
+    <SettingsContainer
+      header='Customize'
+      model={model}
+      visible={settingsVisible}
+      handleCloseClick={handleSettingsCloseClick}>
+      <div className='settingsGroup'>
+        <label className='settingGroupLabel'>Show categories with $0 balance</label>
+        <label className='settingsGroupValue'>
+          <Switch
+            onChange={model.handleSettingShowZerros}
+            checked={model.showZerros}
+            className='react-switch'
+            checkedIcon={false}
+            uncheckedIcon={false} />
+        </label>
+      </div>
+    </SettingsContainer>
     <div>
       <div className='row row-cols-md-auto g-3 align-items-center'>
         <PeriodSelector
@@ -41,7 +58,7 @@ const BudgetToolbar = observer(({ model }) => {
           handleClick={model.handleAddClick}
         />
 
-        <IconButton icon='fas fa-cog' handleClick={handleSettingsClick} />
+        <SettingsButton handleClick={handleSettingsClick} />
       </div>
     </div>
   </div>
@@ -61,7 +78,6 @@ let Settings = ({ modalVisible, model, handleSettingsCloseClick }) => {
 
   return <Modal
     isOpen={modalVisible}
-    contentLabel='onRequestClose Example'
     className='settingsModal'
     overlayClassName='settingsOverlay'
   >

@@ -23,12 +23,14 @@ import Logo from './Logo.jsx'
 import PeriodSelector from './PeriodSelector.jsx'
 import SearchEntry from './SearchEntry.jsx'
 import SelectField from './SelectField.jsx'
+import SettingsButton from './SettingsButton.jsx'
+import SettingsContainer from './SettingsContainer.jsx'
 import StyledDropzone from './StyledDropzone.jsx'
 
 /**
  *
  * @param {React.Component} component
- * @param {SyncEvent} e
+ * @param {Object} e
  * @param {function} [cb]
  * @param {Object} [cbParams]
  */
@@ -66,5 +68,7 @@ export {
   PeriodSelector,
   SearchEntry,
   SelectField,
+  SettingsButton,
+  SettingsContainer,
   StyledDropzone
 }

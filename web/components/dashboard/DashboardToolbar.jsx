@@ -1,37 +1,58 @@
 'use strict'
 
-import React from 'react'
+import React, { useState } from 'react'
 import DropdownButton from '../core/DropdownButton.jsx'
 import classNames from 'classnames'
-import { PeriodSelector } from '../core/index.js'
+import { PeriodSelector, SettingsButton, SettingsContainer } from '../core/index.js'
+import Switch from 'react-switch'
+import { observer } from 'mobx-react'
 
 /**
  * Dashboard toolbar.
+ * @param {DashboardModel} model
  * @return {JSX.Element}
  * @constructor
  */
-const DashboardToolbar = ({
-  selectedPeriod,
-  selectedYear,
-  handlePeriodChange,
-  handleBusinessChange,
-  hasBusinesses,
-  businesses,
-  selectedBusiness
-}) => {
+let DashboardToolbar = ({ model }) => {
+  const [settingsVisible, setSettingsVisible] = useState(false)
+
+  const handleSettingsClick = () => {
+    setSettingsVisible(true)
+  }
+
+  const handleSettingsCloseClick = () => setSettingsVisible(false)
+
   return <div id='toolbar' className='pageToolbar'>
+    <SettingsContainer
+      header='Customize'
+      visible={settingsVisible}
+      handleCloseClick={handleSettingsCloseClick}>
+      <div className='settingsGroup'>
+        <label className='settingGroupLabel'>Show reconciled transactions only</label>
+        <label className='settingsGroupValue'>
+          <Switch
+            onChange={model.handleShowReconciledOnlyChange}
+            checked={model.showReconciledOnly}
+            className='react-switch'
+            checkedIcon={false}
+            uncheckedIcon={false} />
+        </label>
+      </div>
+    </SettingsContainer>
+
     <div>
       <div className='row row-cols-md-auto g-3 align-items-center'>
         <PeriodSelector
           hideAllMonthOption={true}
-          selectedYear={selectedYear}
-          selectedMonth={selectedPeriod}
-          handleChange={handlePeriodChange} />
+          selectedYear={model.year}
+          selectedMonth={model.period}
+          handleChange={model.handlePeriodChange} />
         <BusinessSelector
-          hasBusinesses={hasBusinesses}
-          businesses={businesses}
-          selectedBusiness={selectedBusiness}
-          handleChange={handleBusinessChange} />
+          hasBusinesses={model.hasBusinesses}
+          businesses={model.businesses}
+          selectedBusiness={model.selectedBusiness}
+          handleChange={model.handleBusinessChange} />
+        <SettingsButton handleClick={handleSettingsClick} />
       </div>
     </div>
 
@@ -64,5 +85,5 @@ const BusinessSelector = ({ businesses, selectedBusiness, handleChange, hasBusin
     </div>
   </>
 }
-
+DashboardToolbar = observer(DashboardToolbar)
 export default DashboardToolbar

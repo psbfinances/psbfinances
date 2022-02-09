@@ -17,6 +17,7 @@ import {
   ResponsiveContainer
 } from 'recharts'
 import { c } from '@psbfinances/shared/core'
+import { observer } from 'mobx-react'
 
 const months = c.months
 
@@ -24,23 +25,26 @@ const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 
 const formatterP = new Intl.NumberFormat('en-US',
   { style: 'percent', maximumFractionDigits: 2, minimumFractionDigits: 0 })
 
-const DashboardBusinessTab = (props) => {
+/**
+ * @param {DashboardModel} model
+ */
+const DashboardBusinessTab = observer(({ model }) => {
   return <div className='row'>
     <div className='col-sm-12 col-md-6 col-lg-6'>
-      <ProfitAndLossTable pl={props.pl} />
+      <ProfitAndLossTable pl={model.data.pl} />
     </div>
     <div className='col-sm-12 col-md-6 col-lg-6'>
       <BusinessCategoriesTable
         title=' (month)'
-        categories={props.categories}
-        businessId={props.businessId} />
+        categories={model.data.businessPLCurrentMonth}
+        businessId={model.selectedBusiness.id} />
       <BusinessCategoriesTable
         title=' (YTD)'
-        categories={props.categoriesYear}
-        businessId={props.businessId} />
+        categories={model.data.businessPLCurrentYear}
+        businessId={model.selectedBusiness.id} />
     </div>
   </div>
-}
+})
 
 /**
  *
@@ -48,7 +52,7 @@ const DashboardBusinessTab = (props) => {
  * @return {JSX.Element}
  * @constructor
  */
-const ProfitAndLossTable = ({ pl }) => {
+const ProfitAndLossTable = observer(({ pl }) => {
   let yearTotals = { month: 'Year', income: 0, expenses: 0, profit: 0 }
   Object.keys(pl).forEach(x => {
     yearTotals.income += pl[x].income
@@ -77,7 +81,7 @@ const ProfitAndLossTable = ({ pl }) => {
       <PLChart pl={pl} />
     </div>
   </div>
-}
+})
 
 /**
  *
@@ -86,13 +90,14 @@ const ProfitAndLossTable = ({ pl }) => {
  * @return {JSX.Element}
  * @constructor
  */
-const ProfitAndLossTableRow = ({ pl, month }) => <tr className={classNames({ totalBorder: month === 'Total' })}>
-  <td>{month === 'Total' ? month : months[month - 1]}</td>
-  <td className='text-right'>{formatter.format(pl.income / 100)}</td>
-  <td className='text-right'>{formatter.format(-1 * pl.expenses / 100)}</td>
-  <td className='text-right'>{formatter.format(pl.profit / 100)}</td>
-  <td className='text-right'>{pl.profit <= 0 ? '0' : Math.round(pl.profit / pl.income * 100)}%</td>
-</tr>
+const ProfitAndLossTableRow = observer(
+  ({ pl, month }) => <tr className={classNames({ totalBorder: month === 'Total' })}>
+    <td>{month === 'Total' ? month : months[month - 1]}</td>
+    <td className='text-right'>{formatter.format(pl.income / 100)}</td>
+    <td className='text-right'>{formatter.format(-1 * pl.expenses / 100)}</td>
+    <td className='text-right'>{formatter.format(pl.profit / 100)}</td>
+    <td className='text-right'>{pl.profit <= 0 ? '0' : Math.round(pl.profit / pl.income * 100)}%</td>
+  </tr>)
 
 /**
  *
@@ -103,7 +108,7 @@ const ProfitAndLossTableRow = ({ pl, month }) => <tr className={classNames({ tot
  * @return {JSX.Element}
  * @constructor
  */
-const BusinessCategoriesTable = ({ categories, businessId, title }) => {
+const BusinessCategoriesTable = observer(({ categories, businessId, title }) => {
   const yearExpenses = categories.
     filter(x => x.categoryType === c.transactionType.EXPENSE).
     reduce((t, x) => t + x.amount, 0)
@@ -127,7 +132,7 @@ const BusinessCategoriesTable = ({ categories, businessId, title }) => {
       </table>
     </div>
   </div>
-}
+})
 
 /**
  *
@@ -137,7 +142,7 @@ const BusinessCategoriesTable = ({ categories, businessId, title }) => {
  * @return {JSX.Element}
  * @constructor
  */
-const BusinessCategoriesTableRow = ({ category, businessId, yearExpenses }) => {
+const BusinessCategoriesTableRow = observer(({ category, businessId, yearExpenses }) => {
   let navigate = useNavigate()
 
   const handleClick = e => {
@@ -167,7 +172,7 @@ const BusinessCategoriesTableRow = ({ category, businessId, yearExpenses }) => {
     <td className={classNames('text-right', amountClass)}>{formatter.format(amount)}</td>
     <td className={'text-right'}>{getExpensePercent()}</td>
   </tr>
-}
+})
 
 /**
  * Profit & Loss chart.
@@ -175,7 +180,7 @@ const BusinessCategoriesTableRow = ({ category, businessId, yearExpenses }) => {
  * @return {JSX.Element}
  * @constructor
  */
-const PLChart = ({ pl }) => {
+const PLChart = observer(({ pl }) => {
   const data = Object.keys(pl).map(x => ({
     name: months[parseInt(x) - 1],
     Profit: pl[x].profit / 100,
@@ -206,6 +211,6 @@ const PLChart = ({ pl }) => {
     </ResponsiveContainer>
   </div>
 
-}
+})
 
 export default DashboardBusinessTab

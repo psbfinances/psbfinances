@@ -11,9 +11,10 @@ export default class DashboardApi extends Api {
    * @param {string} period
    * @param {string} year
    * @param {string} businessId
+   * @param {boolean} reconciledOnly
    * @return {AxiosResponse<*>}
    */
-  async get (period, year, businessId) {
-    return this.api.get(`/dashboard?year=${year}&period=${period}&businessId=${businessId}`)
+  async get (period, year, businessId, reconciledOnly) {
+    return this.api.get(`/dashboard?year=${year}&period=${period}&businessId=${businessId}&reconciledOnly=${reconciledOnly}`)
   }
 }

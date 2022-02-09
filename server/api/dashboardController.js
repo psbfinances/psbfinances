@@ -13,17 +13,20 @@ const controller = {
    * Gets tenant transactions by account and date range.
    * @property {AppRequest} req
    * @property {Object} req.query
-   * @property {string} req.query.accountId
-   * @property {string} req.query.dateFrom
-   * @property {string} req.query.dateTo
+   * @property {string} req.query.perio
+   * @property {string} req.query.year
+   * @property {string} req.query.businessId
+   * @property {boolean} req.query.reconciledOnly
    * @return {Array<Transaction>}
    */
   get: async (req, res) => {
     const tenantId = req.user.tenantId
     const dashboardDb = new DashboardDb()
-    const period = req.query && req.query.period ? req.query.period : null
-    const year = req.query && req.query.year ? req.query.year : null
-    const businessId = req.query && req.query.businessId ? req.query.businessId : null
+    const period = req.query.period ? req.query.period : null
+    const year = req.query.year ? req.query.year : null
+    const businessId = req.query.businessId ? req.query.businessId : null
+    const reconciledOnly = req.query.reconciledOnly !== 'false'
+    logger.info('get', { tenantId, year, period, businessId, reconciledOnly })
 
     let accounts = []
     let transactions = []
@@ -38,13 +41,14 @@ const controller = {
     if (businessId === c.PERSONAL_TYPE_ID) {
       accounts = await dashboardDb.listBalances(tenantId)
       transactions = await dashboardDb.listTransactions(tenantId)
-      budget = await controller.getBudget(tenantId, period, year, true)
-      budgetYear = await controller.getBudget(tenantId, period, year, false)
+      budget = await controller.getBudget(tenantId, period, year, true, reconciledOnly)
+      budgetYear = await controller.getBudget(tenantId, period, year, false, reconciledOnly)
       tasks = await dashboardDb.listTransactionsWithTasks(tenantId)
     } else {
-      businessPL = await dashboardDb.listBusinessPL(tenantId, businessId, year)
-      businessPLCurrentMonth = await dashboardDb.listBusinessPLCurrentMonth(tenantId, businessId, period, year)
-      businessPLCurrentYear = await dashboardDb.listBusinessPLCurrentYear(tenantId, businessId, year)
+      businessPL = await dashboardDb.listBusinessPL(tenantId, businessId, year, reconciledOnly)
+      businessPLCurrentMonth = await dashboardDb.listBusinessPLCurrentMonth(tenantId, businessId, period, year,
+        reconciledOnly)
+      businessPLCurrentYear = await dashboardDb.listBusinessPLCurrentYear(tenantId, businessId, year, reconciledOnly)
       businessPL.forEach(x => {
         const hasMonthData = pl.has(x.month)
         const monthData = hasMonthData ? pl.get(x.month) : { income: 0, expenses: 0, profit: 0 }
@@ -73,10 +77,11 @@ const controller = {
    * @param {'cm'|'lm'} period
    * @param {string} selectedYear
    * @param {boolean} monthOnly = true - show data for the month or the whole year
+   * @param {boolean} reconciledOnly
    * @return {Promise<*>}
    */
-  getBudget: async (tenantId, period, selectedYear, monthOnly = true) => {
-    logger.debug('getBudget', {tenantId, period, selectedYear, monthOnly})
+  getBudget: async (tenantId, period, selectedYear, monthOnly = true, reconciledOnly) => {
+    logger.debug('getBudget', { tenantId, period, selectedYear, monthOnly })
     const year = Number.parseInt(selectedYear)
     const currentYear = (new Date()).getFullYear()
     const month = year === currentYear || monthOnly ? period : 12
@@ -85,10 +90,10 @@ const controller = {
     const budgetDb = new BudgetDb()
 
     const categories = await categoryDb.list(tenantId)
-    const expenses = await dashboardDb.listBudgetCurrentMonth(tenantId, year, month, monthOnly)
+    const expenses = await dashboardDb.listBudgetCurrentMonth(tenantId, year, month, monthOnly, reconciledOnly)
     const budgets = await budgetDb.listByYearAndMonth(tenantId, year, month, monthOnly)
 
-    logger.debug('getBudget', {c: categories.length, e: expenses.length, b: budgets.length})
+    logger.debug('getBudget', { c: categories.length, e: expenses.length, b: budgets.length })
 
     return categories.filter(x => Boolean(x.isPersonal) && x.type === 'e').map(x => {
       const expense = expenses.find(e => e.categoryId === x.id)

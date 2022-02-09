@@ -2,6 +2,8 @@
 
 import Db from './db.js'
 
+const getReconciledClause = reconciledOnly => reconciledOnly ? 'reconciled = 1 AND ' : ' '
+
 export default class DashboardDb extends Db {
 
   constructor () {
@@ -48,7 +50,7 @@ export default class DashboardDb extends Db {
       [tenantId, dateFrom, dateTo])
   }
 
-  async listBudgetCurrentMonth (tenantId, year, month, monthOnly) {
+  async listBudgetCurrentMonth (tenantId, year, month, monthOnly, reconciledOnly) {
     return this.raw(`SELECT categoryId, name, SUM(amount) amount
         FROM transactions
                  INNER JOIN accounts a on transactions.accountId = a.id
@@ -59,14 +61,14 @@ export default class DashboardDb extends Db {
          transactions.note NOT LIKE '%#rep-exclude%' AND
          YEAR(postedDate) = ? AND
          MONTH(postedDate) ${monthOnly ? '=' : '<='} ? AND
-         reconciled = 1 AND
+         ${getReconciledClause(reconciledOnly)}
          hasChildren = 0
         GROUP BY categoryId, name
         ORDER BY amount`,
       [tenantId, year, month])
   }
 
-  async listBusinessPL (tenantId, businessId, year) {
+  async listBusinessPL (tenantId, businessId, year, reconciledOnly) {
     const currentYear = Number.parseInt(year)
     const dateFrom = `${currentYear}-01-01`
     const dateTo = `${currentYear + 1}-01-01`
@@ -75,7 +77,7 @@ export default class DashboardDb extends Db {
         WHERE
               transactions.tenantId = ? AND
               transactions.businessId = ? AND
-              reconciled = 1 AND
+              ${getReconciledClause(reconciledOnly)}
               postedDate >= ? AND postedDate <= ? AND
               transactions.note NOT LIKE '%#rep-exclude%' AND
               hasChildren = 0
@@ -84,7 +86,7 @@ export default class DashboardDb extends Db {
       [tenantId, businessId, dateFrom, dateTo])
   }
 
-  async listBusinessPLCurrentMonth (tenantId, businessId, period, year) {
+  async listBusinessPLCurrentMonth (tenantId, businessId, period, year, reconciledOnly) {
     return this.raw(`SELECT c.type categoryType, categoryId, name, SUM(amount) amount
         FROM transactions
                  INNER JOIN accounts a on transactions.accountId = a.id
@@ -92,7 +94,7 @@ export default class DashboardDb extends Db {
         WHERE transactions.tenantId = ? AND
           a.visible = 1 AND
           c.isPersonal = 0 AND
-          reconciled = 1 AND
+          ${getReconciledClause(reconciledOnly)}
           transactions.businessId = ? AND
           transactions.note NOT LIKE '%#rep-exclude%' AND
          YEAR(postedDate) = ? AND
@@ -102,7 +104,7 @@ export default class DashboardDb extends Db {
       [tenantId, businessId, year, period])
   }
 
-  async listBusinessPLCurrentYear (tenantId, businessId, year) {
+  async listBusinessPLCurrentYear (tenantId, businessId, year, reconciledOnly) {
     return this.raw(`SELECT c.type categoryType, categoryId, name, SUM(amount) amount
         FROM transactions
                  INNER JOIN accounts a on transactions.accountId = a.id
@@ -110,7 +112,7 @@ export default class DashboardDb extends Db {
         WHERE transactions.tenantId = ? AND
           a.visible = 1 AND
           c.isPersonal = 0 AND
-          reconciled = 1 AND
+          ${getReconciledClause(reconciledOnly)}
           transactions.businessId = ? AND
          YEAR(postedDate) = ?
         GROUP BY categoryType, categoryId, name
