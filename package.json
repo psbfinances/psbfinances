@@ -3,7 +3,11 @@
   "version": "0.1.0",
   "description": "Personal and Small Business Finances",
   "homepage": "https://psbfinances.com",
-  "workspaces": ["web", "server", "shared"],
+  "workspaces": [
+    "web",
+    "server",
+    "shared"
+  ],
   "main": "server/app.js",
   "type": "module",
   "types": "typeDef/*.d.ts",
@@ -29,7 +33,6 @@
     "build:package-json": "cp ./package.json build/",
     "build:web": "cd web && ../node_modules/.bin/webpack --config=webpack.prod.cjs && cd .. && cp -r web/public/ build/server/public/",
     "build:npm-install": "npm install --only=prod",
-
     "deploy": "./scripts/deploy.sh",
     "start:web": "cd web && ../node_modules/.bin/webpack serve --config=webpack.dev.cjs",
     "start:server": "cd server && NODE_ENV=dev node --experimental-vm-modules --no-warnings server.js",
@@ -45,25 +48,29 @@
     "url": "https://github.com/psbfinances/psbfinances.git"
   },
   "jest": {
-    "projects": ["<rootDir>/server", "<rootDir>/shared"]
+    "projects": [
+      "<rootDir>/server",
+      "<rootDir>/shared"
+    ]
   },
   "devDependencies": {
-    "@babel/cli": "^7.14.8",
-    "@babel/core": "^7.15.0",
-    "@babel/node": "^7.14.9",
-    "@babel/plugin-proposal-class-properties": "^7.14.5",
-    "@babel/plugin-transform-runtime": "^7.15.0",
-    "@babel/preset-env": "^7.15.0",
-    "@babel/preset-react": "^7.14.5",
+    "@babel/cli": "^7.17.0",
+    "@babel/core": "^7.17.2",
+    "@babel/node": "^7.16.8",
+    "@babel/plugin-proposal-class-properties": "^7.16.7",
+    "@babel/plugin-transform-runtime": "^7.17.0",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-react": "^7.16.7",
     "@types/store": "^2.0.2",
     "babel-eslint": "^10.1.0",
-    "babel-jest": "^27.0.6",
-    "babel-loader": "^8.2.2",
+    "babel-jest": "^27.5.1",
+    "babel-loader": "^8.2.3",
     "babel-plugin-transform-remove-console": "^6.9.4",
-    "jest": "^27.0.6",
+    "jest": "^27.5.1",
     "regenerator-runtime": "^0.13.9",
-    "standard": "^16.0.3"
+    "standard": "^16.0.4"
   },
   "dependencies": {
+    "npm-check-updates": "^12.3.0"
   }
 }

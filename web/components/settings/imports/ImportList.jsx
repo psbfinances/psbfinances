@@ -7,7 +7,7 @@ import { c } from '../../../../shared/core/index.js'
 import { SelectField } from '../../core'
 import { rootStore } from '../../../stores/rootStore'
 import * as api from '../../../../shared/apiClient/index.js'
-import Loader from 'react-loader-spinner'
+import { ThreeDots } from 'react-loader-spinner'
 
 const dateFormat = { month: 'short', day: 'numeric', year: 'numeric' }
 
@@ -224,7 +224,7 @@ class ImportForm extends React.Component {
         <div className='mt-4 mb-3'>
           <div className='form-group mb-3'>
             {!this.props.running && <button onClick={this.handleImport} className='btn btn-primary'> Import</button>}
-            {this.props.running && <Loader type='ThreeDots' color='#B88766' height={40} width={40} />}
+            {this.props.running && <ThreeDots color='#B88766' height={40} width={40} />}
           </div>
         </div>
       </div>
