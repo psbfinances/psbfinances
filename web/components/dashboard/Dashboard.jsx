@@ -50,9 +50,16 @@ class DashboardModel {
       this.businesses.shift()
     }
     if (!this.selectedBusiness) this.selectedBusiness = this.businesses[0]
-    const response = await api.dashboardApi.get(this.period, this.year, this.selectedBusiness.id, this.showReconciledOnly)
+    const response = await api.dashboardApi.get(this.period, this.year, this.selectedBusiness.id,
+      this.showReconciledOnly)
     this.data = response.data
     this.hasData = true
+  }
+
+  handleFilterChange = async ({ year, month }) => {
+    if (year) this.year = year
+    if (month) this.month = month
+    await this.getData()
   }
 
   handlePeriodChange = async e => {
@@ -60,7 +67,6 @@ class DashboardModel {
       this.period = e.target.id
     } else {
       this.year = e.target.id
-      rootStore.transactionsStore.filter.year = this.year
     }
     await this.getData()
   }
@@ -71,7 +77,6 @@ class DashboardModel {
   }
 
   handleShowReconciledOnlyChange = async e => {
-    console.log(e)
     this.showReconciledOnly = e
     await this.getData()
   }
@@ -98,3 +103,12 @@ let Dashboard = () => {
 }
 Dashboard = observer(Dashboard)
 export default Dashboard
+
+/** @module psbf/web/components/dashboard **/
+/**
+ * @typedef {Object} DashboardFilter
+ * @property {string} year
+ * @property {string} month
+ * @property {string} businessId
+ * */
+

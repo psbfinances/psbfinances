@@ -1,11 +1,16 @@
 'use strict'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import DropdownButton from '../core/DropdownButton.jsx'
 import classNames from 'classnames'
 import { PeriodSelector, SettingsButton, SettingsContainer } from '../core/index.js'
 import Switch from 'react-switch'
 import { observer } from 'mobx-react'
+import { useSearchParams } from 'react-router-dom'
+
+/**
+ * @link module:psbf/web/components/dashboard
+ */
 
 /**
  * Dashboard toolbar.
@@ -15,13 +20,48 @@ import { observer } from 'mobx-react'
  */
 let DashboardToolbar = ({ model }) => {
   const [settingsVisible, setSettingsVisible] = useState(false)
+  let [searchParams, setSearchParams] = useSearchParams()
 
-  const handleSettingsClick = () => {
-    setSettingsVisible(true)
+  const handleSettingsClick = () => setSettingsVisible(true)
+
+  useEffect(async () => {
+    const filter = getFilter(searchParams)
+    console.log(filter)
+    setUrl(filter)
+  }, [searchParams])
+
+  /**
+   * @param {DashboardFilter} filter
+   */
+  const setUrl = filter => {
+    setSearchParams(filter)
+  }
+  /**
+   * @param {URLSearchParams} searchParams
+   * @return {DashboardFilter}
+   */
+  const getFilter = (searchParams) => {
+    const year = searchParams.has('year') ? searchParams.get('year') : model.year
+    const month = searchParams.has('month') ? searchParams.get('month') : model.period
+    const businessId = searchParams.has('businessId') ? searchParams.get('businessId') : model.selectedBusiness.id
+
+    return { year, month, businessId }
+  }
+
+  const handlePeriodChange = async e => {
+    console.log(e.target.name)
+    if (e.target.name === 'monthSelect') {
+      setSearchParams({ month: e.target.id })
+    } else {
+      setSearchParams({ year: e.target.id })
+    }
+
+    await model.handlePeriodChange(e)
   }
 
   const handleSettingsCloseClick = () => setSettingsVisible(false)
 
+  // noinspection RequiredAttributes
   return <div id='toolbar' className='pageToolbar'>
     <SettingsContainer
       header='Customize'
@@ -43,10 +83,11 @@ let DashboardToolbar = ({ model }) => {
     <div>
       <div className='row row-cols-md-auto g-3 align-items-center'>
         <PeriodSelector
+          options={{ hideAllMonth: true }}
           hideAllMonthOption={true}
           selectedYear={model.year}
           selectedMonth={model.period}
-          handleChange={model.handlePeriodChange} />
+          handleChange={handlePeriodChange} />
         <BusinessSelector
           hasBusinesses={model.hasBusinesses}
           businesses={model.businesses}

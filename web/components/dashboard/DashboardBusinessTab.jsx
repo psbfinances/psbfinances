@@ -2,7 +2,7 @@
 
 import React from 'react'
 import classNames from 'classnames'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { rootStore } from '../../stores/rootStore.js'
 import {
   ComposedChart,
@@ -18,12 +18,9 @@ import {
 } from 'recharts'
 import { c } from '@psbfinances/shared/core'
 import { observer } from 'mobx-react'
+import {setTransactionListFilter, formatter, formatterP} from './dashboardUtils.js'
 
 const months = c.months
-
-const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
-const formatterP = new Intl.NumberFormat('en-US',
-  { style: 'percent', maximumFractionDigits: 2, minimumFractionDigits: 0 })
 
 /**
  * @param {DashboardModel} model
@@ -144,12 +141,11 @@ const BusinessCategoriesTable = observer(({ categories, businessId, title }) => 
  */
 const BusinessCategoriesTableRow = observer(({ category, businessId, yearExpenses }) => {
   let navigate = useNavigate()
+  let [searchParams] = useSearchParams()
 
   const handleClick = e => {
     const categoryId = e.target.parentNode.id
-    const year = rootStore.transactionsStore.filter.year
-    rootStore.transactionsStore.filter.reset()
-    rootStore.transactionsStore.filter.year = year
+    setTransactionListFilter(searchParams)
     rootStore.transactionsStore.filter.categoryId = categoryId
     rootStore.transactionsStore.filter.businessId = businessId
     navigate('/app/transactions')

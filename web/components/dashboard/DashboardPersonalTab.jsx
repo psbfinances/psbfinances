@@ -1,14 +1,12 @@
 'use strict'
 
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { rootStore } from '../../stores/rootStore.js'
 import classNames from 'classnames'
 import { c } from '../../../shared/core/index.js'
 import { observer } from 'mobx-react'
-
-const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
-const dateFormat = { month: 'short', day: 'numeric' }
+import { setTransactionListFilter, formatter, dateFormat } from './dashboardUtils.js'
 
 /**
  *
@@ -69,16 +67,15 @@ const AccountsTable = observer(({ accounts }) => {
  */
 const AccountTableRow = observer(({ account }) => {
   const navigate = useNavigate()
+  let [searchParams] = useSearchParams()
+
   /**
    * @param {SyntheticEvent} e
    */
   const handleClick = e => {
     const accountId = e.target.parentNode.id
     if (accountId === 'totalAccounts') return
-    const year = rootStore.transactionsStore.filter.year
-    rootStore.transactionsStore.filter.reset()
-    rootStore.transactionsStore.filter.year = year
-    rootStore.transactionsStore.filter.accountId = accountId
+    setTransactionListFilter(searchParams)
     navigate('/app/transactions')
   }
 
@@ -228,13 +225,12 @@ const CategoriesTable = observer(({ categories, title }) => {
  */
 const CategoriesTableRow = observer(({ category }) => {
   const navigate = useNavigate()
+  let [searchParams] = useSearchParams()
 
   const handleClick = e => {
     const categoryId = e.target.parentNode.id
     if (categoryId === 'total') return
-    const year = rootStore.transactionsStore.filter.year
-    rootStore.transactionsStore.filter.reset()
-    rootStore.transactionsStore.filter.year = year
+    setTransactionListFilter(searchParams)
     rootStore.transactionsStore.filter.categoryId = categoryId
     rootStore.transactionsStore.filter.accountId = c.selectId.ALL
     navigate('/app/transactions')
