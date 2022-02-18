@@ -132,7 +132,8 @@ export default class TransactionDb extends Db {
   async aggregateAmountByAccountDates ({ tenantId, accountId, dateFrom }) {
     return this.knex.
       sum('amount as total').
-      where({ tenantId, accountId }).
+      whereNull('parentId').
+      andWhere({ tenantId, accountId }).
       andWhere('postedDate', '<', dateFrom)
   }
 
