@@ -46,8 +46,8 @@ class DashboardModel {
   getData = async () => {
     if (!this.businesses) {
       await rootStore.masterDataStore.getData()
-      this.businesses = rootStore.masterDataStore.businessOptions.map(x => ({ id: x.value, ...x }))
-      this.businesses.shift()
+      this.businesses = rootStore.masterDataStore.businessOptions.filter(x => x.value !== '-1').
+        map(x => ({ id: x.value, label: x.label }))
     }
     if (!this.selectedBusiness) this.selectedBusiness = this.businesses[0]
     const response = await api.dashboardApi.get(this.period, this.year, this.selectedBusiness.id,

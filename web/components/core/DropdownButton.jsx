@@ -11,16 +11,27 @@ import React from 'react'
  * @return {JSX.Element}
  * @constructor
  */
-const DropdownButton = ({ id, items, selectedId, labelName }) =>
-  <button
+const DropdownButton = ({ id, items, selectedId, labelName }) => {
+  const getLabel = () => {
+    try {
+      return items.find(x => x.id === selectedId)[labelName]
+    } catch (e) {
+      console.error(items, selectedId)
+    }
+  }
+
+  const label = getLabel()
+
+  return <button
     className='btn btn-outline-primary dropdown-toggle mr-2 btn-sm'
-    style={{minWidth: '100px'}}
+    style={{ minWidth: '100px' }}
     type='button'
     id={id}
     data-testid={id}
     data-bs-toggle='dropdown'
     aria-expanded='false'>
-    {items.find(x => x.id === selectedId)[labelName]}
+    {label}
   </button>
+}
 
 export default DropdownButton

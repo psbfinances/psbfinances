@@ -26,8 +26,10 @@ let DashboardToolbar = ({ model }) => {
 
   useEffect(async () => {
     const filter = getFilter(searchParams)
-    console.log(filter)
     setUrl(filter)
+    model.year = filter.year
+    model.month = filter.month
+    model.selectedBusiness = model.businesses.find(x => x.id === filter.businessId)
   }, [searchParams])
 
   /**
@@ -49,7 +51,6 @@ let DashboardToolbar = ({ model }) => {
   }
 
   const handlePeriodChange = async e => {
-    console.log(e.target.name)
     if (e.target.name === 'monthSelect') {
       setSearchParams({ month: e.target.id })
     } else {
@@ -57,6 +58,11 @@ let DashboardToolbar = ({ model }) => {
     }
 
     await model.handlePeriodChange(e)
+  }
+
+  const handleBusinessChange = async e => {
+    setSearchParams({ businessId: e.target.id })
+    await model.handleBusinessChange(e)
   }
 
   const handleSettingsCloseClick = () => setSettingsVisible(false)
@@ -92,7 +98,7 @@ let DashboardToolbar = ({ model }) => {
           hasBusinesses={model.hasBusinesses}
           businesses={model.businesses}
           selectedBusiness={model.selectedBusiness}
-          handleChange={model.handleBusinessChange} />
+          handleChange={handleBusinessChange} />
         <SettingsButton handleClick={handleSettingsClick} />
       </div>
     </div>
@@ -111,13 +117,13 @@ const BusinessSelector = ({ businesses, selectedBusiness, handleChange, hasBusin
       <DropdownButton
         id='businessSelect'
         items={businesses}
-        selectedId={selectedBusiness.value}
+        selectedId={selectedBusiness.id}
         labelName='label' />
       <ul className='dropdown-menu' aria-label='businessSelect'>
-        {businesses.map(x => <li key={x.value}>
+        {businesses.map(x => <li key={`b-${x.id}`}>
           <a
-            id={x.value}
-            className={classNames('dropdown-item', { 'active': x.value === selectedBusiness.value })}
+            id={x.id}
+            className={classNames('dropdown-item', { 'active': x.id === selectedBusiness.id })}
             href='#'
             name='businessSelect'
             onClick={handleChange}>{x.label}</a>
