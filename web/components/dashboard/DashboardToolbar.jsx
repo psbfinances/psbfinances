@@ -29,7 +29,9 @@ let DashboardToolbar = ({ model }) => {
     setUrl(filter)
     model.year = filter.year
     model.month = filter.month
+    model.period = filter.month
     model.selectedBusiness = model.businesses.find(x => x.id === filter.businessId)
+    await model.getData()
   }, [searchParams])
 
   /**
