@@ -18,6 +18,7 @@ import transactionController from './transactionController.js'
 import tripController from './tripController.js'
 import userController from './userController.js'
 import budgetController from './budgetController.js'
+import reportController from './reportController.js'
 
 /** @type {import('express').Router} */
 const router = express.Router()
@@ -39,6 +40,7 @@ router.use('/duplicateTransactions', duplicateTransactionController)
 router.use('/imports', importController)
 router.use('/importRules', importRuleController)
 router.use('/importRuleTransactions', importRuleTransactionController)
+router.use('/reports', reportController)
 router.use('/transactions', transactionController)
 router.use('/trips', tripController)
 router.use('/users', userController)

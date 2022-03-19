@@ -13,7 +13,7 @@ const controller = {
    * Gets tenant transactions by account and date range.
    * @property {AppRequest} req
    * @property {Object} req.query
-   * @property {string} req.query.perio
+   * @property {string} req.query.period month
    * @property {string} req.query.year
    * @property {string} req.query.businessId
    * @property {boolean} req.query.reconciledOnly

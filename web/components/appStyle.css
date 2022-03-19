@@ -10,6 +10,11 @@ body {
   overflow: hidden;
 }
 
+h4 {
+  color: #B88766;
+  margin-bottom: 10px;
+}
+
 table, .form-control, .col-form-label-sm {
 }
 

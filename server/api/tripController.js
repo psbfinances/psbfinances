@@ -114,6 +114,21 @@ const controller = {
     await dataChangeLogic.insert(tripDb.tableName, id, ops.DELETE, {transactionId})
 
     res.json({})
+  },
+
+  /**
+   * Returns year total mileage for a bussiness.
+   * @param {string} tenantId
+   * @param {string} businessId
+   * @param {string} year
+   * @return {Promise<number>}
+   */
+  calcTotalByBusinessAndDates: async (tenantId, businessId, year) => {
+    const tripDb = new TripDb()
+    const dateFrom = `${year}-01-01`
+    const dateTo = `${Number.parseInt(year) + 1}-01-01`
+    const tripTotal = await tripDb.calcTotalByBusinessAndDates(tenantId, businessId, dateFrom, dateTo)
+    return tripTotal[0].totalDistance
   }
 }
 

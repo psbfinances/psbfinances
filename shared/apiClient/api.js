@@ -17,6 +17,7 @@ export const endpoint = {
   DUPLICATE_TRANSACTIONS: 'duplicateTransactions',
   IMPORTS: 'imports',
   IMPORT_RULES: 'importRules',
+  REPORTS: 'reports',
   TENANTS: 'tenants',
   TRANSACTIONS: 'transactions',
   TRIPS: 'trips',

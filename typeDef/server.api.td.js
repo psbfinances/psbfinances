@@ -1,5 +1,10 @@
 'use strict'
 
+/**
+ * @typedef {Object} InvalidRequestData
+ * @property {boolean} result
+ * @property {string} error
+ */
 
 /**
  @typedef {Object} TransactionRequest
@@ -71,3 +76,30 @@
  * @property {psbf.Attachment[]} attachments
  * @property {string} deletedId
  */
+
+/** @module psbf/api/reports **/
+/**
+ * @typedef {Object} YearTaxRequest
+ * @property {string} businessId
+ * @property {string} year
+ */
+
+/**
+ * @typedef {Object} YearTaxExpenseItem
+ * @property {string} categoryId
+ * @property {string} categoryName
+ * @property {number} amount
+ */
+
+/**
+ * @typedef {Object} YearTaxResponse
+ * @property {string} year
+ * @property {string} businessId
+ * @property {YearTaxExpenseItem[]} income
+ * @property {YearTaxExpenseItem[]} expenses
+ * @property {number} totalIncome
+ * @property {number} totalExpenses
+ * @property {number} profit
+ * @property {number} mileage
+ */
+

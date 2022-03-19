@@ -10,6 +10,7 @@ import appController from '../../../../shared/core/appController.js'
 import TenantList from '../../tenants/TenantList.jsx'
 import TransactionList from '../../transactionList/TransactionList.jsx'
 import Dashboard from '../../dashboard/Dashboard.jsx'
+import ReportList from '../../reports/ReportList.jsx'
 import Budget from '../../budget/Budget.jsx'
 import { observer } from 'mobx-react'
 import {
@@ -29,6 +30,7 @@ import classNames from 'classnames'
 import CarList from '../../settings/cars/CarList.jsx'
 import DuplicateList from '../../settings/duplicateTransactions/DuplicateList.jsx'
 import ApplicationSettingsForm from '../../settings/application/ApplicationSettings.jsx'
+import BusinessYearTaxes from '../../reports/BusinessYearTaxes.jsx'
 
 const MustBeAuthenticated = ({ children }) => {
   const navigate = useNavigate()
@@ -59,6 +61,8 @@ const BusinessLayout = observer(
                     <Route path='transactions' element={<TransactionList />} />
                     <Route path='dashboard' element={<Dashboard />} />
                     <Route path='budget' element={<Budget />} />
+                    <Route path='reports' element={<ReportList />} />
+                    <Route path='reports/year-taxes' element={<BusinessYearTaxes />} />
                     <Route exact path='settings' element={<Settings />} />
                     <Route path='settings/applicationSettings' element={<ApplicationSettingsForm />} />
                     <Route path='settings/accounts' element={<AccountList />} />
@@ -132,6 +136,7 @@ const NavItems = () => {
     <HeaderNavItem label='Transactions' icon='fa-table' url='/app/transactions' />
     <HeaderNavItem label='Dashboard' icon='fa-tachometer-alt' url='/app/dashboard' />
     <HeaderNavItem label='Budget' icon='fa-book' url='/app/budget' />
+    <HeaderNavItem label='Reports' icon='fa-file' url='/app/reports' />
     <HeaderNavItem label='Settings' icon='fa-cog' url='/app/settings' />
   </ul>
 }

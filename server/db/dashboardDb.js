@@ -104,7 +104,15 @@ export default class DashboardDb extends Db {
       [tenantId, businessId, year, period])
   }
 
-  async listBusinessPLCurrentYear (tenantId, businessId, year, reconciledOnly) {
+  /**
+   * Returns PL by categories.
+   * @param {string} tenantId
+   * @param {string} businessId
+   * @param {string} year
+   * @param {boolean} [reconciledOnly = true]
+   * @return {Promise<PLItem[]>}
+   */
+  async listBusinessPLCurrentYear (tenantId, businessId, year, reconciledOnly = true) {
     return this.raw(`SELECT c.type categoryType, categoryId, name, SUM(amount) amount
         FROM transactions
                  INNER JOIN accounts a on transactions.accountId = a.id
@@ -120,3 +128,11 @@ export default class DashboardDb extends Db {
       [tenantId, businessId, year])
   }
 }
+
+/**
+ * @typedef {Object} PLItem
+ * @property {string} categoryId
+ * @property {string} categoryType
+ * @property {string} name
+ * @property {Number} amount
+ */
