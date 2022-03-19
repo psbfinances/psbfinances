@@ -7,6 +7,7 @@ import AuthApi from './authApi.js'
 import DashboardApi from './dashboardApi.js'
 import DuplicateTransactionApi from './duplicateTransactionApi.js'
 import ImportApi from './importApi.js'
+import ReportApi from './reportApi.js'
 import TransactionApi from './transactionApi.js'
 
 export const accountApi = new Api(endpoint.ACCOUNTS)
@@ -21,6 +22,7 @@ export const dashboardApi = new DashboardApi(endpoint.DASHBOARD)
 export const duplicateTransactionApi = new DuplicateTransactionApi(endpoint.DUPLICATE_TRANSACTIONS)
 export const importApi = new ImportApi(endpoint.IMPORTS)
 export const importRuleApi = new Api(endpoint.IMPORT_RULES)
+export const reportApi = new ReportApi(endpoint.REPORTS)
 export const tenantApi = new TransactionApi(endpoint.TENANTS)
 export const transactionApi = new TransactionApi(endpoint.TRANSACTIONS)
 export const tripApi = new Api(endpoint.TRIPS)
