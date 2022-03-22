@@ -21,9 +21,10 @@ export class MintCsvImporter extends Importer {
     transaction.postedDate = new Date(row.Date)
     transaction.amount = Math.round(Number(row.Amount) * 100) *
       (row['Transaction Type'].toLowerCase() === 'debit' ? -1 : 1)
-    transaction.description = row.Description
-    transaction.originalDescription = row.Description
-    transaction.sourceOriginalDescription = row['Original Description']
+    const description = row.Description.slice(0, 149)
+    transaction.description = description
+    transaction.originalDescription = description
+    transaction.sourceOriginalDescription = row['Original Description'].slice(0, 149)
     transaction.note = `${row.Notes}${label}`
     transaction.externalUid = row.psbfUid
   }
