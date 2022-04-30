@@ -80,8 +80,16 @@ export default class AuthModel {
     this.screen = this.screen === authScreens.SIGNUP ? authScreens.LOGIN : authScreens.SIGNUP
   }
 
+  handleEnterKey = async e => {
+    if (e.code === 'Enter') await this.processSubmit()
+  }
+
   handleSubmit = async e => {
     e.preventDefault()
+    await this.processSubmit()
+  }
+
+  async processSubmit () {
     switch (this.screen) {
       case authScreens.LOGIN:
       case authScreens.SIGNUP:

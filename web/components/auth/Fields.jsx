@@ -18,6 +18,7 @@ let Email = ({ model }) => {
       className='form-control'
       autoComplete='username'
       placeholder='Email'
+      onKeyDown={model.handleEnterKey}
       onChange={model.handleChange}
       value={model.email} />
   </div>
@@ -40,6 +41,7 @@ let Password = ({ model, fieldName, placeholder }) => {
       name={field}
       type='password'
       className='form-control'
+      onKeyDown={model.handleEnterKey}
       placeholder={placeholder || 'Password'}
       onChange={model.handleChange}
       value={model[field]} />
