@@ -3,6 +3,7 @@
 import React from 'react'
 import { observer } from 'mobx-react'
 import classNames from 'classnames'
+import { rootStore } from '../../stores/rootStore.js'
 
 export const barId = {
   DETAILS: 'details',
@@ -20,22 +21,25 @@ const spacer = 'me-4'
  * @constructor
  */
 let TransactionFormToolbar = ({ model }) => {
+  const showExtraOptions = !rootStore.transactionsStore.isNew
 
   const handleClick = e => model.setToolbarId(e.target.id)
 
   return <nav className='navbar navbar-expand-lg mb-3'>
-      <div className='collapse navbar-collapse' id='navbarNav'>
-        <BarLink label='Details' id={barId.DETAILS} selectedId={model.toolBarId} handleClick={handleClick} />
+    <div className='collapse navbar-collapse' id='navbarNav'>
+      <BarLink label='Details' id={barId.DETAILS} selectedId={model.toolBarId} handleClick={handleClick} />
+      {showExtraOptions && <>
         <BarLink label='Split' id={barId.SPLIT} selectedId={model.toolBarId} handleClick={handleClick} />
         <BarLink label='Files' id={barId.FILES} selectedId={model.toolBarId} handleClick={handleClick} />
         <BarLink label='More...' id={barId.MORE} selectedId={model.toolBarId} handleClick={handleClick} />
-      </div>
+      </>}
+    </div>
   </nav>
 }
 
-let BarLink = ({id, selectedId, label, handleClick}) => <a
+let BarLink = ({ id, selectedId, label, handleClick }) => <a
   className={classNames(['nav-link-2', spacer, { active1: selectedId === id }])}
-  onClick={handleClick} >
+  onClick={handleClick}>
   <span id={id}>{label}</span>
 </a>
 BarLink = observer(BarLink)
