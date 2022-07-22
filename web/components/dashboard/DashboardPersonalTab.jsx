@@ -203,8 +203,8 @@ const CategoriesTable = observer(({ categories, title }) => {
         <thead>
           <tr className='dashboardTh'>
             <th>Category</th>
-            <th className='text-right'>Amount</th>
             <th className='text-right'>Budget</th>
+            <th className='text-right'>Amount</th>
             <th className='text-right'>Delta</th>
           </tr>
         </thead>
