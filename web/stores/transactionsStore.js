@@ -219,7 +219,19 @@ export class TransactionsStore {
     this.setNew(transactionModel.getNew(accountId))
   }
 
-  clone () {
+  /**
+   *
+   * @param {Set<string>} selectedIds
+   */
+  clone (selectedIds) {
+    if (selectedIds.size > 0) {
+      [...selectedIds.keys()].forEach(x => {
+        console.log(x)
+        const transaction = this.items.find(y => y.id === x)
+        const cloneTransaction = transactionModel.clone(transaction)
+        console.log(cloneTransaction)
+      })
+    }
     this.setNew(transactionModel.clone(this.selectedItem))
   }
 

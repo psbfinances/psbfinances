@@ -10,7 +10,7 @@ import { ThreeDots } from 'react-loader-spinner'
 
 /**
  * Transaction list toolbar.
- * @param {ListModel} model
+ * @param {TransactionListModel} model
  * @return {JSX.Element|null}
  * @constructor
  */
