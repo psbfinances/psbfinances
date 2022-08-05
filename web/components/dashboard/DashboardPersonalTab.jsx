@@ -239,10 +239,10 @@ const CategoriesTableRow = observer(({ category }) => {
   return <tr id={category.categoryId} className={classNames({ totalBorder: category.name === 'Total' })}
              onClick={handleClick}>
     <td>{category.name}</td>
-    <td className={classNames('text-right', { 'text-danger': category.amount < 0 })}>{formatter.format(
-      category.amount / 100)}</td>
     <td className={classNames('text-right', { 'text-danger': category.budget < 0 })}>{formatter.format(
       category.budget / 100)}</td>
+    <td className={classNames('text-right', { 'text-danger': category.amount < 0 })}>{formatter.format(
+      category.amount / 100)}</td>
     <td className={classNames('text-right', { 'text-danger': category.delta < 0 })}>{formatter.format(
       Math.round(category.delta / 100))}</td>
   </tr>
