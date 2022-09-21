@@ -9,6 +9,14 @@ import { observer } from 'mobx-react'
 import { setTransactionListFilter, formatter, dateFormat } from './dashboardUtils.js'
 
 /**
+ * Retirns current balance for an account.
+ * @param {number} openingBalance
+ * @param {number} total
+ * @returns {number}
+ */
+const calcAccountBalance = (openingBalance, total) => openingBalance + total
+
+/**
  *
  * @param {DashboardModel} model
  * @return {JSX.Element}
@@ -37,7 +45,7 @@ DashboardPersonalTab = observer(DashboardPersonalTab)
 const AccountsTable = observer(({ accounts }) => {
   let total = { accountId: 'totalAccounts', shortName: 'Total', openingBalance: 0, total: 0 }
   accounts.forEach(x => {
-    total.total += x.total
+    total.total += calcAccountBalance(x.openingBalance, x.total)
   })
 
   return <div className='dashboardWidgetContainer'>
