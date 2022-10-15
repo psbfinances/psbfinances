@@ -112,7 +112,9 @@ export class TransactionsStore {
       return null
     }
 
-    const trip = tripModel.getNew([...this.rootStore.masterDataStore.cars][0].id,
+    const allCars = [...this.rootStore.masterDataStore.cars.values()]
+    const tripCar = allCars.find(x => x.isInUse)
+    const trip = tripModel.getNew(tripCar.id,
       this.editItem.description, this.editItem.postedDate, this.editItem.tripDistance)
     trip.transactionId = this.editItem.id
     const isExistingTrip = Boolean(this.selectedItem && this.selectedItem.tripId)
