@@ -46,21 +46,21 @@ export default class MasterDataStore {
    * @param {boolean} reload = false - whether data should be reloaded
    * @return
    */
-  * getData (reload = false) {
+  async getData (reload = false) {
     if (this.loaded && !reload) return Promise.resolve()
 
     this.loading = true
-    yield this.getAccounts(true)
-    yield this.getCategories()
-    yield this.getBusinesses()
-    yield this.getCars()
-    yield this.getApplicationSettings()
+    await this.getAccounts(true)
+    await this.getCategories()
+    await this.getBusinesses()
+    await this.getCars()
+    await this.getApplicationSettings()
     this.loading = false
     this.loaded = true
   }
 
-  * getRules () {
-    const rules = yield api.importRuleApi.list()
+  async getRules () {
+    const rules = await api.importRuleApi.list()
     this.importRules = new Map([...rules].map(x => {
       const rule = x
       const result = new DipRule(rule.id)
@@ -73,8 +73,8 @@ export default class MasterDataStore {
     }))
   }
 
-  * getAccounts (visibleOnly = true) {
-    let accounts = yield api.accountApi.list()
+  async getAccounts (visibleOnly = true) {
+    let accounts = await api.accountApi.list()
     if (visibleOnly) accounts = accounts.filter(x => Boolean(x.visible))
     this.accounts = new Map([...accounts].map(x => [x.id, x]))
   }
@@ -85,34 +85,34 @@ export default class MasterDataStore {
    * @param {number} [currentBalance]
    * @return {Promise<FinancialAccount>}
    */
-  * getAccount (id, currentBalance) {
+  async getAccount (id, currentBalance) {
     return currentBalance !== undefined
-      ? yield api.accountApi.get(id, {currentBalance})
-      : yield api.accountApi.get(id)
+      ? await api.accountApi.get(id, {currentBalance})
+      : await api.accountApi.get(id)
   }
 
-  * getCategories () {
-    const categories = yield api.categoryApi.list()
+  async getCategories () {
+    const categories = await api.categoryApi.list()
     this.categories = new Map(categories.map(x => [x.id, x]))
   }
 
-  * getBusinesses () {
-    const businesses = yield api.businessApi.list()
+  async getBusinesses () {
+    const businesses = await api.businessApi.list()
     this.businesses = new Map(businesses.map(x => [x.id, x]))
   }
 
-  * getCars () {
-    const cars = yield api.carApi.list()
+  async getCars () {
+    const cars = await api.carApi.list()
     this.cars = new Map(cars.map(x => [x.id, x]))
   }
 
-  * getApplicationSettings () {
-    const settings = yield api.applicationApi.get()
+  async getApplicationSettings () {
+    const settings = await api.applicationApi.get()
     this.years = settings.years
   }
 
-  * getUsers () {
-    const users = yield api.userApi.list()
+  async getUsers () {
+    const users = await api.userApi.list()
     this.users = new Map([...users].map(x => [x.id, x]))
   }
 
@@ -120,44 +120,44 @@ export default class MasterDataStore {
     return [allAccountsOption, ...[...this.accounts.values()].filter(x => x.visible).sort(x => x.isDefault ? -1 : 1)]
   }
 
-  * saveAccount (account) {
+  async saveAccount (account) {
     return utils.isNewId(account.id)
-      ? yield api.accountApi.post(account)
-      : yield api.accountApi.put(account.id, account)
+      ? await api.accountApi.post(account)
+      : await api.accountApi.put(account.id, account)
   }
 
-  * saveUser (user) {
+  async saveUser (user) {
     return utils.isNewId(user.id)
-      ? yield api.userApi.post(user)
-      : yield api.userApi.put(user.id, user)
+      ? await api.userApi.post(user)
+      : await api.userApi.put(user.id, user)
   }
 
-  * saveBusiness (business) {
+  async saveBusiness (business) {
     return utils.isNewId(business.id)
-      ? yield api.businessApi.post(business)
-      : yield api.businessApi.put(business.id, business)
+      ? await api.businessApi.post(business)
+      : await api.businessApi.put(business.id, business)
   }
 
-  * saveCategory (category) {
+  async saveCategory (category) {
     return utils.isNewId(category.id)
-      ? yield api.categoryApi.post(category)
-      : yield api.categoryApi.put(category.id, category)
+      ? await api.categoryApi.post(category)
+      : await api.categoryApi.put(category.id, category)
   }
 
-  * saveCar (car) {
-    return utils.isNewId(car.id) ? yield api.carApi.post(car) : yield api.carApi.put(car.id, car)
+  async saveCar (car) {
+    return utils.isNewId(car.id) ? await api.carApi.post(car) : await api.carApi.put(car.id, car)
   }
 
-  * saveRule (data) {
+  async saveRule (data) {
     const apiData = { ...data }
     apiData.actions = [...data.actions.entries()]
     return utils.isNewId(data.id)
-      ? yield api.importRuleApi.post(apiData)
-      : yield api.importRuleApi.put(data.id, apiData)
+      ? await api.importRuleApi.post(apiData)
+      : await api.importRuleApi.put(data.id, apiData)
   }
 
-  * deleteRule (id) {
-    yield api.importRuleApi.delete(id)
+  async deleteRule (id) {
+    await api.importRuleApi.delete(id)
   }
 
   setData (accounts, categories, businesses, cars) {
