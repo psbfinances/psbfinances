@@ -40,12 +40,12 @@ export class TransactionsStore {
     this.filter = new Filter()
   }
 
-  * getData (criteria) {
+  async getData (criteria) {
     this.loading = true
     if (criteria) this.criteria = criteria
-    const data = yield api.transactionApi.list(this.filter)
+    const data = await api.transactionApi.list(this.filter)
     const { openingBalance, items } = data
-    yield this.setItems(items, openingBalance)
+    await this.setItems(items, openingBalance)
   }
 
   get isEmpty () {
@@ -62,11 +62,11 @@ export class TransactionsStore {
    * @param {number} openingBalance
    * @return {Promise<void>}
    */
-  * setItems (items, openingBalance = 0)  {
+  async setItems (items, openingBalance = 0)  {
     this.openingBalance = openingBalance
     this.items = items
     this.setItemsMeta()
-    yield this.setSelected()
+    await this.setSelected()
     this.loading = false
   }
 
@@ -81,9 +81,9 @@ export class TransactionsStore {
     return this.items.find(x => x.id === id)
   }
 
-  * setSelected (index = 0) {
+  async setSelected (index = 0) {
     this.selectedItem = this.items.length > 0 ? this.items[index] : null
-    yield this.setTrip()
+    await this.setTrip()
     this.setEditItem()
     this.childTransactions = []
   }
@@ -103,12 +103,12 @@ export class TransactionsStore {
     }
   }
 
-  * saveTripInfo () {
+  async saveTripInfo () {
     const hasTrip = this.editItem && !!this.editItem.tripDistance
     if (!hasTrip && !this.selectedItem.tripId) return Promise.resolve(null)
 
     if (this.selectedItem.tripId && !hasTrip) {
-      yield api.tripApi.delete(this.selectedItem.tripId)
+      await api.tripApi.delete(this.selectedItem.tripId)
       return null
     }
 
@@ -120,9 +120,9 @@ export class TransactionsStore {
     const isExistingTrip = Boolean(this.selectedItem && this.selectedItem.tripId)
     if (isExistingTrip) {
       trip.id = this.selectedItem.tripId
-      yield api.tripApi.patch(trip.id, trip)
+      await api.tripApi.patch(trip.id, trip)
     } else {
-      yield api.tripApi.post(trip)
+      await api.tripApi.post(trip)
     }
 
     return trip.id
@@ -132,10 +132,10 @@ export class TransactionsStore {
     this.editItem.tripDistance = distance
   }
 
-  * save () {
+  async save () {
     if (this.editItem.isDuplicate) {
-      yield api.duplicateTransactionApi.put(this.editItem.id)
-      yield this.getData()
+      await api.duplicateTransactionApi.put(this.editItem.id)
+      await this.getData()
       return
     }
 
@@ -144,24 +144,24 @@ export class TransactionsStore {
     const { categoryId, businessId, description, note, postedDate, amount } = this.editItem
     const updatedTransaction = { categoryId, businessId, description, note, postedDate, amount, tripId: null }
 
-    const tripId = yield this.saveTripInfo()
+    const tripId = await this.saveTripInfo()
     if (tripId) updatedTransaction.tripId = tripId
     this.editItem.tripId = tripId
 
     if (this.editItem.id.includes('new')) {
       updatedTransaction.accountId = this.editItem.accountId
       /** @type {psbf.TransactionUI} */
-      const savedTransaction = yield api.transactionApi.post(updatedTransaction)
+      const savedTransaction = await api.transactionApi.post(updatedTransaction)
       updatedTransaction.id = savedTransaction.id
     } else {
-      yield api.transactionApi.patch(this.selectedItem.id, updatedTransaction)
+      await api.transactionApi.patch(this.selectedItem.id, updatedTransaction)
       updatedTransaction.id = this.selectedItem.id
     }
-    yield this.getData()
+    await this.getData()
     this.setSelectedItemById(updatedTransaction.id)
   }
 
-  * saveSplits () {
+  async saveSplits () {
     const childTransactions = this.childTransactions.map(x => {
       return {
         id: x.id,
@@ -173,9 +173,9 @@ export class TransactionsStore {
     })
 
     const parentTransactionId = this.editItem.id
-    yield api.transactionApi.patch(this.editItem.id, { childTransactions })
-    yield this.getData()
-    yield this.setSelectedItemById(parentTransactionId)
+    await api.transactionApi.patch(this.editItem.id, { childTransactions })
+    await this.getData()
+    await this.setSelectedItemById(parentTransactionId)
     this.getChildTransactions()
   }
 
@@ -195,18 +195,18 @@ export class TransactionsStore {
     transaction.isDuplicate = false
   }
 
-  * setSelectedItemById (id) {
+  async setSelectedItemById (id) {
     if (this.selectedItem.id === id) return
 
     let selectedIndex = this.items.findIndex(x => x.id === id)
     if (selectedIndex === -1) selectedIndex = 0
-    yield this.setSelected(selectedIndex)
+    await this.setSelected(selectedIndex)
   }
 
-  * setTrip () {
+  async setTrip () {
     if (!this.selectedItem || !this.selectedItem.tripId) return Promise.resolve()
 
-    const trip = yield api.tripApi.get(this.selectedItem.tripId)
+    const trip = await api.tripApi.get(this.selectedItem.tripId)
     this.selectedItem.tripDistance = trip.distance
   }
 
@@ -231,10 +231,10 @@ export class TransactionsStore {
    * @param {string} secondId
    * @return {Promise}
    */
-  * merge (secondId) {
+  async merge (secondId) {
     if (!secondId || !this.selectedItem || secondId === this.selectedItem.id) return Promise.resolve()
 
-    let result = yield api.transactionApi.patchMerge(this.selectedItem.id, secondId)
+    let result = await api.transactionApi.patchMerge(this.selectedItem.id, secondId)
     result = result.data
     if (!result.transaction) return Promise.resolve()
 
@@ -264,20 +264,20 @@ export class TransactionsStore {
     this.editItem = this.selectedItem ? { ...this.selectedItem } : null
   }
 
-  * delete () {
+  async delete () {
     if (!this.selectedItem || this.selectedItem.source !== c.sources.MANUAL) return
 
-    yield api.transactionApi.delete(this.selectedItem.id)
+    await api.transactionApi.delete(this.selectedItem.id)
 
     const selectedItemIndex = this.items.findIndex(x => x.id === this.selectedItem.id)
     const newSelectedIndex = selectedItemIndex >= 1 ? selectedItemIndex - 1 : 0
     this.items.splice(selectedItemIndex, 1)
     this.setItemsMeta()
-    yield this.setSelected(newSelectedIndex)
+    await this.setSelected(newSelectedIndex)
   }
 
-  * setNotDuplicate () {
-    const duplicateCandidateTransactionIds = yield api.duplicateTransactionApi.resolve(this.editItem.id)
+  async setNotDuplicate () {
+    const duplicateCandidateTransactionIds = await api.duplicateTransactionApi.resolve(this.editItem.id)
     this.editItem.isDuplicate = false
     this.editItem.duplicateCandidateId = null
     this.selectedItem.isDuplicate = false
@@ -289,17 +289,17 @@ export class TransactionsStore {
     if (anotherTransactionIndex >= 0) this.items[anotherTransactionIndex].duplicateCandidateId = null
   }
 
-  * toggleReconciled () {
-    yield this.updateScheduledAndReconciled({ reconciled: this.selectedItem.reconciled })
+  async toggleReconciled () {
+    await this.updateScheduledAndReconciled({ reconciled: this.selectedItem.reconciled })
   }
 
-  * toggleScheduled () {
+  async toggleScheduled () {
     if (this.selectedItem.source === c.sources.IMPORT) return Promise.resolve()
-    yield this.updateScheduledAndReconciled({ scheduled: this.selectedItem.scheduled })
+    await this.updateScheduledAndReconciled({ scheduled: this.selectedItem.scheduled })
   }
 
-  * undoSplit () {
-    yield api.transactionApi.patch(this.editItem.id, { childTransactions: [] })
+  async undoSplit () {
+    await api.transactionApi.patch(this.editItem.id, { childTransactions: [] })
     this.selectedItem.hasChildren = false
     this.editItem.hasChildren = false
     this.items = this.items.filter(x => x.parentId !== this.selectedItem.id)
@@ -309,8 +309,8 @@ export class TransactionsStore {
   /**
    * @param {{reconciled: boolean}|{scheduled:boolean}} change
    */
-  * updateScheduledAndReconciled (change) {
-    const updatedTransaction = yield api.transactionApi.patch(this.selectedItem.id, change)
+  async updateScheduledAndReconciled (change) {
+    const updatedTransaction = await api.transactionApi.patch(this.selectedItem.id, change)
     this.editItem.reconciled = updatedTransaction.reconciled
     this.selectedItem.reconciled = updatedTransaction.reconciled
     this.selectedItem.scheduled = updatedTransaction.scheduled
@@ -358,4 +358,3 @@ export class Filter {
     return this.accountId !== c.selectId.ALL || this.categoryId !== c.selectId.ALL
   }
 }
-
