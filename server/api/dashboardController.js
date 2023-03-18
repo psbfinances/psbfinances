@@ -49,13 +49,18 @@ const controller = {
       businessPLCurrentMonth = await dashboardDb.listBusinessPLCurrentMonth(tenantId, businessId, period, year,
         reconciledOnly)
       businessPLCurrentYear = await dashboardDb.listBusinessPLCurrentYear(tenantId, businessId, year, reconciledOnly)
+      let prevYearEntry = businessPL.length > 0 ? businessPL[0].year : 0;
       businessPL.forEach(x => {
-        const hasMonthData = pl.has(x.month)
-        const monthData = hasMonthData ? pl.get(x.month) : { income: 0, expenses: 0, profit: 0 }
+        const key = `${x.year}-${x.month}`
+        const hasMonthData = pl.has(key)
+        const monthData = hasMonthData ? pl.get(key) : { income: 0, expenses: 0, profit: 0 }
+        monthData.newYear = monthData.newYear === undefined ? prevYearEntry !== x.year : monthData.newYear
+        prevYearEntry = x.year
         if (x.type === 'e') monthData.expenses = monthData.expenses + x.total
         if (x.type === 'i') monthData.income = monthData.income + x.total
         monthData.profit = monthData.income + monthData.expenses
-        pl.set(x.month, monthData)
+        pl.set(key, monthData)
+        // pl.set(`${x.month}`, monthData)
       })
     }
 

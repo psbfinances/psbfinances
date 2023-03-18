@@ -175,6 +175,10 @@ table, .form-control, .col-form-label-sm {
   border-bottom: 5px rgba(184, 135, 102, 0.4) solid !important;
 }
 
+.newYear {
+  border-top: 5px rgba(184, 135, 102, 0.4) solid !important;
+}
+
 .btn-primary {
   background-color: #b88766;
   border-color: #b88766;

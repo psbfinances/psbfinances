@@ -69,10 +69,19 @@ export default class DashboardDb extends Db {
   }
 
   async listBusinessPL (tenantId, businessId, year, reconciledOnly) {
-    const currentYear = Number.parseInt(year)
-    const dateFrom = `${currentYear}-01-01`
-    const dateTo = `${currentYear + 1}-01-01`
-    return this.raw(`SELECT MONTH(postedDate) month, type, categoryId, name, SUM(amount) total FROM transactions
+    const selectedYear = Number.parseInt(year)
+    const currentYear = (new Date()).getFullYear()
+    let dateFrom, dateTo
+    if (selectedYear === currentYear) {
+      const today = new Date()
+      const milisecondsInDay = 86400000
+      dateFrom = (new Date(today - 400 * milisecondsInDay)).toISOString().substring(0, 10)
+      dateTo = (new Date()).toISOString().substring(0, 10)
+    } else {
+      dateFrom = `${selectedYear}-01-01`
+      dateTo = `${selectedYear + 1}-01-01`
+    }
+    return this.raw(`SELECT YEAR(postedDate) year, MONTH(postedDate) month, type, categoryId, name, SUM(amount) total FROM transactions
         INNER JOIN categories c on transactions.categoryId = c.id
         WHERE
               transactions.tenantId = ? AND
@@ -81,8 +90,8 @@ export default class DashboardDb extends Db {
               postedDate >= ? AND postedDate <= ? AND
               transactions.note NOT LIKE '%#rep-exclude%' AND
               hasChildren = 0
-        GROUP BY MONTH(postedDate), type ASC, categoryId, name
-        ORDER BY month, total`,
+        GROUP BY YEAR(postedDate), MONTH(postedDate), type ASC, categoryId, name
+        ORDER BY year, month, total`,
       [tenantId, businessId, dateFrom, dateTo])
   }
 

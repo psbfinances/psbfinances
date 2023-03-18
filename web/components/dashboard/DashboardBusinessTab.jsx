@@ -18,7 +18,7 @@ import {
 } from 'recharts'
 import { c } from '@psbfinances/shared/core'
 import { observer } from 'mobx-react'
-import {setTransactionListFilter, formatter, formatterP} from './dashboardUtils.js'
+import { setTransactionListFilter, formatter, formatterP } from './dashboardUtils.js'
 
 const months = c.months
 
@@ -51,10 +51,16 @@ const DashboardBusinessTab = observer(({ model }) => {
  */
 const ProfitAndLossTable = observer(({ pl }) => {
   let yearTotals = { month: 'Year', income: 0, expenses: 0, profit: 0 }
+  const keys = Object.keys(pl)
+  if (keys.length === 0) return null
+  const year = Math.max(...keys.map(x => parseInt(x.substring(0, 4), 10)))
   Object.keys(pl).forEach(x => {
-    yearTotals.income += pl[x].income
-    yearTotals.expenses += pl[x].expenses
-    yearTotals.profit += pl[x].profit
+    const plYear = parseInt(x.substring(0, 4), 10)
+    if (plYear === year) {
+      yearTotals.income += pl[x].income
+      yearTotals.expenses += pl[x].expenses
+      yearTotals.profit += pl[x].profit
+    }
   })
   return <div className='dashboardWidgetContainer'>
     <h5>Profit and Loss</h5>
@@ -70,7 +76,7 @@ const ProfitAndLossTable = observer(({ pl }) => {
           </tr>
         </thead>
         <tbody>
-          {Object.keys(pl).map(x => <ProfitAndLossTableRow key={`pl-${x}`} pl={pl[x]} month={x} />)}
+          {Object.keys(pl).map((x, i) => <ProfitAndLossTableRow key={`pl-${x}`} pl={pl[x]} month={x} index={i} />)}
           <ProfitAndLossTableRow key={'pl-tot'} pl={yearTotals} month='Total' />
         </tbody>
       </table>
@@ -83,18 +89,21 @@ const ProfitAndLossTable = observer(({ pl }) => {
 /**
  *
  * @param pl
- * @param month
+ * @param yearMonth
  * @return {JSX.Element}
  * @constructor
  */
 const ProfitAndLossTableRow = observer(
-  ({ pl, month }) => <tr className={classNames({ totalBorder: month === 'Total' })}>
-    <td>{month === 'Total' ? month : months[month - 1]}</td>
-    <td className='text-right'>{formatter.format(pl.income / 100)}</td>
-    <td className='text-right'>{formatter.format(-1 * pl.expenses / 100)}</td>
-    <td className='text-right'>{formatter.format(pl.profit / 100)}</td>
-    <td className='text-right'>{pl.profit <= 0 ? '0' : Math.round(pl.profit / pl.income * 100)}%</td>
-  </tr>)
+  ({ pl, month, index }) => {
+    console.log('new Month', month, index, pl.newYear && index > 0)
+    return <tr className={classNames({ totalBorder: month === 'Total', newYear: pl.newYear && index > 0 })}>
+      <td>{month === 'Total' ? month : months[parseInt(month.substring(5), 10) - 1]}</td>
+      <td className='text-right'>{formatter.format(pl.income / 100)}</td>
+      <td className='text-right'>{formatter.format(-1 * pl.expenses / 100)}</td>
+      <td className='text-right'>{formatter.format(pl.profit / 100)}</td>
+      <td className='text-right'>{pl.profit <= 0 ? '0' : Math.round(pl.profit / pl.income * 100)}%</td>
+    </tr>
+  })
 
 /**
  *
@@ -178,7 +187,7 @@ const BusinessCategoriesTableRow = observer(({ category, businessId, yearExpense
  */
 const PLChart = observer(({ pl }) => {
   const data = Object.keys(pl).map(x => ({
-    name: months[parseInt(x) - 1],
+    name: months[parseInt(x.substring(5), 10) - 1],
     Profit: pl[x].profit / 100,
     Revenue: pl[x].income / 100,
     Expenses: 1 * pl[x].expenses / 100
