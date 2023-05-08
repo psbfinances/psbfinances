@@ -51,10 +51,11 @@ let AccountForm = ({ model }) => {
             className='form-select'
             onChange={model.handleChange}
             value={model.editItem.type}>
-            <option value='checking'>Checking account</option>
-            <option value='saving'>Saving account</option>
-            <option value='CC'>Credit card</option>
-            <option value='cash'>Cash</option>
+            <option value='Banking'>Banking</option>
+            <option value='Saving'>Saving account</option>
+            <option value='Credit Card'>Credit card</option>
+            <option value='Cash'>Cash</option>
+            <option value='Investment'>Investment</option>
           </select>
         </div>
         <div className='mb-3'>

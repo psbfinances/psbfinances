@@ -52,7 +52,7 @@
  * @property {string} tenantId
  * @property {string} shortName
  * @property {string} fullName
- * @property {'CC'|'checking'|'saving'|'cash'|'investment'} type
+ * @property {'Credit Card'|'Banking'|'Saving'|'Cash'|'Investment'} type
  * @property {string} [bankId]
  * @property {Bank} bank
  * @property {number} [businessId]

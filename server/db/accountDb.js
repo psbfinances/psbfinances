@@ -8,6 +8,7 @@ export default class AccountDb extends Db {
     this.tCol = {
       isDefault: '',
       closed: '',
+      type: '',
       shortName: ''
     }
     Object.keys(this.tCol).forEach(x => this.tCol[x] = x)
@@ -16,6 +17,7 @@ export default class AccountDb extends Db {
   async list (tenantId) {
     return this.knex.where({ tenantId }).select().orderBy([
       this.tCol.closed,
+      this.tCol.type,
       this.tCol.shortName])
   }
 

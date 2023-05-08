@@ -62,7 +62,7 @@ let Header = ({}) => <thead>
   <tr className='sticky-top'>
     <th style={{ width: '200px' }}>Short name</th>
     <th style={{ width: '300px' }}>Full name</th>
-    <th className='otherCol'>Type</th>
+    <th style={{ width: '150px' }}>Type</th>
     <th className='text-right'>Opening balance</th>
     <th className='text-center otherCol'>Default</th>
     <th className='text-center otherCol'>Closed</th>
