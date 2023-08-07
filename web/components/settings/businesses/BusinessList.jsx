@@ -1,38 +1,44 @@
 'use strict'
 
-import React, { useEffect } from 'react'
 import { observer } from 'mobx-react'
 import BusinessListModel from './BusinessListModel'
 import ListToolbar from '../ListToolbar'
 import BusinessForm from './BusinessForm.jsx'
+import React from 'react'
+
+const model = new BusinessListModel()
 
 /**
  * Business list.
  * @return {JSX.Element}
  * @constructor
  */
-let BusinessList = ({}) => {
-  let model = new BusinessListModel()
-  return <BusinessListComponent model={model} />
-}
-BusinessList = observer(BusinessList)
+const BusinessList = observer(({}) => <BusinessListComponent model={model} />)
 export default BusinessList
 
 /**
  * Business list.
  */
-let BusinessListComponent = ({ model }) => {
-  useEffect(async () => {await model.getData()}, [])
+class BusinessListComponent extends React.Component {
+  async componentDidMount () {
+    await model.getData()
+  }
 
-  return <div className='dataContainer'>
-    <ListToolbar model={model.toolbarModel} />
+  render () {
+    const { model } = this.props
 
-    <div className='tableAndForm'>
-      <BusinessesTable model={model} />
-      <BusinessForm model={model} />
+    return <div className='dataContainer'>
+      <ListToolbar model={model.toolbarModel} />
+
+      <div className='tableAndForm'>
+        <BusinessesTable model={model} />
+        <BusinessForm model={model} />
+      </div>
     </div>
-  </div>
+  }
 }
+
+BusinessListComponent.propTypes = { model: BusinessListModel }
 
 /**
  *

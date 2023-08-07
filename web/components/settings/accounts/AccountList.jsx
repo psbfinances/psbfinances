@@ -1,39 +1,45 @@
 'use strict'
 
-import React, { useEffect } from 'react'
 import { AmountTd } from '../../core'
 import { observer } from 'mobx-react'
 import AccountForm from './AccountForm'
 import AccountListModel from './AccountListModel'
 import ListToolbar from '../ListToolbar'
+import React from 'react'
 
 /**
  * Account list.
  * @return {JSX.Element}
  * @constructor
  */
-let AccountList = ({}) => {
-  let model = new AccountListModel()
-  return <AccountListComponent model={model} />
-}
-AccountList = observer(AccountList)
+let model = new AccountListModel()
+
+const AccountList = observer(({}) => <AccountListComponent model={model} />)
 export default AccountList
 
 /**
  * Account list.
  */
-let AccountListComponent = ({ model }) => {
-  useEffect(async () => {await model.getData()}, [])
+class AccountListComponent extends React.Component {
+  async componentDidMount () {
+    await model.getData()
+  }
 
-  return <div className='dataContainer'>
-    <ListToolbar model={model.toolbarModel} />
+  render () {
+    const { model } = this.props
 
-    <div className='tableAndForm'>
-      <AccountsTable model={model} />
-      <AccountForm model={model} />
+    return <div className='dataContainer'>
+      <ListToolbar model={model.toolbarModel} />
+
+      <div className='tableAndForm'>
+        <AccountsTable model={model} />
+        <AccountForm model={model} />
+      </div>
     </div>
-  </div>
+  }
 }
+
+AccountListComponent.propTypes = { model: AccountListModel }
 
 /**
  *

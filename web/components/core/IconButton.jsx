@@ -1,7 +1,7 @@
 'use strict'
 
 import React from 'react'
-import ReactTooltip from 'react-tooltip'
+import { Tooltip } from 'react-tooltip'
 
 /**
  * Icon button for list toolbars.
@@ -22,7 +22,7 @@ const IconButton = ({ icon, label, disabled, handleClick, tooltip }) => {
     disabled={disabled}
 
     onClick={handleClick}>
-    <ReactTooltip />
+    <Tooltip />
     <i className={icon} />
   </button>
 }

@@ -38,12 +38,21 @@ export class CoreFieldsModel {
    * @param {Object} errors
    */
   constructor (transaction, readOnly = false, errors = {}) {
-    makeAutoObservable(this)
+    // makeAutoObservable(this)
     this.transaction = transaction
     this.businessOptions = rootStore.masterDataStore.businessOptions
     this.categoryOptions = rootStore.masterDataStore.categoryOptions
     this.readOnly = readOnly
     this.errors = errors
+  }
+
+  setValues = (transaction, readOnly = false, rootStore, errors = {}) => {
+    this.transaction = transaction
+    this.businessOptions = rootStore.masterDataStore.businessOptions
+    this.categoryOptions = rootStore.masterDataStore.categoryOptions
+    this.readOnly = readOnly
+    this.errors = errors
+
   }
 
   handleChange = e => {

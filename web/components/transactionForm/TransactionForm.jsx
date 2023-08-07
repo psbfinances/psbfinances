@@ -13,6 +13,8 @@ import Splits from './Splits'
 import Attachments from './Attachments'
 import { transactionModel } from '../../../shared/models'
 
+const coreFieldsModel = new CoreFieldsModel()
+
 /**
  * Transaction form model.
  */
@@ -122,7 +124,14 @@ let DetailsView = ({ model }) => {
 
   const handleDelete = async () => rootStore.transactionsStore.delete()
 
+  // coreFieldsModel.setValues(rootStore.transactionsStore.editItem, model.isReadOnly, rootStore, model.errors)
   const coreFieldsModel = new CoreFieldsModel(rootStore.transactionsStore.editItem, model.isReadOnly, model.errors)
+  // coreFieldsModel.transaction = rootStore.transactionsStore.editItem
+  // coreFieldsModel.readOnly = model.isReadOnly
+  // coreFieldsModel.errors = model.errors
+  // coreFieldsModel.businessOptions = rootStore.masterDataStore.businessOptions
+  // coreFieldsModel.categoryOptions = rootStore.masterDataStore.categoryOptions
+
   return <div className='col-form-label-sm'>
     <CoreFields model={coreFieldsModel}>
       <TripEntry model={model} />

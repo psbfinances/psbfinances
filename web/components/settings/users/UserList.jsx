@@ -1,38 +1,44 @@
 'use strict'
 
-import React, { useEffect } from 'react'
+import React from 'react'
 import { observer } from 'mobx-react'
 import UserListModel from './UserListModel'
 import UserForm from './UserForm'
 import ListToolbar from '../ListToolbar'
+
+const model = new UserListModel()
 
 /**
  * User list.
  * @return {JSX.Element}
  * @constructor
  */
-let UserList = ({}) => {
-  let model = new UserListModel()
-  return <UserListComponent model={model} />
-}
-UserList = observer(UserList)
+const UserList = observer(({}) => <UserListComponent model={model} />)
 export default UserList
 
 /**
  * User list.
  */
-let UserListComponent = ({ model }) => {
-  useEffect(async () => {await model.getData()}, [])
+class UserListComponent extends React.Component {
+  async componentDidMount () {
+    await model.getData()
+  }
 
-  return <div className='dataContainer'>
-    <ListToolbar model={model.toolbarModel} />
+  render () {
+    const { model } = this.props
 
-    <div className='tableAndForm'>
-      <UsersTable model={model} />
-      <UserForm model={model} />
+    return <div className='dataContainer'>
+      <ListToolbar model={model.toolbarModel} />
+
+      <div className='tableAndForm'>
+        <UsersTable model={model} />
+        <UserForm model={model} />
+      </div>
     </div>
-  </div>
+  }
 }
+
+UserListComponent.propTypes = { model: UserListModel }
 
 /**
  *

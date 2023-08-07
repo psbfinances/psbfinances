@@ -27,12 +27,12 @@
   "devDependencies": {
   },
   "dependencies": {
-    "axios": "^0.24.0",
+    "axios": "^1.4.0",
     "cuid": "^2.1.8",
-    "qs": "^6.10.1",
-    "query-string": "^7.0.1",
-    "rrule": "^2.6.8",
+    "qs": "^6.11.2",
+    "query-string": "^8.1.0",
+    "rrule": "^2.7.2",
     "store": "^2.0.12",
-    "validator": "^13.6.0"
+    "validator": "^13.9.0"
   }
 }

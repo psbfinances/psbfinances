@@ -1,6 +1,6 @@
 'use strict'
 
-import React, { useEffect } from 'react'
+import React from 'react'
 import { observer } from 'mobx-react'
 import ImportRuleForm from './ImportRuleForm.jsx'
 import ImportRuleListModel from './ImportRuleListModel.js'
@@ -13,53 +13,58 @@ import AppleCardRuleForm from './AppleCardRuleForm.jsx'
 
 const adapterOptions = Object.keys(c.dipAdapters).map(x => c.dipAdapters[x])
 
+const model = new ImportRuleListModel()
+
 /**
  * Rule list.
  * @return {JSX.Element}
  * @constructor
  */
-let RuleList = ({}) => {
-  let model = new ImportRuleListModel()
-  return <ImportRulesListComponent model={model} />
-}
-RuleList = observer(RuleList)
+const RuleList = observer(({}) => <ImportRulesListComponent model={model} />)
 export default RuleList
-
 
 /**
  * Rule list.
  * @param {ImportRuleListModel} model
  */
-let ImportRulesListComponent = ({ model }) => {
-  useEffect(async () => {
-    await model.getData()}, [])
+class ImportRulesListComponent extends React.Component {
+  async componentDidMount () {
+    await model.getData()
+  }
 
-  return <div className='dataContainer'>
-    <ListToolbar model={model.toolbarModel} >
-      <div className='col dropdown mt-1 me-2'>
-        <DropdownButton id='adapterSelect' items={adapterOptions} selectedId={model.selectedAdapter.id} labelName='label' />
-        <ul className='dropdown-menu' aria-label='adapterSelect'>
-          {adapterOptions.map(x => <li key={x.id}>
-            <a
-              id={x.id}
-              className={classNames('dropdown-item', { 'active': x.id === model.selectedAdapter.id })}
-              href='#'
-              name='periodSelect'
-              onClick={model.handleAdapterChange}>{x.label}</a>
-          </li>)}
-        </ul>
+  render () {
+    const { model } = this.props
+
+    return <div className='dataContainer'>
+      <ListToolbar model={model.toolbarModel}>
+        <div className='col dropdown mt-1 me-2'>
+          <DropdownButton id='adapterSelect' items={adapterOptions} selectedId={model.selectedAdapter.id}
+                          labelName='label' />
+          <ul className='dropdown-menu' aria-label='adapterSelect'>
+            {adapterOptions.map(x => <li key={x.id}>
+              <a
+                id={x.id}
+                className={classNames('dropdown-item', { 'active': x.id === model.selectedAdapter.id })}
+                href='#'
+                name='periodSelect'
+                onClick={model.handleAdapterChange}>{x.label}</a>
+            </li>)}
+          </ul>
+        </div>
+
+      </ListToolbar>
+
+      <div className='tableAndForm'>
+        <ImportRuleListTable model={model} />
+        {model.selectedAdapter.id === c.dipAdapters.all.id && <ImportRuleForm model={model} />}
+        {model.selectedAdapter.id === c.dipAdapters.mint.id && <MintRuleForm model={model} />}
+        {model.selectedAdapter.id === c.dipAdapters.appleCard.id && <AppleCardRuleForm model={model} />}
       </div>
-
-    </ListToolbar>
-
-    <div className='tableAndForm'>
-      <ImportRuleListTable model={model} />
-      {model.selectedAdapter.id === c.dipAdapters.all.id && <ImportRuleForm model={model} />}
-      {model.selectedAdapter.id === c.dipAdapters.mint.id && <MintRuleForm model={model} />}
-      {model.selectedAdapter.id === c.dipAdapters.appleCard.id && <AppleCardRuleForm model={model} />}
     </div>
-  </div>
+  }
 }
+
+ImportRulesListComponent.propTypes = { model: ImportRuleListModel }
 ImportRulesListComponent = observer(ImportRulesListComponent)
 
 /**

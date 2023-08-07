@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { observer } from 'mobx-react'
-import ReactTooltip from 'react-tooltip'
+import { Tooltip } from 'react-tooltip'
 import CurrencyInput from 'react-currency-input-field'
 import { c } from '@psbfinances/shared/core/index.js'
 
@@ -81,7 +81,7 @@ const BudgetForm = observer(({ model }) => {
         </div>
       </div>
     </div>
-    <ReactTooltip />
+    <Tooltip />
   </div>
 })
 

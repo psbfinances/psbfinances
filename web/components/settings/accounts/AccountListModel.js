@@ -1,6 +1,6 @@
 'use strict'
 
-import { makeAutoObservable } from 'mobx'
+import { makeAutoObservable, makeObservable, observable } from 'mobx'
 import { rootStore } from '../../../stores/rootStore.js'
 import { accountModel } from '../../../../shared/models/index.js'
 import { utils } from '../../../../shared/core/index.js'

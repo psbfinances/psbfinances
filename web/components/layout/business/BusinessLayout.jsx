@@ -31,6 +31,15 @@ import CarList from '../../settings/cars/CarList.jsx'
 import DuplicateList from '../../settings/duplicateTransactions/DuplicateList.jsx'
 import ApplicationSettingsForm from '../../settings/application/ApplicationSettings.jsx'
 import BusinessYearTaxes from '../../reports/BusinessYearTaxes.jsx'
+import { configure } from "mobx"
+
+// configure({
+//   enforceActions: "always",
+//   computedRequiresReaction: true,
+//   reactionRequiresObservable: true,
+//   observableRequiresReaction: true,
+//   disableErrorBoundaries: true
+// })
 
 const MustBeAuthenticated = ({ children }) => {
   const navigate = useNavigate()
@@ -44,7 +53,7 @@ const MustBeAuthenticated = ({ children }) => {
 /**
  * Business Layout component.
  */
-const BusinessLayout = observer(
+// const BusinessLayout = observer(
   class BusinessLayout extends React.Component {
     render () {
       return <ErrorBoundary>
@@ -81,7 +90,7 @@ const BusinessLayout = observer(
         </MustBeAuthenticated>
       </ErrorBoundary>
     }
-  })
+  }//)
 
 /**
  * Business layout header.

@@ -16,20 +16,23 @@ import { authScreens } from './AuthModel.js'
 let Auth = ({model}) => {
   const navigate = useNavigate()
 
-  useEffect(async () => {
-    if (model.navigateUrl) return navigate(model.navigateUrl)
+  useEffect(() => {
+    const getData = async  () => {
+      if (model.navigateUrl) return navigate(model.navigateUrl)
 
-    const resetPasswordToken = new URL(window.location.href).searchParams.get('token')
-    if (resetPasswordToken) {
-      const validate = await model.validatePasswordResetToken(resetPasswordToken)
-      if (!validate.valid) {
-        model.screen = authScreens.FORGOTTEN
+      const resetPasswordToken = new URL(window.location.href).searchParams.get('token')
+      if (resetPasswordToken) {
+        const validate = await model.validatePasswordResetToken(resetPasswordToken)
+        if (!validate.valid) {
+          model.screen = authScreens.FORGOTTEN
+          return
+        }
+        model.screen = authScreens.RESET
         return
       }
-      model.screen = authScreens.RESET
-      return
+      model.screen = authScreens.LOGIN
     }
-    model.screen = authScreens.LOGIN
+    getData()
   }, [model.navigateUrl])
 
   return (

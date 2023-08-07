@@ -78,15 +78,15 @@ export class ListModel {
     return rootStore.transactionsStore.isEmpty || rootStore.transactionsStore.isNew
   }
 
-  * refresh () {
+  async refresh () {
     const selectedId = rootStore.transactionsStore.editItem ? rootStore.transactionsStore.editItem.id : null
-    yield rootStore.transactionsStore.getData()
-    if (selectedId) yield rootStore.transactionsStore.setSelectedItemById(selectedId)
+    await rootStore.transactionsStore.getData()
+    if (selectedId) await rootStore.transactionsStore.setSelectedItemById(selectedId)
     this.setFormDetailedView()
   }
 
-  * merge () {
-    yield rootStore.transactionsStore.merge(this.secondSelectedId)
+  async merge () {
+    await rootStore.transactionsStore.merge(this.secondSelectedId)
     this.secondSelectedId = null
   }
 
@@ -100,7 +100,7 @@ export class ListModel {
     rootStore.transactionsStore.clone()
   }
 
-  * loadData () {
+  async loadData () {
     if (!this.rootStore.masterDataStore.hasAccounts) return Promise.resolve()
 
     this.loading = true
@@ -113,7 +113,7 @@ export class ListModel {
         ? this.account.id
         : this.rootStore.masterDataStore.firstAccount.id
     }
-    yield rootStore.transactionsStore.getData()
+    await rootStore.transactionsStore.getData()
 
     if (!this.account) this.account = rootStore.masterDataStore.firstAccount
     if (!this.category) this.category = allCategories
@@ -129,7 +129,7 @@ export class ListModel {
   async setCategory (id) {
     rootStore.transactionsStore.filter.categoryId = id
     this.category = id === c.selectId.ALL ? allCategories : this.rootStore.masterDataStore.categories.get(id)
-    this.loadData()
+    await this.loadData()
   }
 
   setFormDetailedView () {
@@ -141,9 +141,12 @@ export class ListModel {
     if (field === 'yearSelect') rootStore.transactionsStore.filter.year = value
     else rootStore.transactionsStore.filter.month = value
 
-    this.loadData()
+    await this.loadData()
   }
 }
+
+const model = new ListModel(rootStore)
+model.formModel = new FormModel()
 
 /**
  * List of transactions.
@@ -154,7 +157,7 @@ const TransactionList = observer(
 
     constructor (props) {
       super(props)
-      this.model = new ListModel(rootStore)
+      // this.model = model
     }
 
     componentWillUnmount () {
@@ -164,18 +167,17 @@ const TransactionList = observer(
     async componentDidMount () {
       if (!rootStore.masterDataStore.loaded) {
         await rootStore.masterDataStore.getData()
-        this.model.formModel = new FormModel()
       }
-      await this.model.loadData()
+      await model.loadData()
     }
 
     render () {
       return <div id='dataContainer' className='dataContainer'>
-        <TransactionListToolbar model={this.model} />
+        <TransactionListToolbar model={model} />
 
         <div id='transactions' className='tableAndForm'>
-          <TransactionTable model={this.model} />
-          <TransactionForm model={this.model.formModel} />
+          <TransactionTable model={model} />
+          <TransactionForm model={model.formModel} />
         </div>
 
       </div>

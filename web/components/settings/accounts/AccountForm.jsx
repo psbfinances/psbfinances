@@ -4,7 +4,7 @@ import React from 'react'
 import classNames from 'classnames'
 import { AmountField } from '../../core'
 import { observer } from 'mobx-react'
-import ReactTooltip from 'react-tooltip'
+import { Tooltip } from 'react-tooltip'
 
 /**
  * Account form.
@@ -69,7 +69,7 @@ let AccountForm = ({ model }) => {
             onClick={model.handleCalculatorIconClick}
             data-tip='Calculate opening balance based on the current balance'
             className='fas fa-calculator' />
-          <ReactTooltip />
+          <Tooltip />
         </div>}
 
         <div className='form-check mb-3'>
@@ -154,7 +154,7 @@ AccountForm = observer(AccountForm)
 let BalanceCalculator = ({ model }) => {
   if (!model.balanceCalculatorVisible) return null
 
-  return <div style={{backgroundColor: '#f6f8fb'}}>
+  return <div style={{ backgroundColor: '#f6f8fb' }}>
     <hr />
     <div className='mb-3'>
       <label htmlFor='inputCurrentBalance' className='form-label'>Current balance</label>

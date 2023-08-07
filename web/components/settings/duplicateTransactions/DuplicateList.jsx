@@ -1,40 +1,46 @@
 'use strict'
 
-import React, { useEffect } from 'react'
 import { observer } from 'mobx-react'
 import DuplicateListModel from './DuplicateListModel.js'
 import ListToolbar from '../ListToolbar'
 import { AmountTd } from '../../core/index.js'
+import React from 'react'
 
 const dateFormat = { month: 'short', day: 'numeric', year: 'numeric' }
 const formatDate = date => new Date(date).toLocaleDateString('en-gb', dateFormat)
+
+const model = new DuplicateListModel()
 
 /**
  * Duplicate list.
  * @return {JSX.Element}
  * @constructor
  */
-let DuplicateList = ({}) => {
-  let model = new DuplicateListModel()
-  return <DuplicateListComponent model={model} />
-}
-DuplicateList = observer(DuplicateList)
+const DuplicateList = observer(({}) => <DuplicateListComponent model={model} />)
 export default DuplicateList
 
 /**
  * Duplicate list.
  */
-let DuplicateListComponent = ({ model }) => {
-  useEffect(async () => {await model.getData()}, [])
+class DuplicateListComponent extends React.Component {
+  async componentDidMount () {
+    await model.getData()
+  }
 
-  return <div className='dataContainer'>
-    <ListToolbar model={model.toolbarModel} />
+  render () {
+    const { model } = this.props
 
-    <div className='tableAndForm'>
-      <DuplicatesTable model={model} />
+    return <div className='dataContainer'>
+      <ListToolbar model={model.toolbarModel} />
+
+      <div className='tableAndForm'>
+        <DuplicatesTable model={model} />
+      </div>
     </div>
-  </div>
+  }
 }
+
+DuplicateListComponent.propTypes = { model: DuplicateListModel }
 
 /**
  *

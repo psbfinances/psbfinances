@@ -1,38 +1,44 @@
 'use strict'
 
-import React, { useEffect } from 'react'
 import { observer } from 'mobx-react'
 import CarListModel from './CarListModel'
 import ListToolbar from '../ListToolbar'
 import CarForm from './CarForm.jsx'
+import React from 'react'
+
+const model = new CarListModel()
 
 /**
  * Car list.
  * @return {JSX.Element}
  * @constructor
  */
-let CarList = ({}) => {
-  let model = new CarListModel()
-  return <CarListComponent model={model} />
-}
-CarList = observer(CarList)
+const CarList = observer(({}) => <CarListComponent model={model} />)
 export default CarList
 
 /**
  * Car list.
  */
-let CarListComponent = ({ model }) => {
-  useEffect(async () => {await model.getData()}, [])
+class CarListComponent extends React.Component {
+  async componentDidMount () {
+    await model.getData()
+  }
 
-  return <div className='dataContainer'>
-    <ListToolbar model={model.toolbarModel} />
+  render () {
+    const { model } = this.props
 
-    <div className='tableAndForm'>
-      <CarTable model={model} />
-      <CarForm model={model} />
+    return <div className='dataContainer'>
+      <ListToolbar model={model.toolbarModel} />
+
+      <div className='tableAndForm'>
+        <CarTable model={model} />
+        <CarForm model={model} />
+      </div>
     </div>
-  </div>
+  }
 }
+
+CarListComponent.propTypes = { model: CarListModel }
 
 /**
  *

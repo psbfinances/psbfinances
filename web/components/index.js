@@ -1,7 +1,7 @@
 'use strict'
 
 import * as React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client';
 import AppRoutes from './routes.js'
 import './appStyle.css'
 
@@ -10,7 +10,9 @@ import './appStyle.css'
  * @return {void}
  */
 function init () {
-  ReactDOM.render(<AppRoutes />, document.getElementById('root'))
+  const container = document.getElementById('root')
+  const root = createRoot(container)
+  root.render(<AppRoutes tab="home" />);
 }
 
 init()

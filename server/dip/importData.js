@@ -4,7 +4,7 @@ import hash from 'object-hash'
 import fs from 'fs'
 import cuid from 'cuid'
 import path from 'path'
-import { parse } from 'csv-parse/sync'
+import { parse } from 'csv-parse'
 // noinspection JSFileReferences
 import { ratio, partial_ratio } from 'fuzzball/dist/esm/fuzzball.esm.min.js'
 import {

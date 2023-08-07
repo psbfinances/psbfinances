@@ -5,34 +5,40 @@ import { observer } from 'mobx-react'
 import CategoryForm from './CategoryForm.jsx'
 import CategoryModel from './CategoryListModel.js'
 import ListToolbar from '../ListToolbar'
+import CategoryListModel from './CategoryListModel.js'
+
+const model = new CategoryModel()
 
 /**
  * Category list.
  * @return {JSX.Element}
  * @constructor
  */
-let CategoryList = ({}) => {
-  let model = new CategoryModel()
-  return <CategoryListComponent model={model} />
-}
-CategoryList = observer(CategoryList)
+const CategoryList = observer(({}) => <CategoryListComponent model={model} />)
 export default CategoryList
 
 /**
  * Category list.
  */
-let CategoryListComponent = ({ model }) => {
-  useEffect(async () => {await model.getData()}, [])
+class CategoryListComponent extends React.Component {
+  async componentDidMount () {
+    await model.getData()
+  }
+  render () {
+    const { model } = this.props
 
-  return <div className='dataContainer'>
-    <ListToolbar model={model.toolbarModel} />
+    return <div className='dataContainer'>
+      <ListToolbar model={model.toolbarModel} />
 
-    <div className='tableAndForm'>
-      <CategoriesTable model={model} />
-      <CategoryForm model={model} />
+      <div className='tableAndForm'>
+        <CategoriesTable model={model} />
+        <CategoryForm model={model} />
+      </div>
     </div>
-  </div>
+  }
 }
+
+CategoryListComponent.propTypes = { model: CategoryListModel }
 
 /**
  *
