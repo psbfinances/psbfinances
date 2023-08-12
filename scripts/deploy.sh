@@ -12,8 +12,9 @@ pm2 stop psbFinance
 
 today=$(date +%Y-%m-%d)
 Backup_file=~/psbFinance/
-Dest=psbFinanceBackup
+Dest=~/psbFinanceBackup
 filename=back-${Backup_file//\//_}-${today}.tar.gz
+echo ${filename}
 if [ -f ${filename} ]; then
   echo "Error file ${filename} already exists!"
 else
@@ -29,4 +30,3 @@ cd server
 pm2 delete psbFinance
 pm2 start npm --name psbFinance -- start
 #pm2 start 0
-
