@@ -88,7 +88,7 @@ export default (app, routes, auth) => {
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use(bodyParser.json())
   app.use(cookieParser())
-  app.enable('trust proxy')
+  app.set('trust proxy', 1)
   app.use(expressWinston.logger(requestLoggerOptions))
   app.use(rateLimiter)
   app.use(fileUpload({ limits: { fileSize: 50 * 1024 * 1024 } }))

@@ -8,7 +8,7 @@ export default class ImportApi extends Api {
   }
 
   async post (data) {
-    return this.api.post(this.endPoint, data)
+    return this.api.post(this.endPoint, data, {headers: { 'Content-Type': 'multipart/form-data' } })
   }
 }
 
