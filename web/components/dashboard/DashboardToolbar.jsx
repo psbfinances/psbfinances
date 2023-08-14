@@ -24,14 +24,15 @@ let DashboardToolbar = ({ model }) => {
 
   const handleSettingsClick = () => setSettingsVisible(true)
 
-  useEffect(async () => {
+  useEffect(() => {
+    const getData = async () => await model.getData()
     const filter = getFilter(searchParams)
     setUrl(filter)
     model.year = filter.year
     model.month = filter.month
     model.period = filter.month
     model.selectedBusiness = model.businesses.find(x => x.id === filter.businessId)
-    await model.getData()
+    getData()
   }, [searchParams])
 
   /**

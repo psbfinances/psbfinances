@@ -1,6 +1,6 @@
 'use strict'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import * as api from '../../../shared/apiClient/index.js'
 import './dashboard.css'
 import { rootStore } from '../../stores/rootStore.js'
@@ -82,16 +82,18 @@ class DashboardModel {
   }
 }
 
+const model = new DashboardModel()
+
 /**
  * Dashboard component.
  * @return {JSX.Element|null}
  * @constructor
  */
 let Dashboard = () => {
-  const [model] = useState(new DashboardModel())
 
-  useEffect(async () => {
-    await model.getData()
+  useEffect(() => {
+    const getData = async () => await model.getData()
+    getData()
   }, [])
 
   if (!model.hasData) return null

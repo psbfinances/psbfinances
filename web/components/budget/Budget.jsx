@@ -1,6 +1,6 @@
 'use strict'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import BudgetToolbar from './BudgetToolbar.jsx'
 import BudgetTable from './BudgetTable.jsx'
 import BudgetForm from './BudgetForm.jsx'
@@ -127,15 +127,17 @@ class BudgetModel {
   }
 }
 
+const model = new BudgetModel()
+
 /**
  * Budget component.
  * @constructor
  */
 const Budget = observer(({}) => {
-  const [model] = useState(new BudgetModel())
 
-  useEffect(async () => {
-    await model.getData()
+  useEffect( () => {
+    const getData = async () => await model.getData()
+    getData()
   }, [])
 
   return <div id='dataContainer' className='dataContainer'>
