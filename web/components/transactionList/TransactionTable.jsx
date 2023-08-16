@@ -13,7 +13,7 @@ const formatDate = date => new Date(date).toLocaleDateString('en-gb', dateFormat
 
 /**
  * Transactions table.
- * @param {ListModel} model
+ * @param {TransactionListModel} model
  * @return {JSX.Element}
  * @constructor
  */
@@ -35,7 +35,7 @@ function TransactionTable ({ model }) {
 
 /**
  * Table header
- * @param {ListModel} model
+ * @param {TransactionListModel} model
  * @return {JSX.Element}
  * @constructor
  */
@@ -59,7 +59,7 @@ Header = observer(Header)
 
 /**
  * Table rows
- * @param {ListModel} model
+ * @param {TransactionListModel} model
  * @return {JSX.Element[]}
  * @constructor
  */
@@ -71,7 +71,7 @@ Rows = observer(Rows)
 /**
  * Row element.
  * @param {psbf.TransactionUI} item
- * @param {ListModel} model
+ * @param {TransactionListModel} model
  * @return {JSX.Element}
  * @constructor
  */
@@ -92,8 +92,10 @@ let Row = ({ item, model }) => {
     const transactionId = e.currentTarget.id
     if (e.metaKey && transactionId !== rootStore.transactionsStore.selectedItem.id) {
       model.secondSelectedId = e.currentTarget.id
+      model.setSelectedIds(e.currentTarget.id)
       return
     }
+    model.selectedIds = new Set()
     model.secondSelectedId = null
     model.setFormDetailedView()
     await rootStore.transactionsStore.setSelectedItemById(transactionId)
@@ -118,8 +120,10 @@ let Row = ({ item, model }) => {
     item.reconciled = e.target.checked
   }
 
+  // const selectedTableRow = (rootStore.transactionsStore.selectedItem && rootStore.transactionsStore.selectedItem.id ===
+  //   item.id) || (model.secondSelectedId && model.secondSelectedId === item.id)
   const selectedTableRow = (rootStore.transactionsStore.selectedItem && rootStore.transactionsStore.selectedItem.id ===
-    item.id) || (model.secondSelectedId && model.secondSelectedId === item.id)
+    item.id) || model.selectedIds.has(item.id)
   const newMonth = Boolean(item.isNewMonth)
   const manual = item.source === c.sources.MANUAL
   const trClasses = classNames(['trRow', { selectedTableRow: selectedTableRow }, { newMonth: newMonth }])

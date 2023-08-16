@@ -10,7 +10,7 @@ import { ThreeDots } from 'react-loader-spinner'
 
 /**
  * Transaction list toolbar.
- * @param {ListModel} model
+ * @param {TransactionListModel} model
  * @return {JSX.Element|null}
  * @constructor
  */
@@ -25,7 +25,7 @@ let TransactionListToolbar = ({ model }) => {
 
   const handleAccountChange = async e => {
     model.setAccount(e.target.id)
-    model.loadData()
+    await model.loadData()
   }
 
   const handlePeriodChange = async e => model.setPeriod(e.target.name, e.target.id)
@@ -34,12 +34,13 @@ let TransactionListToolbar = ({ model }) => {
 
   const handleAddClick = () => model.add()
 
-  const handleCloneClick = () => model.clone()
+  const handleCloneClick = async () => model.clone()
 
   const handleRefreshClick = async () => model.refresh()
 
   const handleMerge = async () => model.merge()
 
+  // noinspection RequiredAttributes
   return <div id='toolbar' className='pageToolbar'>
     <div>
       <div className='row row-cols-md-auto g-3 align-items-center'>

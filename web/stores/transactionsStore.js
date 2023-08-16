@@ -62,7 +62,7 @@ export class TransactionsStore {
    * @param {number} openingBalance
    * @return {Promise<void>}
    */
-  async setItems (items, openingBalance = 0)  {
+  async setItems (items, openingBalance = 0) {
     this.openingBalance = openingBalance
     this.items = items
     this.setItemsMeta()
@@ -132,6 +132,17 @@ export class TransactionsStore {
     this.editItem.tripDistance = distance
   }
 
+  /**
+   *
+   * @param {psbf.TransactionUI} transaction
+   * @return {{note: string, amount: number, businessId: string, description: string, tripId: null,
+   * categoryId: string, postedDate: Date | string}}
+   */
+  static cloneTransaction (transaction) {
+    const { categoryId, businessId, description, note, postedDate, amount } = transaction
+    return { categoryId, businessId, description, note, postedDate, amount, tripId: null }
+  }
+
   async save () {
     if (this.editItem.isDuplicate) {
       await api.duplicateTransactionApi.put(this.editItem.id)
@@ -141,8 +152,7 @@ export class TransactionsStore {
 
     if (transactionModel.isEqual(this.editItem, this.selectedItem) && !this.isNew) return Promise.resolve()
 
-    const { categoryId, businessId, description, note, postedDate, amount } = this.editItem
-    const updatedTransaction = { categoryId, businessId, description, note, postedDate, amount, tripId: null }
+    const updatedTransaction = TransactionsStore.cloneTransaction(this.editItem)
 
     const tripId = await this.saveTripInfo()
     if (tripId) updatedTransaction.tripId = tripId
@@ -158,19 +168,46 @@ export class TransactionsStore {
       updatedTransaction.id = this.selectedItem.id
     }
     await this.getData()
-    this.setSelectedItemById(updatedTransaction.id)
+    await this.setSelectedItemById(updatedTransaction.id)
+  }
+
+  /**
+   * Clones selected transactions.
+   * @param {Set<string>} ids
+   */
+  async clone (ids) {
+    const selectedTransactions = [...ids].map(x => this.findById(x))
+    const clones = selectedTransactions.map(x => transactionModel.clone(x))
+    await this.saveClones(clones)
+  }
+
+  /**
+   * Saves cloned transactions.
+   * @param {psbf.TransactionUI[]} clones - cloned transactions.
+   * @returns {Promise<void>}
+   */
+  async saveClones (clones) {
+    for (let transaction of clones) {
+      const updatedTransaction = TransactionsStore.cloneTransaction(transaction)
+
+      updatedTransaction.accountId = this.editItem.accountId
+      /** @type {psbf.TransactionUI} */
+      const savedTransaction = await api.transactionApi.post(updatedTransaction)
+      updatedTransaction.id = savedTransaction.id
+      transaction.id = savedTransaction.id
+    }
+    await this.getData()
+    await this.setSelectedItemById(clones[clones.length - 1].id)
   }
 
   async saveSplits () {
-    const childTransactions = this.childTransactions.map(x => {
-      return {
-        id: x.id,
-        businessId: x.businessId === c.selectId.NONE ? null : x.businessId,
-        categoryId: x.businessId === c.selectId.NONE || x.categoryId === c.selectId.NONE ? null : x.categoryId,
-        amount: x.amount,
-        note: x.note
-      }
-    })
+    const childTransactions = this.childTransactions.map(x => ({
+      id: x.id,
+      businessId: x.businessId === c.selectId.NONE ? null : x.businessId,
+      categoryId: x.businessId === c.selectId.NONE || x.categoryId === c.selectId.NONE ? null : x.categoryId,
+      amount: x.amount,
+      note: x.note
+    }))
 
     const parentTransactionId = this.editItem.id
     await api.transactionApi.patch(this.editItem.id, { childTransactions })
@@ -221,10 +258,6 @@ export class TransactionsStore {
     this.setNew(transactionModel.getNew(accountId))
   }
 
-  clone () {
-    this.setNew(transactionModel.clone(this.selectedItem))
-  }
-
   /**
    * Merges selected item with another one identified by secondId.
    * @link module:psbf/api/transactions
@@ -243,7 +276,7 @@ export class TransactionsStore {
     const toItemIndex = this.items.findIndex(x => x.id === result.transaction.id)
     this.items[toItemIndex] = result.transaction
     this.setItemsMeta()
-    this.setSelectedItemById(result.transaction.id)
+    await this.setSelectedItemById(result.transaction.id)
   }
 
   cancelAdd () {
@@ -282,7 +315,8 @@ export class TransactionsStore {
     this.editItem.duplicateCandidateId = null
     this.selectedItem.isDuplicate = false
     this.selectedItem.duplicateCandidateId = null
-    const anotherTransactionId = duplicateCandidateTransactionIds.data.duplicateCandidateIds.find(x => x !== this.editItem.id)
+    const anotherTransactionId = duplicateCandidateTransactionIds.data.duplicateCandidateIds.find(
+      x => x !== this.editItem.id)
     if (!anotherTransactionId) return
 
     const anotherTransactionIndex = this.items.findIndex(x => x.id === anotherTransactionId)
