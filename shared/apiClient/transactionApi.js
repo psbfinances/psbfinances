@@ -39,7 +39,11 @@ export default class TransactionApi extends Api {
   }
 
   async postAttachment (id, data) {
-    return this.api.post(`${this.endPoint}/${id}/attachments`, data)
+    return this.api.post(`${this.endPoint}/${id}/attachments`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
   }
 
   /**
