@@ -1,6 +1,6 @@
 {
   "name": "@psbfinances/shared",
-  "version": "0.1.0",
+  "version": "1.4.0",
   "description": "psbfinances shared code",
   "homepage": "https://psbfinances.com",
   "type": "module",
@@ -27,12 +27,12 @@
   "devDependencies": {
   },
   "dependencies": {
-    "axios": "^1.4.0",
+    "axios": "^1.6.2",
     "cuid": "^2.1.8",
     "qs": "^6.11.2",
     "query-string": "^8.1.0",
-    "rrule": "^2.7.2",
+    "rrule": "^2.8.1",
     "store": "^2.0.12",
-    "validator": "^13.9.0"
+    "validator": "^13.11.0"
   }
 }
