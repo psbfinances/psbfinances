@@ -1,6 +1,6 @@
 {
   "name": "@psbfinances/shared",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "psbfinances shared code",
   "homepage": "https://psbfinances.com",
   "type": "module",
@@ -24,8 +24,7 @@
     "url": "https://github.com/psbfinances/psbfinances.git",
     "directory": "shared"
   },
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "dependencies": {
     "axios": "^1.6.2",
     "cuid": "^2.1.8",
