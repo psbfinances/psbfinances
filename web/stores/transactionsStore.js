@@ -365,8 +365,10 @@ export class Filter {
   }
 
   get dateFrom () {
+    const thisYear = new Date().getFullYear()
+    const year = this.year > thisYear ? thisYear : this.year
     const monthFrom = this.month === 'all' ? '01' : this.month
-    return `${this.year}-${monthFrom}-01`
+    return `${year}-${monthFrom}-01`
   }
 
   get dateTo () {
