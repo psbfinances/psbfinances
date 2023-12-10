@@ -76,13 +76,9 @@ const handle404 = (req, res) => {
  * @return {void}
  */
 export default (app, routes, auth) => {
-  app.use(helmet())
-  app.use((req, res, next) => {
-    res.setHeader('Content-Security-Policy',
-      'default-src \'self\' 10.0.0.55; img-src \'self\' data: stackpath.bootstrapcdn.com 10.0.0.55; script-src \'self\' \'unsafe-inline\' code.jquery.com stackpath.bootstrapcdn.com cdn.jsdelivr.net 10.0.0.55; style-src \'unsafe-inline\' cdn.jsdelivr.net stackpath.bootstrapcdn.com use.fontawesome.com 10.0.0.55; font-src use.fontawesome.com')
-    next()
-  })
-
+  app.use(helmet({
+    contentSecurityPolicy: false
+  }))
   app.use(cors())
   app.use(compression())
   app.use(bodyParser.urlencoded({ extended: false }))
