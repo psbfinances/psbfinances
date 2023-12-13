@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { createRoot } from 'react-dom/client';
-import AppRoutes from './routes.js'
+import AppRoutes from './routes.jsx'
 import './appStyle.css'
 
 /**
