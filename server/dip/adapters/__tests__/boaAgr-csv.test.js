@@ -11,20 +11,19 @@ const rows = [
 
 const getRows = () => {
   const splitHeader = rowsHeader.split(',')
-  const sourceRows = rows.map(x => {
+  return rows.map(x => {
     const row = {}
-    const splitRow = rows[0].split(',')
-    splitHeader.forEach((x, i) => row[x] = splitRow[i])
+    const splitRow = x.split(',')
+    splitHeader.forEach((y, i) => row[y] = splitRow[i])
     return row
   })
-  return sourceRows
 }
 
 /**  */
 describe('getRows', () => {
   it('should split data', () => {
     const rows = getRows()
-    expect(rows[0].Status).toBe('posted')
+    expect(rows[0]['Status']).toBe('posted')
   })
 })
 
