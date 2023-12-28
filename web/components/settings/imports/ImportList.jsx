@@ -8,6 +8,7 @@ import { SelectField } from '../../core'
 import { rootStore } from '../../../stores/rootStore'
 import * as api from '../../../../shared/apiClient/index.js'
 import { ThreeDots } from 'react-loader-spinner'
+import ImportLog from '@psbfinances/server/dip/importLog.js'
 
 const dateFormat = { month: 'short', day: 'numeric', year: 'numeric' }
 
@@ -21,9 +22,10 @@ const dateFormat = { month: 'short', day: 'numeric', year: 'numeric' }
 
 /** @type {ImportFormat[]} */
 export const importFormats = [
-  { id: c.importFormatId.MINT_CSV, name: 'Mint', accountOptionVisible: false },
-  { id: c.importFormatId.CITI_CARD_CVS, name: 'Citi Card', accountOptionVisible: true, accounts: [] },
-  { id: c.importFormatId.APPLE_CARD_CSV, name: 'Apple Card', accountOptionVisible: true, accounts: [] }
+  { id: c.importFormatId.BOA_AGR_CSV, name: 'BoA Aggregator', accountOptionVisible: false },
+  { id: c.importFormatId.APPLE_CARD_CSV, name: 'Apple Card', accountOptionVisible: true, accounts: [] },
+  // { id: c.importFormatId.CITI_CARD_CVS, name: 'Citi Card', accountOptionVisible: true, accounts: [] },
+  { id: c.importFormatId.MINT_CSV, name: 'Mint', accountOptionVisible: false }
 ]
 const formatOptions = importFormats.map(x => ({ value: x.id, label: x.name }))
 
@@ -58,7 +60,7 @@ export default class ImportList extends React.Component {
    * @return {Promise<void>}
    */
   reload = async () => {
-    this.setState({running: true})
+    this.setState({ running: true })
     const lastId = this.state.items.length > 0 ? this.state.items[0].id : null
     let counter = 0
     const reloadId = setInterval(async () => {
@@ -68,7 +70,7 @@ export default class ImportList extends React.Component {
         clearInterval(reloadId)
         await rootStore.masterDataStore.getAccounts()
         await rootStore.masterDataStore.getCategories()
-        this.setState({running: false})
+        this.setState({ running: false })
       }
     }, 1000)
   }
@@ -77,8 +79,8 @@ export default class ImportList extends React.Component {
     return <div id='dataContainer' className='dataContainer'>
       <ImportListToolbar handleRefreshClick={this.handleRefreshClick} />
       <div id='transactions' className='tableAndForm'>
-        <ImportsTable items={this.state.items} handleUndoClick={this.handleUndoClick}/>
-        <ImportForm reload={this.reload} running={this.state.running}/>
+        <ImportsTable items={this.state.items} handleUndoClick={this.handleUndoClick} />
+        <ImportForm reload={this.reload} running={this.state.running} />
       </div>
     </div>
   }
@@ -103,7 +105,7 @@ const ImportsTable = ({ items, handleUndoClick }) => {
             <th>Date to</th>
             <th className='text-right'>All transactions</th>
             <th className='text-right'>New transactions</th>
-            <th className='text-right' style={{width: '80px'}}/>
+            <th className='text-right' style={{ width: '80px' }} />
           </tr>
         </thead>
         <tbody>
@@ -115,18 +117,17 @@ const ImportsTable = ({ items, handleUndoClick }) => {
 }
 
 const TableRow = ({ item, handleUndoClick }) => {
-  const stats = JSON.parse(item.stats)
-  const counts = JSON.parse(item.counts)
+  const importLog = ImportLog.getFromDbEntry(item)
   const elapsedHours = Math.round((new Date() - new Date(item.stepDateTime)) / (1000 * 3600))
   const undoButtonVisible = elapsedHours <= 2
 
   return <tr id={item.id}>
     <td>{(new Date(item.stepDateTime)).toLocaleDateString('en-us', dateFormat)}</td>
     <td>{item.source}</td>
-    <td>{(new Date(stats.newTransactionsDateFrom)).toLocaleDateString('en-us', dateFormat)}</td>
-    <td>{new Date(stats.newTransactionsDateTo).toLocaleDateString('en-us', dateFormat)}</td>
-    <td className='text-right'>{counts.allTransactions}</td>
-    <td className='text-right'>{counts.newTransactions}</td>
+    <td>{(new Date(importLog.stats.newTransactionsDateFrom)).toLocaleDateString('en-us', dateFormat)}</td>
+    <td>{new Date(importLog.stats.newTransactionsDateTo).toLocaleDateString('en-us', dateFormat)}</td>
+    <td className='text-right'>{importLog.counts.allTransactions}</td>
+    <td className='text-right'>{importLog.counts.newTransactions}</td>
     <td>
       {undoButtonVisible && <button id={item.id} className='btn btn-link' onClick={handleUndoClick}>Undo</button>}
     </td>

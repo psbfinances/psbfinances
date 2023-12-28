@@ -3,8 +3,9 @@
 const c = {
   dipAdapters: {
     all: { id: 'all', label: 'All transactions' },
-    mint: { id: 'mint', label: 'Mint transactions' },
-    appleCard: { id: 'appleCard', label: 'Apple Card transactions' }
+    boaAgr: { id: 'boaAgr', label: 'BoA Aggregator transactions' },
+    appleCard: { id: 'appleCard', label: 'Apple Card transactions' },
+    mint: { id: 'mint', label: 'Mint transactions' }
   },
   selectId: {
     ALL: 'all',
@@ -32,6 +33,7 @@ const c = {
   importFormatId: {
     MINT_CSV: 'mint',
     APPLE_CARD_CSV: 'appleCard',
+    BOA_AGR_CSV: 'boaAgr',
     CITI_CARD_CVS: 'citiCard'
   }
 }

@@ -18,20 +18,22 @@ import { initConfig } from '../../config/index.js'
 import DipRule from '../../../shared/models/dipRule.js'
 import { op } from '../../../shared/models/condition.js'
 import cuid from 'cuid'
+import { BoAgrCsvImporter } from '../adapters/boaAgr-csv.js'
 
 
 /**
  * Run
  */
 describe.skip('run', () => {
-  const tenantId = 'tenant-01'
-  const fileName = 'transactions'
+  // const tenantId = 'tenant-01'
+  const tenantId = 'ckkfm160400003e5iimcnpt66'
+  const fileName = '../server/dip/__tests__/ExportData'
   /** @type {Importer} */
   let importer
 
   beforeEach(() => {
     process.env.NODE_ENV = 'dev'
-    importer = new Importer(tenantId, 'mint-csv-2021-20210621', 'mint-csv', 'all', false)
+    importer = new Importer(tenantId, 'ExportData', 'boaAgr-csv', 'all', false)
   })
 
   afterEach(() => {
@@ -43,6 +45,14 @@ describe.skip('run', () => {
     enrich(`${fileName}.csv`)
     expect(true).toBeTruthy()
   })
+
+  it('imports boa-agr-csv file', async () => {
+    const fileFullName = `${fileName}-enr.csv`
+    const canSave = false
+    const fileImporter = new BoAgrCsvImporter(tenantId, fileFullName, 'boaAgr', 'all', canSave)
+    await fileImporter.run()
+    expect(true).toBeTruthy()
+  }, 800000)
 
   it('imports mint-csv file', async () => {
     const fileFullName = `${fileName}-enr.csv`
@@ -558,7 +568,6 @@ const transactions = [
   }
 ]
 
-/** @type {typeof DipRule[]} */
 const rules = [
   {
     'id': 'rule-01',

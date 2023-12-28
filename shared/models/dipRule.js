@@ -13,6 +13,7 @@ export const field = {
 Object.keys(field).forEach(x => field[x] = x)
 
 const ALL = 'all'
+const includeConditionFields = ['Account Name', 'description']
 
 /**
  * DIP transformation rule.
@@ -38,7 +39,7 @@ export default class DipRule {
     const fieldValue = value.trim()
     if (fieldValue === '' || fieldValue === c.selectId.NONE || fieldValue === c.selectId.ALL) return
 
-    this.conditions.push(new Condition(field, fieldValue, field === 'description' ? op.INCL : condition))
+    this.conditions.push(new Condition(field, fieldValue, includeConditionFields.includes(field) ? op.INCL : condition))
   }
 
   addActon (field, value) {

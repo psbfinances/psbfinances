@@ -25,6 +25,18 @@ class ImportLog {
     }
   }
 
+  /**
+   * Constructs the object from DB import log entry row.
+   * @param item
+   * @return {ImportLog}
+   */
+  static getFromDbEntry (item) {
+    const result = new ImportLog()
+    result.counts = JSON.parse(item.counts)
+    result.stats = JSON.parse(item.stats)
+    return result
+  }
+
   addNewAccount (name) {
     this.newData.accounts.push(name)
     this.counts.newAccounts++

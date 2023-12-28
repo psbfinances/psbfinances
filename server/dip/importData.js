@@ -28,12 +28,13 @@ import ImportLog from './importLog.js'
 import { getLogger } from '../core/index.js'
 import { c } from '../../shared/core/index.js'
 import DipRule from '../../shared/models/dipRule.js'
+import { op } from '@psbfinances/shared/models/condition.js'
 
 const logger = getLogger(import.meta.url)
 
 export const injectUid = (row, i) => {
   const psbfUid = i === 0 ? 'psbfUid' : `${hash(row)}`
-  return `${row},"${psbfUid}"`
+  return `${row},${psbfUid}`
 }
 
 export const importStep = {
@@ -67,7 +68,7 @@ export const enrich = fileName => {
  * @class
  * @export
  * @property {string} tenantId
- * @property {'mint-csv'|'citi-csv'|'appleCard-csv'} source
+ * @property {'mint-csv'|'citi-csv'|'appleCard-csv'|'boa-agr-csv'} source
  * @property {string} fileName
  * @property {string} accountId
  * @property {boolean} canSave
@@ -160,10 +161,12 @@ export class Importer {
 
     const rule = new DipRule(cuid(), this.tenantId)
     rule.adapterId = this.source.replace('-csv', '')
-    rule.addCondition(this.accountColumn, name)
+    rule.addCondition(this.accountColumn, name, op.INCL)
     rule.addActon('accountId', account.id)
     this.importLog.countNewRule()
     if (this.canSave) await this.importRuleDb.insert(rule)
+
+    logger.info('createAccount', { name, account, rule })
 
     return { account, rule }
   }

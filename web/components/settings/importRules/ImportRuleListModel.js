@@ -18,6 +18,9 @@ const fieldMapping = {
   mint: {
     'Account Name': 'accountId'
   },
+  boaAgr: {
+    'Account Name': 'accountId'
+  },
   appleCard: {
   }
 }

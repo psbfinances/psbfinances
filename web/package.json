@@ -1,6 +1,6 @@
 {
   "name": "@psbfinances/web",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "Personal and Small Business Finances",
   "homepage": "https://psbfinances.com",
   "main": "index.js",
@@ -40,6 +40,7 @@
     "html-webpack-plugin": "^5.5.3",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "performance-now": "^2.1.0",
     "react-test-renderer": "^18.2.0",
     "regenerator-runtime": "^0.14.0",

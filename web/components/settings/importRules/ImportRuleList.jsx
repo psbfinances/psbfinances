@@ -10,6 +10,7 @@ import classNames from 'classnames'
 import {c} from '../../../../shared/core/index.js'
 import MintRuleForm from './MintRuleForm.jsx'
 import AppleCardRuleForm from './AppleCardRuleForm.jsx'
+import BoaAgrRuleForm from './BoaAgrRuleForm.jsx'
 
 const adapterOptions = Object.keys(c.dipAdapters).map(x => c.dipAdapters[x])
 
@@ -58,6 +59,7 @@ class ImportRulesListComponent extends React.Component {
         <ImportRuleListTable model={model} />
         {model.selectedAdapter.id === c.dipAdapters.all.id && <ImportRuleForm model={model} />}
         {model.selectedAdapter.id === c.dipAdapters.mint.id && <MintRuleForm model={model} />}
+        {model.selectedAdapter.id === c.dipAdapters.boaAgr.id && <BoaAgrRuleForm model={model} />}
         {model.selectedAdapter.id === c.dipAdapters.appleCard.id && <AppleCardRuleForm model={model} />}
       </div>
     </div>

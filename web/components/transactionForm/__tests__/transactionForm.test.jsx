@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import '@testing-library/jest-dom/extend-expect'
+import '@testing-library/jest-dom'
 import userEvent from '@testing-library/user-event'
 import { c } from '../../../../shared/core/index.js'
 import { Api } from '../../../../shared/apiClient/api.js'

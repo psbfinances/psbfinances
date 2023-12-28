@@ -56,6 +56,7 @@ let AccountForm = ({ model }) => {
             <option value='Credit Card'>Credit card</option>
             <option value='Cash'>Cash</option>
             <option value='Investment'>Investment</option>
+            <option value='Loan'>Loan</option>
           </select>
         </div>
         <div className='mb-3'>
