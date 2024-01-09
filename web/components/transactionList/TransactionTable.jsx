@@ -51,7 +51,7 @@ let Header = ({ model }) => {
       {model.balanceColumnVisible && <th className='amountCol'>Balance</th>}
       {model.scheduledColumnVisible && <th className='otherCol text-center'>Sch.</th>}
       <th className='otherCol text-center'>Rec.</th>
-      <th className='otherCol'>Meta</th>
+      <th className='otherColMeta'>Meta</th>
     </tr>
   </thead>
 }

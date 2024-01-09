@@ -380,12 +380,17 @@ table, .form-control, .col-form-label-sm {
 }
 
 .otherCol {
-  width: 60px;
+  width: 40px;
   vertical-align: baseline;
 }
 
 .otherCol2 {
   width: 120px;
+  vertical-align: baseline;
+}
+
+.otherColMeta {
+  width: 80px;
   vertical-align: baseline;
 }
 
@@ -615,4 +620,8 @@ table, .form-control, .col-form-label-sm {
 }
 .settingsGroupValue {
   margin-left: auto;
+}
+
+input[type="checkbox"]:checked {
+  accent-color: #B88766;
 }

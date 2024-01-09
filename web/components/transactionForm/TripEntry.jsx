@@ -38,7 +38,6 @@ let TripEntry = ({model}) => {
         id='hasTrip'
         name='hasTrip'
         key='hasTripCheckbox'
-        className='form-check-input'
         type='checkbox'
         checked={hasTrip}
         onChange={handleChange}
