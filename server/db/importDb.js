@@ -25,6 +25,7 @@ export default class ImportDb extends Db {
     const dbData = { ...data }
     dbData.counts = JSON.stringify(data.counts)
     dbData.stats = JSON.stringify(data.stats)
+    dbData.newData = JSON.stringify(data.newData)
     if (data.fileInfo) dbData.fileInfo = JSON.stringify(data.fileInfo)
     return this.knex.insert(dbData)
   }

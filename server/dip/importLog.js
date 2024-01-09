@@ -21,7 +21,8 @@ class ImportLog {
     }
     this.newData = {
       accounts: [],
-      categories: []
+      categories: [],
+      rules: []
     }
   }
 
@@ -37,15 +38,24 @@ class ImportLog {
     return result
   }
 
-  addNewAccount (name) {
-    this.newData.accounts.push(name)
+  /**
+   * Logs creation of a new account.
+   * @param {string} id
+   * @param {string} name
+   */
+  addNewAccount (id, name) {
+    this.newData.accounts.push({ id, name })
     this.counts.newAccounts++
   }
-  addNewCategory (name) {
-    this.newData.categories.push(name)
+
+  addNewCategory (id,name) {
+    this.newData.categories.push({ id, name })
     this.counts.newCategories++
   }
-  countNewRule () { this.counts.newRules++ }
+  addNewRule (id) {
+    this.newData.rules.push(id)
+    this.counts.newRules++
+  }
   countNewTransaction () { this.counts.newTransactions++ }
   countMsBusinessService () { this.counts.msBusinessServices++ }
   countMissingAccounts () { this.counts.missingAccount++ }

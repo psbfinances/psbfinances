@@ -9,6 +9,8 @@ import { rootStore } from '../../../stores/rootStore'
 import * as api from '../../../../shared/apiClient/index.js'
 import { ThreeDots } from 'react-loader-spinner'
 import ImportLog from '@psbfinances/server/dip/importLog.js'
+import { setTransactionListFilter } from '../../dashboard/dashboardUtils.js'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
 const dateFormat = { month: 'short', day: 'numeric', year: 'numeric' }
 
@@ -105,6 +107,9 @@ const ImportsTable = ({ items, handleUndoClick }) => {
             <th>Date to</th>
             <th className='text-right'>All transactions</th>
             <th className='text-right'>New transactions</th>
+            <th className='text-right'>New accounts</th>
+            <th className='text-right'>New categories</th>
+            <th className='text-right'>New rules</th>
             <th className='text-right' style={{ width: '80px' }} />
           </tr>
         </thead>
@@ -117,17 +122,31 @@ const ImportsTable = ({ items, handleUndoClick }) => {
 }
 
 const TableRow = ({ item, handleUndoClick }) => {
+  const navigate = useNavigate()
+  let [searchParams] = useSearchParams()
+
   const importLog = ImportLog.getFromDbEntry(item)
   const elapsedHours = Math.round((new Date() - new Date(item.stepDateTime)) / (1000 * 3600))
   const undoButtonVisible = elapsedHours <= 2
 
-  return <tr id={item.id}>
+  const handleImportRowClick = e => {
+    const processId = e.target.parentNode.id
+    setTransactionListFilter(searchParams)
+    rootStore.transactionsStore.filter.importProcessId = processId
+    rootStore.transactionsStore.filter.accountId = c.selectId.ALL
+    navigate('/app/transactions')
+  }
+
+  return <tr id={item.processId} onClick={handleImportRowClick}>
     <td>{(new Date(item.stepDateTime)).toLocaleDateString('en-us', dateFormat)}</td>
     <td>{item.source}</td>
     <td>{(new Date(importLog.stats.newTransactionsDateFrom)).toLocaleDateString('en-us', dateFormat)}</td>
     <td>{new Date(importLog.stats.newTransactionsDateTo).toLocaleDateString('en-us', dateFormat)}</td>
     <td className='text-right'>{importLog.counts.allTransactions}</td>
     <td className='text-right'>{importLog.counts.newTransactions}</td>
+    <td className='text-right'>{importLog.counts.newAccounts}</td>
+    <td className='text-right'>{importLog.counts.newCategories}</td>
+    <td className='text-right'>{importLog.counts.newRules}</td>
     <td>
       {undoButtonVisible && <button id={item.id} className='btn btn-link' onClick={handleUndoClick}>Undo</button>}
     </td>

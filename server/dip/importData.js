@@ -148,15 +148,15 @@ export class Importer {
     const account = accountModel.getNew()
     account.id = cuid()
     account.tenantId = this.tenantId
-    account.fullName = name.substr(0, 100)
-    account.shortName = name.substr(0, 25)
+    account.fullName = name.substring(0, 100)
+    account.shortName = name.substring(0, 25)
     account.createdAt = this.runDate
     const aName = name.toLowerCase()
     if (aName.toLowerCase() === 'cash') account.type = 'cash'
     if (aName.toLowerCase().includes('card')) account.type = 'CC'
     if (aName.toLowerCase().includes('visa')) account.type = 'CC'
     if (aName.toLowerCase().includes('mastercard')) account.type = 'CC'
-    this.importLog.addNewAccount(name)
+    this.importLog.addNewAccount(account.id, name)
     if (this.canSave) await this.accountDb.insert(account)
 
     const rule = new DipRule(cuid(), this.tenantId)
@@ -180,18 +180,18 @@ export class Importer {
     const category = categoryModel.getNew()
     category.id = cuid()
     category.tenantId = this.tenantId
-    category.name = name.substr(0, 100)
+    category.name = name.substring(0, 100)
     if (name.toLowerCase().includes('income')) category.type = 'i'
     if (name.toLowerCase().includes('deposit')) category.type = 'i'
     if (name.toLowerCase().includes('transfer')) category.type = 't'
-    this.importLog.addNewCategory(name)
+    this.importLog.addNewCategory(category.id, name)
     if (this.canSave) await this.categoryDb.insert(category)
 
     const rule = new DipRule(cuid(), this.tenantId)
     rule.adapterId = this.source.replace('-csv', '')
     rule.addCondition(this.categoryColumn, name)
     rule.addActon('categoryId', category.id)
-    this.importLog.countNewRule()
+    this.importLog.addNewRule(rule.id)
     if (this.canSave) await this.importRuleDb.insert(rule)
 
     return { category, rule }
@@ -257,7 +257,7 @@ export class Importer {
     await this.saveTransactionRules()
 
     const { counts, stats, newData } = this.importLog
-    await this.logStep('end', counts, stats)
+    await this.logStep('end', counts, stats, newData)
     logger.info('run:end', { processId: this.processId, fileName: this.fileName, counts, stats, newData })
   }
 
@@ -290,9 +290,10 @@ export class Importer {
    * @param {string} step
    * @param {Object} [counts]
    * @param {Object} [stats]
+   * @param {Object} [newData]
    * @return {Promise<void>}
    */
-  async logStep (step, counts, stats) {
+  async logStep (step, counts, stats, newData) {
     logger.info(step, { processId: this.processId })
     if (!this.canSave) return
 
@@ -308,6 +309,7 @@ export class Importer {
     if (step === importStep.START && this.fileInfo) fileImport.fileInfo = this.fileInfo
     if (counts) fileImport.counts = counts
     if (stats) fileImport.stats = stats
+    if (newData) fileImport.newData = newData
 
     await this.importDb.insert(fileImport)
   }
@@ -357,10 +359,9 @@ export class Importer {
   /**
    * Creates new transaction.
    * @description #NO_NEED_UT
-   * @param {Object} row
    * @return {psbf.Transaction}
    */
-  getNewTransaction (row) {
+  getNewTransaction () {
     const result = transactionModel.getNew(this.accountId)
     result.id = cuid()
     result.tenantId = this.tenantId

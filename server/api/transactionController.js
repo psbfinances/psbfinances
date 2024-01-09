@@ -33,11 +33,12 @@ const controller = {
    * @property {string} req.query.dateTo
    * @property {?string} req.query.categoryId
    * @property {?string} req.query.search
+   * @property {?string} req.query.importProcessId
    * @return {Array<Transaction>}
    */
   list: async (req, res) => {
-    const { accountId, categoryId, businessId, dateFrom, dateTo, search } = req.query
-    logger.info('list', { accountId, categoryId, businessId, dateFrom, dateTo, search })
+    const { accountId, categoryId, businessId, dateFrom = '2000-01-01', dateTo = '2050-01-01', search, importProcessId } = req.query
+    logger.info('list', { accountId, categoryId, businessId, dateFrom, dateTo, search, importProcessId })
 
     if (search && search.includes('q:')) return controller.listDescriptions(req, res)
 
@@ -47,6 +48,7 @@ const controller = {
     let result
     let criteria = Object.assign(
       { tenantId, dateFrom, dateTo },
+      importProcessId ? { importProcessId } : {},
       businessId ? { businessId } : {},
       accountId && accountId !== '-1' ? { accountId } : {},
       categoryId && categoryId !== '-1' ? { categoryId } : {}

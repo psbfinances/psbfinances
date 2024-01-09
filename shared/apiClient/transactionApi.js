@@ -14,14 +14,19 @@ export default class TransactionApi extends Api {
    * @param params
    */
   async list (params) {
-    const { accountId, categoryId, dateFrom, dateTo, search, businessId } = params
+    const { accountId, categoryId, dateFrom, dateTo, search, businessId, importProcessId } = params
     let q = {}
-    if (accountId && accountId !== c.selectId.ALL) q.accountId = accountId
-    if (categoryId && categoryId !== c.selectId.ALL) q.categoryId = categoryId
-    if (dateFrom) q.dateFrom = dateFrom
-    if (dateTo) q.dateTo = dateTo
-    if (search) q.search = search
-    if (businessId) q.businessId = businessId
+    if (importProcessId) {
+      q.importProcessId = importProcessId
+    } else {
+      if (accountId && accountId !== c.selectId.ALL) q.accountId = accountId
+      if (categoryId && categoryId !== c.selectId.ALL) q.categoryId = categoryId
+      if (dateFrom) q.dateFrom = dateFrom
+      if (dateTo) q.dateTo = dateTo
+      if (search) q.search = search
+      if (businessId) q.businessId = businessId
+      if (businessId) q.businessId = businessId
+    }
     const query = qs.stringify(q)
     return (await this.api.get(`${this.endPoint}?${query}`)).data
   }
@@ -53,7 +58,7 @@ export default class TransactionApi extends Api {
    * @return {Promise<UpdateMergeResponse>}
    */
   async patchMerge (id, mergeId) {
-    return this.api.patch(`${this.endPoint}/${id}/merge`, {mergeId})
+    return this.api.patch(`${this.endPoint}/${id}/merge`, { mergeId })
   }
 
   async deleteAttachment (id, attachmentId) {

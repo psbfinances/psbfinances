@@ -23,6 +23,7 @@ const columns = {
   hasChildren: '',
   tripId: '',
   source: '',
+  importProcessId: '',
   meta: ''
 }
 
@@ -66,10 +67,12 @@ export default class TransactionDb extends Db {
       [tenantId, id, accountId, amount, postedDate])
   }
 
-  async listByAccountDates ({ tenantId, categoryId, businessId, accountId, dateFrom, dateTo }) {
+  async listByAccountDates ({ tenantId, categoryId, businessId, accountId, dateFrom, dateTo, importProcessId }) {
+    logger.debug('listByAccountDates', { tenantId, categoryId, businessId, accountId, dateFrom, dateTo, importProcessId })
     const mainFields = Object.assign({ 'transactions.tenantId': tenantId },
       businessId ? { 'transactions.businessId': businessId } : {},
       accountId ? { accountId } : {},
+      importProcessId ? { importProcessId } : {},
       categoryId ? { categoryId } : {}
     )
     return this.knex.from(this.tableName).columns(listColumns).

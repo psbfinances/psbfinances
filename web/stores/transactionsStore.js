@@ -359,6 +359,7 @@ export class Filter {
   categoryId = c.selectId.ALL
   search = ''
   businessId = null
+  importProcessId = ''
 
   constructor () {
     makeAutoObservable(this)
@@ -388,9 +389,11 @@ export class Filter {
     this.accountId = c.selectId.ALL
     this.categoryId = c.selectId.ALL
     this.businessId = null
+    this.importProcessId = ''
   }
 
   get hasReferenceCriteria () {
-    return this.accountId !== c.selectId.ALL || this.categoryId !== c.selectId.ALL
+    console.log('ddd')
+    return this.accountId !== c.selectId.ALL || this.categoryId !== c.selectId.ALL || this.importProcessId !== ''
   }
 }
