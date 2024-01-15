@@ -163,7 +163,7 @@ export class Importer {
     rule.adapterId = this.source.replace('-csv', '')
     rule.addCondition(this.accountColumn, name, op.INCL)
     rule.addActon('accountId', account.id)
-    this.importLog.countNewRule()
+    this.importLog.addNewRule()
     if (this.canSave) await this.importRuleDb.insert(rule)
 
     logger.info('createAccount', { name, account, rule })
