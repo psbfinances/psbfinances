@@ -98,6 +98,7 @@ export const enrich = fileName => {
  * @property {string} defaultCarId
  * @property {string} accountColumn
  * @property {string} categoryColumn
+ * @property {int} rowIndex
  */
 export class Importer {
   /** @type {DipRule[]} */ rules = []
@@ -113,6 +114,7 @@ export class Importer {
    * @param {boolean} canSave
    */
   constructor (tenantId, fileInfo, source, accountId = 'all', canSave = false) {
+    this.rowIndex = 0
     this.tenantId = tenantId
     this.fileName = typeof fileInfo === 'string' ? fileInfo : fileInfo.internalName
     this.source = source
@@ -163,7 +165,7 @@ export class Importer {
     rule.adapterId = this.source.replace('-csv', '')
     rule.addCondition(this.accountColumn, name, op.INCL)
     rule.addActon('accountId', account.id)
-    this.importLog.addNewRule()
+    this.importLog.addNewRule(rule.id)
     if (this.canSave) await this.importRuleDb.insert(rule)
 
     logger.info('createAccount', { name, account, rule })
@@ -229,6 +231,16 @@ export class Importer {
     return rules
   }
 
+  validRow (data) {
+    let result = true
+    if (data.Date === '') {
+      this.importLog.addBadRow(this.rowIndex)
+      result = false
+    }
+    this.rowIndex += 1
+    return result
+  }
+
   /**
    * Imports file.
    * @return {Promise<void>}
@@ -250,7 +262,7 @@ export class Importer {
     this.importLog.counts.allTransactions = rows.length
 
     for (const data of rows) {
-      await this.importRow(data)
+      if (this.validRow(data)) await this.importRow(data)
     }
 
     await this.detectDuplicates()

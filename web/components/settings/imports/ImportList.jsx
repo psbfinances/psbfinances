@@ -110,6 +110,7 @@ const ImportsTable = ({ items, handleUndoClick }) => {
             <th className='text-right'>New accounts</th>
             <th className='text-right'>New categories</th>
             <th className='text-right'>New rules</th>
+            <th className='text-right'>Bad Rows</th>
             <th className='text-right' style={{ width: '80px' }} />
           </tr>
         </thead>
@@ -147,6 +148,7 @@ const TableRow = ({ item, handleUndoClick }) => {
     <td className='text-right'>{importLog.counts.newAccounts}</td>
     <td className='text-right'>{importLog.counts.newCategories}</td>
     <td className='text-right'>{importLog.counts.newRules}</td>
+    <td className='text-right'>{importLog.newData && importLog.newData.badRows ? importLog.newData.badRows.length : 0}</td>
     <td>
       {undoButtonVisible && <button id={item.id} className='btn btn-link' onClick={handleUndoClick}>Undo</button>}
     </td>

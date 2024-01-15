@@ -22,7 +22,8 @@ class ImportLog {
     this.newData = {
       accounts: [],
       categories: [],
-      rules: []
+      rules: [],
+      badRows: []
     }
   }
 
@@ -35,6 +36,7 @@ class ImportLog {
     const result = new ImportLog()
     result.counts = JSON.parse(item.counts)
     result.stats = JSON.parse(item.stats)
+    result.newData = JSON.parse(item.newData)
     return result
   }
 
@@ -55,6 +57,9 @@ class ImportLog {
   addNewRule (id) {
     this.newData.rules.push(id)
     this.counts.newRules++
+  }
+  addBadRow (i) {
+    this.newData.badRows.push(i)
   }
   countNewTransaction () { this.counts.newTransactions++ }
   countMsBusinessService () { this.counts.msBusinessServices++ }
