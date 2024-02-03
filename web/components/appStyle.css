@@ -180,9 +180,27 @@ table, .form-control, .col-form-label-sm {
 }
 
 .btn-primary {
-  background-color: #b88766;
+  background-color: white;
+  border-color: #b88766;
+  color: #b88766;
+}
+
+.btn-primary:disabled,
+.btn-primary[disabled] {
+  background-color: white;
   border-color: #b88766;
 }
+
+.btn-primary:hover,
+.btn-primary[hover] {
+  background-color: #b88766;
+}
+
+.btn-primary:hover i,
+.btn-primary[hover] i {
+  color: white;
+}
+
 
 .form-control, .form-control-sm, .form-select {
   border-color: #b88766;
@@ -614,14 +632,20 @@ table, .form-control, .col-form-label-sm {
   border-radius: 15px;
   padding: 7px;
 }
+
 .settingGroupLabel {
   margin-bottom: auto;
   margin-top: auto;
 }
+
 .settingsGroupValue {
   margin-left: auto;
 }
 
 input[type="checkbox"]:checked {
   accent-color: #B88766;
+}
+
+button i {
+  color: #b88766;
 }
