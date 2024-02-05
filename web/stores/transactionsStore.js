@@ -393,7 +393,6 @@ export class Filter {
   }
 
   get hasReferenceCriteria () {
-    console.log('ddd')
     return this.accountId !== c.selectId.ALL || this.categoryId !== c.selectId.ALL || this.importProcessId !== ''
   }
 }

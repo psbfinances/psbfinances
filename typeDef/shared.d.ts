@@ -40,6 +40,7 @@ export declare namespace psbf {
     businessDescription?: string
     balance?: number
     isNewMonth?: boolean
+    isNewDate?: boolean
     tripDistance?: number
     isDuplicate: boolean
   }

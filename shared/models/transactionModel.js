@@ -47,7 +47,7 @@ const transactionModel = {
   isValid: data => {
     let { postedDate, description, businessId, categoryId, amount, note } = data
     let errors = {}
-    if (amount === undefined) return {valid: true, errors}
+    if (amount === undefined) return { valid: true, errors }
 
     const date = postedDate instanceof Date ? postedDate.toISOString() : postedDate
 
@@ -55,7 +55,7 @@ const transactionModel = {
       150) errors['description'] = 'Invalid description'
     if (!Boolean(postedDate) || !isISO8601(date)) errors['postedDate'] = 'Invalid date'
     if (!Boolean(amount.toString()) ||
-      !isCurrency(amount.toString(), {negative_sign_before_digits: true, digits_after_decimal: [0, 1, 2]}))
+      !isCurrency(amount.toString(), { negative_sign_before_digits: true, digits_after_decimal: [0, 1, 2] }))
       errors['amount'] = 'Invalid amount'
     if (Boolean(note) && note.length > 500) errors['note'] = 'Note is too long'
     if (Boolean(categoryId) && !cuid.isCuid(categoryId)) errors['categoryId'] = 'Invalid category'
@@ -212,6 +212,15 @@ const transactionModel = {
         transactions[i].balance = 0
       }
 
+      transactions[0].isNewDate = true
+      if (i === transactions.length - 1) {
+        transactions[transactions.length - 1].isNewDate = true
+      } else if (transactions[i].postedDate !== transactions[i + 1].postedDate) {
+        transactions[i + 1].isNewDate = true
+      } else {
+        transactions[i + 1].isNewDate = false
+      }
+
       date = new Date(transactions[i].postedDate)
       const transactionMonthYear = `${date.getFullYear()}-${date.getMonth()}`
       if (monthYear !== transactionMonthYear) {
@@ -235,7 +244,7 @@ const transactionModel = {
 
     postedDate = postedDate && typeof postedDate === 'string' && postedDate.length > 10
       ? postedDate : (new Date()).toISOString()
-    postedDate = postedDate.substr(0, 10)
+    postedDate = postedDate.substring(0, 10)
     if (!Boolean(amount)) amount = 0
     amount = Math.round(amount * 100)
 
