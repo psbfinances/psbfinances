@@ -84,6 +84,19 @@ export default class TransactionDb extends Db {
       orderBy([{ column: columns.postedDate, order: 'desc' }, columns.originalDescription])
   }
 
+  async listByAccountTopX ({ tenantId, accountId }) {
+    logger.debug('listByAccountTopX', { tenantId, accountId })
+    const mainFields = Object.assign({ 'transactions.tenantId': tenantId },
+      accountId ? { accountId } : {}
+    )
+    return this.knex.from(this.tableName).columns(listColumns).
+      innerJoin('accounts', 'transactions.accountId', 'accounts.id').
+      where(mainFields).
+      where('accounts.visible', '=', 1).
+      limit(100).
+      orderBy([{ column: columns.postedDate, order: 'desc' }, columns.originalDescription])
+  }
+
   async listByAccountDatesWithSearch ({ tenantId, accountId, categoryId, dateFrom, dateTo, search, accountIds }) {
     let mainFields = { tenantId }
     if (categoryId) mainFields.categoryId = categoryId

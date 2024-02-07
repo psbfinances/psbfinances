@@ -61,6 +61,9 @@ const controller = {
       result = await transactionDb.listByAccountDatesWithSearch(criteria)
     } else {
       result = await transactionDb.listByAccountDates(criteria)
+      if (result.length === 0) {
+        result = await transactionDb.listByAccountTopX({tenantId, accountId})
+      }
     }
     if (result.length === 0) return res.json({
       items: [],
