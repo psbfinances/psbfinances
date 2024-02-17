@@ -139,6 +139,19 @@ export class TransactionListModel {
     await this.loadData()
   }
 
+  async setDuplicatesOnly () {
+    rootStore.transactionsStore.filter.reset()
+    rootStore.transactionsStore.filter.duplicatesOnly = true
+    rootStore.transactionsStore.applyLocalFilter()
+    return Promise.resolve()
+  }
+
+  setNewOnly () {
+    rootStore.transactionsStore.filter.reset()
+    rootStore.transactionsStore.filter.newOnly = true
+    rootStore.transactionsStore.applyLocalFilter()
+  }
+
   setFormDetailedView () {
     this.formModel.setToolbarId('details')
     this.formModel.resetErrors()
@@ -149,6 +162,20 @@ export class TransactionListModel {
     else rootStore.transactionsStore.filter.month = value
 
     await this.loadData()
+  }
+
+  async resetFilter() {
+    rootStore.transactionsStore.filter.reset()
+    await this.loadData()
+  }
+
+  get hasFilter () {
+    const {categoryId, year, month, duplicatesOnly, newOnly} = rootStore.transactionsStore.filter
+    return categoryId !== c.selectId.ALL ||
+      year !== new Date().getFullYear().toString() ||
+      month !== c.selectId.ALL ||
+      duplicatesOnly ||
+      newOnly
   }
 }
 

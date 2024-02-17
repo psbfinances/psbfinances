@@ -179,6 +179,8 @@ table, .form-control, .col-form-label-sm {
   border-top: 5px rgba(184, 135, 102, 0.4) solid !important;
 }
 
+.btn-outline-secondary,
+.btn-secondary,
 .btn-primary {
   background-color: white;
   border-color: #b88766;
@@ -191,9 +193,22 @@ table, .form-control, .col-form-label-sm {
   border-color: #b88766;
 }
 
+.btn-outline-primary:hover,
+.btn-outline-secondary:hover,
 .btn-primary:hover,
-.btn-primary[hover] {
+.btn-primary[hover],
+.btn-outline-primary[hover] {
   background-color: #b88766;
+}
+
+.btn-outline-primary.active,
+.btn-primary.active {
+  background-color: #b88766;
+  color: white;
+}
+.btn-outline-primary.active,
+.btn-primary.active i {
+  color: white;
 }
 
 .btn-primary:hover i,

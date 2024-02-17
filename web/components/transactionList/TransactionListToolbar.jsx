@@ -1,12 +1,14 @@
 'use strict'
 
-import React from 'react'
+/// <reference path="./FilterModal.jsx" />
+import React, { useState } from 'react'
 import { observer } from 'mobx-react'
 import { AccountSelector, PeriodSelector, SearchEntry, CategorySelector } from '../core'
 import { rootStore } from '../../stores/rootStore.js'
 import { c } from '../../../shared/core/index.js'
 import { IconButton } from '../core/index.js'
 import { ThreeDots } from 'react-loader-spinner'
+import { FilterModal } from '../transactionForm/FilterModal.jsx'
 
 /**
  * Transaction list toolbar.
@@ -28,10 +30,6 @@ let TransactionListToolbar = ({ model }) => {
     await model.loadData()
   }
 
-  const handlePeriodChange = async e => model.setPeriod(e.target.name, e.target.id)
-
-  const handleCategoryChange = async e => model.setCategory(e.target.id)
-
   const handleAddClick = () => model.add()
 
   const handleCloneClick = async () => model.clone()
@@ -40,53 +38,59 @@ let TransactionListToolbar = ({ model }) => {
 
   const handleMerge = async () => model.merge()
 
-  // noinspection RequiredAttributes
-  return <div id='toolbar' className='pageToolbar'>
-    <div>
-      <div className='row row-cols-md-auto g-3 align-items-center'>
-        <AccountSelector
-          accounts={[...rootStore.masterDataStore.accountOptions]}
-          selectedAccountId={model.account ? model.account.id : c.selectId.ALL}
-          handleChange={handleAccountChange} />
-        <PeriodSelector
-          selectedYear={rootStore.transactionsStore.filter.year}
-          selectedMonth={rootStore.transactionsStore.filter.month}
-          handleChange={handlePeriodChange} />
-        <CategorySelector
-          items={[...rootStore.masterDataStore.categories.values()]}
-          selectedId={model.category ? model.category.id : c.selectId.ALL}
-          handleChange={handleCategoryChange} />
-        <SearchEntry value={rootStore.transactionsStore.filter.search} handleChange={handleSearchChange}
-                     handleKey={handleSearchKey} />
+  const filterButtonActive = model.hasFilter
 
-        <IconButton
-          label='add'
-          tooltip='Add new transaction'
-          icon='fas fa-plus-square'
-          disabled={model.addDisabled}
-          handleClick={handleAddClick} />
-        <IconButton
-          label='clone'
-          tooltip='Clone transaction'
-          icon='fas fa-clone'
-          disabled={model.cloneDisabled}
-          handleClick={handleCloneClick} />
-        <IconButton
-          label='refresh'
-          tooltip='Reload transactions'
-          icon='fas fa-sync'
-          handleClick={handleRefreshClick} />
-        <IconButton
-          label='mapManual'
-          tooltip='Merge transactions'
-          icon='fas fa-object-group'
-          disabled={model.mergeDisabled}
-          handleClick={handleMerge} />
-        {model.loading && <ThreeDots color='#B88766' height={40} width={40} />}
+  // noinspection RequiredAttributes
+  return <>
+    <FilterModal model={model}/>
+    <div id='toolbar' className='pageToolbar'>
+      <div>
+        <div className='row row-cols-md-auto g-3 align-items-center'>
+          <AccountSelector
+            accounts={[...rootStore.masterDataStore.accountOptions]}
+            selectedAccountId={model.account ? model.account.id : c.selectId.ALL}
+            handleChange={handleAccountChange} />
+          <SearchEntry value={rootStore.transactionsStore.filter.search} handleChange={handleSearchChange}
+                       handleKey={handleSearchKey} />
+
+          <IconButton
+            label='filter'
+            tooltip='Filter transactions'
+            modalToggle='modal'
+            modalTarget='#filterModal'
+            active={filterButtonActive}
+            icon='fas fa-filter'
+          />
+          <IconButton
+            label='add'
+            tooltip='Add new transaction'
+            icon='fas fa-plus-square'
+            disabled={model.addDisabled}
+            handleClick={handleAddClick} />
+          <IconButton
+            label='clone'
+            tooltip='Clone transaction'
+            icon='fas fa-clone'
+            disabled={model.cloneDisabled}
+            handleClick={handleCloneClick} />
+          <IconButton
+            label='refresh'
+            tooltip='Reload transactions'
+            icon='fas fa-sync'
+            handleClick={handleRefreshClick} />
+          <IconButton
+            label='mapManual'
+            tooltip='Merge transactions'
+            icon='fas fa-object-group'
+            disabled={model.mergeDisabled}
+            handleClick={handleMerge} />
+          {model.loading && <ThreeDots color='#B88766' height={40} width={40} />}
+        </div>
       </div>
     </div>
-  </div>
+  </>
 }
+
 
 TransactionListToolbar = observer(TransactionListToolbar)
 

@@ -350,6 +350,14 @@ export class TransactionsStore {
     this.selectedItem.scheduled = updatedTransaction.scheduled
     this.editItem.scheduled = updatedTransaction.scheduled
   }
+
+  applyLocalFilter () {
+    if (this.filter.duplicatesOnly) {
+      this.items = this.items.filter(x => Boolean(x.duplicateCandidateId));
+    } else if (this.filter.newOnly) {
+      this.items = this.items.filter(x => x.source === c.sources.MANUAL || !x.reconciled)
+    }
+  }
 }
 
 export class Filter {
@@ -360,6 +368,8 @@ export class Filter {
   search = ''
   businessId = null
   importProcessId = ''
+  duplicatesOnly = false
+  newOnly = false
 
   constructor () {
     makeAutoObservable(this)
@@ -390,6 +400,8 @@ export class Filter {
     this.categoryId = c.selectId.ALL
     this.businessId = null
     this.importProcessId = ''
+    this.duplicatesOnly = false
+    this.newOnly = false
   }
 
   get hasReferenceCriteria () {
