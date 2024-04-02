@@ -215,11 +215,7 @@ const transactionModel = {
       transactions[0].isNewDate = true
       if (i === transactions.length - 1) {
         transactions[transactions.length - 1].isNewDate = true
-      } else if (transactions[i].postedDate !== transactions[i + 1].postedDate) {
-        transactions[i + 1].isNewDate = true
-      } else {
-        transactions[i + 1].isNewDate = false
-      }
+      } else transactions[i + 1].isNewDate = transactions[i].postedDate !== transactions[i + 1].postedDate;
 
       date = new Date(transactions[i].postedDate)
       const transactionMonthYear = `${date.getFullYear()}-${date.getMonth()}`

@@ -125,6 +125,7 @@ let Row = ({ item, model }) => {
   const selectedTableRow = (rootStore.transactionsStore.selectedItem && rootStore.transactionsStore.selectedItem.id ===
     item.id) || model.selectedIds.has(item.id)
   const newMonth = Boolean(item.isNewMonth)
+  const newDate = Boolean(item.isNewDate)
   const manual = item.source === c.sources.MANUAL
   const trClasses = classNames(['trRow', { selectedTableRow: selectedTableRow }, { newMonth: newMonth }])
   const amountClass = `amountCol ${item.amount < 0 ? 'text-danger' : 'text-success'}`
@@ -134,7 +135,7 @@ let Row = ({ item, model }) => {
 
   return <tr id={item.id} onClick={handleRowClick} className={trClasses}>
 
-    <td className='text-right dateCol'>{isChildRow ? '' : formatDate(item.postedDate)}</td>
+    <td className='text-right dateCol'>{isChildRow || !newDate ? '' : formatDate(item.postedDate)}</td>
 
     {model.accountColumnVisible && <td className='truncate accountCol'>{isChildRow ? '' : item.accountName}</td>}
 

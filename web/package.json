@@ -1,6 +1,6 @@
 {
   "name": "@psbfinances/web",
-  "version": "1.12.0",
+  "version": "1.13.0",
   "description": "Personal and Small Business Finances",
   "homepage": "https://psbfinances.com",
   "main": "index.js",
