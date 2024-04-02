@@ -350,6 +350,7 @@ table, .form-control, .col-form-label-sm {
   text-align: right;
 }
 
+
 .corn {
   padding: 10px !important;
   position: relative;
@@ -413,7 +414,7 @@ table, .form-control, .col-form-label-sm {
 }
 
 .otherCol {
-  width: 40px;
+  width: 60px;
   vertical-align: baseline;
 }
 
