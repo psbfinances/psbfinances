@@ -19,13 +19,15 @@ module.exports = merge(common, {
       directory: join(__dirname, 'public'),
       publicPath: '/'
     },
-    magicHtml: true,
+    // magicHtml: true,
     historyApiFallback: true,
     hot: true,
-    proxy: {
-      '/api': 'http://127.0.0.1:9000',
-      '/app/files': 'http://127.0.0.1:9000'
-    },
+    proxy: [
+      {
+        context: ['/api', '/api/files'],
+        target: 'http://localhost:9000',
+      },
+    ],
     port: 9001
   }
 })
