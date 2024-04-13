@@ -13,7 +13,7 @@ export const field = {
 Object.keys(field).forEach(x => field[x] = x)
 
 const ALL = 'all'
-const includeConditionFields = ['Account Name', 'description']
+const includeConditionFields = ['Account Name', 'description', 'Description']
 
 /**
  * DIP transformation rule.

@@ -186,7 +186,7 @@ export default class ImportRuleListModel {
     const target = e.target
     const value = target.type === 'checkbox' ? target.checked : target.value
     let name = target.name
-    if (name.substr(0, actionPrefix.length) === actionPrefix) {
+    if (name.substring(0, actionPrefix.length) === actionPrefix) {
       const fieldName = name.replace(actionPrefix, '')
       this.editItem.action[fieldName] = value
       if (fieldName === 'businessId') this.editItem.action.categoryId = c.selectId.NONE

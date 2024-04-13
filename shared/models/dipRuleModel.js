@@ -9,7 +9,7 @@ const op = {
 
 class Condition {
   field = ''
-  condition = '='
+  condition = op.EQ
   value = ''
 
   constructor (field, condition, value) {
