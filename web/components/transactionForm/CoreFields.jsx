@@ -266,7 +266,7 @@ let NoteField = ({ model }) =>
       data-testid={fields.note}
       rows={model.isChild ? 1 : 3}
       className='form-control'
-      placeholder='Notes'
+      placeholder='Notes. Tags: #task, #rep-exclude'
       onChange={model.handleChange}
       value={model.transaction.note} />
     <Error errors={model.errors} fieldName={fields.note} />
