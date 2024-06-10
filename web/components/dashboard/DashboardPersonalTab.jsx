@@ -27,11 +27,18 @@ let DashboardPersonalTab = ({ model }) => {
     <div className='col-sm-12 col-md-6 col-lg-6'>
       <AccountsTable accounts={model.data.accounts} />
       <TasksTable tasks={model.data.tasks} />
-      <LatestTransactionsTable transactions={model.data.transactions} />
+      <LatestTransactionsTable transactions={model.data.transactions} title='Latest Transactions' />
     </div>
     <div className='col-sm-12 col-md-6 col-lg-6'>
       <CategoriesTable categories={model.data.budget} title='month' />
       <CategoriesTable categories={model.data.budgetYear} title='YTD' />
+      <LatestTransactionsTable
+        transactions={model.data.reportExcludedTransactions}
+        title='Excluded Transactions'
+        options={{
+          showReconciled: false,
+          showNote: true
+        }} />
     </div>
   </div>
 }
@@ -141,15 +148,19 @@ const TaskTableRow = observer(({ task }) => {
   </tr>
 })
 
+const transactionListDefaultOptions = {
+  showReconciled: true,
+  showNote: false
+}
 /**
  *
  * @param transactions
  * @return {JSX.Element}
  * @constructor
  */
-const LatestTransactionsTable = observer(({ transactions }) => <div className='dashboardWidgetContainer'>
-
-    <h5>Latest transactions</h5>
+const LatestTransactionsTable = observer(
+  ({ transactions, options = transactionListDefaultOptions, title }) => <div className='dashboardWidgetContainer'>
+    <h5>{title}</h5>
     <div>
       <table className='dataTable'>
         <thead>
@@ -159,11 +170,13 @@ const LatestTransactionsTable = observer(({ transactions }) => <div className='d
             <th>Category</th>
             <th>Description</th>
             <th className='text-right'>Amount</th>
-            <th className='text-center'>Rec</th>
+            {options.showReconciled && <th className='text-center'>Rec</th>}
+            {options.showNote && <th>Note</th>}
           </tr>
         </thead>
         <tbody>
-          {transactions.map(x => <TransactionTableRow key={Math.random()} transaction={x} />)}
+          {transactions.map(x => <TransactionTableRow key={Math.random()} transaction={x} options={options} />)}
+          {options.showNote && <TransactionsTotal transactions={transactions} />}
         </tbody>
 
       </table>
@@ -177,7 +190,7 @@ const LatestTransactionsTable = observer(({ transactions }) => <div className='d
  * @return {JSX.Element}
  * @constructor
  */
-const TransactionTableRow = observer(({ transaction }) => <tr>
+const TransactionTableRow = observer(({ transaction, options }) => <tr>
   <td width='85px' style={{ width: '80px' }}>{new Date(transaction.postedDate).toLocaleDateString('en-gb',
     dateFormat)}</td>
   <td style={{ width: '150px' }}>{transaction.shortName}</td>
@@ -186,9 +199,25 @@ const TransactionTableRow = observer(({ transaction }) => <tr>
   <td style={{ width: '50px' }}
       className={classNames('text-right', { 'text-danger': transaction.amount < 0 })}>{formatter.format(
     transaction.amount / 100)}</td>
-  <td className='text-right' style={{ width: '20px' }}><input type='checkbox' checked={Boolean(transaction.reconciled)}
-                                                              readOnly /></td>
+  {options.showReconciled &&
+    <td className='text-right' style={{ width: '20px' }}>
+      <input type='checkbox' checked={Boolean(transaction.reconciled)} readOnly />
+    </td>}
+  {options.showNote && <td className='tdDescription'>{transaction.note.replace('#rep-exclude', '')}</td>}
+
 </tr>)
+
+const TransactionsTotal = ({ transactions }) => {
+  const total = transactions.reduce((acc, x) => acc + x.amount, 0)
+  return <tr className='totalBorder'>
+    <td>TOTAL:</td>
+    <td></td>
+    <td></td>
+    <td></td>
+    <td style={{ width: '50px' }} className='text-right'>{formatter.format(total / 100)}</td>
+    <td></td>
+  </tr>
+}
 
 /**
  * @param categories

@@ -1,5 +1,6 @@
 'use strict'
 
+/** @module psbf/shared/dashboard **/
 /**
  * @typedef {Object} BusinessPL
  * @property {number} year
@@ -10,5 +11,3 @@
  * @property {string} name
  * @property {number} total
  */
-
-export const d = []

@@ -1,4 +1,5 @@
 'use strict'
+/** @link module:psbf/shared/dashboard */
 
 import Db from './db.js'
 
@@ -50,6 +51,21 @@ export default class DashboardDb extends Db {
       [tenantId, dateFrom, dateTo])
   }
 
+  async listReportExcludedTransactions (tenantId, year) {
+    return this.raw(`SELECT postedDate, accountId, shortName, categoryId, name, description, amount, transactions.note
+      FROM transactions
+      INNER JOIN accounts a on transactions.accountId = a.id
+      INNER JOIN categories c on transactions.categoryId = c.id
+      WHERE transactions.tenantId = ? AND
+        a.visible = 1 AND
+        source = 'i' AND
+        YEAR(postedDate) = ? AND
+        accountId <> 'ckl2ft0kt000101mr6ncggktq' AND
+        transactions.note LIKE '%#rep-exclude%'
+      ORDER BY postedDate DESC, accountId;`,
+      [tenantId, year])
+  }
+
   async listBudgetCurrentMonth (tenantId, year, month, monthOnly, reconciledOnly) {
     return this.raw(`SELECT categoryId, name, SUM(amount) amount
         FROM transactions
@@ -68,6 +84,14 @@ export default class DashboardDb extends Db {
       [tenantId, year, month])
   }
 
+  /**
+   * Returns busines P&L statement.
+   * @param {string} tenantId
+   * @param {string} businessId
+   * @param {string} year
+   * @param {boolean} reconciledOnly
+   * @return {Promise<BusinessPL[]>}
+   */
   async listBusinessPL (tenantId, businessId, year, reconciledOnly) {
     const selectedYear = Number.parseInt(year)
     const currentYear = (new Date()).getFullYear()

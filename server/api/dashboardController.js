@@ -28,28 +28,24 @@ const controller = {
     const reconciledOnly = req.query.reconciledOnly !== 'false'
     logger.info('get', { tenantId, year, period, businessId, reconciledOnly })
 
-    let accounts = []
-    let transactions = []
-    let businessPL = []
-    let businessPLCurrentMonth = []
-    let businessPLCurrentYear = []
-    let budget = []
-    let budgetYear = []
-    let tasks = []
-    const pl = new Map()
-
     if (businessId === c.PERSONAL_TYPE_ID) {
-      accounts = await dashboardDb.listBalances(tenantId)
-      transactions = await dashboardDb.listTransactions(tenantId)
-      budget = await controller.getBudget(tenantId, period, year, true, reconciledOnly)
-      budgetYear = await controller.getBudget(tenantId, period, year, false, reconciledOnly)
-      tasks = await dashboardDb.listTransactionsWithTasks(tenantId)
+      const [accounts, transactions, reportExcludedTransactions, budget, budgetYear, tasks] = await Promise.all([
+        dashboardDb.listBalances(tenantId),
+        dashboardDb.listTransactions(tenantId),
+        dashboardDb.listReportExcludedTransactions(tenantId, year),
+        controller.getBudget(tenantId, period, year, true, reconciledOnly),
+        controller.getBudget(tenantId, period, year, false, reconciledOnly),
+        dashboardDb.listTransactionsWithTasks(tenantId)
+      ])
+      res.json({ accounts, transactions, reportExcludedTransactions, tasks, budget, budgetYear })
     } else {
-      businessPL = await dashboardDb.listBusinessPL(tenantId, businessId, year, reconciledOnly)
-      businessPLCurrentMonth = await dashboardDb.listBusinessPLCurrentMonth(tenantId, businessId, period, year,
-        reconciledOnly)
-      businessPLCurrentYear = await dashboardDb.listBusinessPLCurrentYear(tenantId, businessId, year, reconciledOnly)
-      let prevYearEntry = businessPL.length > 0 ? businessPL[0].year : 0;
+      const [businessPL, businessPLCurrentMonth, businessPLCurrentYear] = await Promise.all([
+        dashboardDb.listBusinessPL(tenantId, businessId, year, reconciledOnly),
+        dashboardDb.listBusinessPLCurrentMonth(tenantId, businessId, period, year, reconciledOnly),
+        dashboardDb.listBusinessPLCurrentYear(tenantId, businessId, year, reconciledOnly)
+      ])
+      let prevYearEntry = businessPL.length > 0 ? businessPL[0].year : 0
+      const pl = new Map()
       businessPL.forEach(x => {
         const key = `${x.year}-${x.month}`
         const hasMonthData = pl.has(key)
@@ -62,18 +58,12 @@ const controller = {
         pl.set(key, monthData)
         // pl.set(`${x.month}`, monthData)
       })
+      res.json({
+        pl: Object.fromEntries(pl),
+        businessPLCurrentMonth,
+        businessPLCurrentYear,
+      })
     }
-
-    res.json({
-      accounts,
-      transactions,
-      tasks,
-      pl: Object.fromEntries(pl),
-      businessPLCurrentMonth,
-      businessPLCurrentYear,
-      budget,
-      budgetYear
-    })
   },
 
   /**
