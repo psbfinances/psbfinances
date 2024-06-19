@@ -92,9 +92,10 @@ const model = new DashboardModel()
 let Dashboard = () => {
 
   useEffect(() => {
+    console.log('useEffect', model.isBusinessSelected)
     const getData = async () => await model.getData()
     getData()
-  }, [])
+  }, [model.isBusinessSelected])
 
   if (!model.hasData) return null
 

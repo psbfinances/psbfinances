@@ -1,6 +1,6 @@
 'use strict'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import classNames from 'classnames'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { rootStore } from '../../stores/rootStore.js'
@@ -26,6 +26,9 @@ const months = c.months
  * @param {DashboardModel} model
  */
 const DashboardBusinessTab = observer(({ model }) => {
+  if (!model.data.pl) return null
+
+  console.log("DashboardBusinessTab")
   return <div className='row'>
     <div className='col-sm-12 col-md-6 col-lg-6'>
       <ProfitAndLossTable pl={model.data.pl} />
