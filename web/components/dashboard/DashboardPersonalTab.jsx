@@ -23,6 +23,8 @@ const calcAccountBalance = (openingBalance, total) => openingBalance + total
  * @constructor
  */
 let DashboardPersonalTab = ({ model }) => {
+  if (!model.data.budget) return null
+
   return <div className='row'>
     <div className='col-sm-12 col-md-6 col-lg-6'>
       <AccountsTable accounts={model.data.accounts} />
