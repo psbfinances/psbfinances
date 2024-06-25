@@ -1,177 +1,140 @@
 'use strict'
 
 import React from 'react'
-import classNames from 'classnames'
-import { AmountField } from '../../core'
-import { observer } from 'mobx-react'
-import { Tooltip } from 'react-tooltip'
+import { AmountField, InputField } from '../../core'
+import SelectField from '../../core/SelectField.jsx'
+import CheckboxField from '../../core/CheckboxField.jsx'
+import { NoteField } from '../../core/NoteField.jsx'
+import { BalanceCalculator } from './BalanceCalculator.jsx'
+import CancelOkButtons from '../../core/CancelOkButtons.jsx'
+import utils from '@psbfinances/shared/core/utils.js'
+import { accountsViewModel } from './accountsViewModel.js'
+
+const typeOptions = [
+  { value: 'Banking', label: 'Banking' },
+  { value: 'Saving', label: 'Saving' },
+  { value: 'Credit Card', label: 'Credit Card' },
+  { value: 'Cash', label: 'Cash' },
+  { value: 'Investment', label: 'Investment' },
+  { value: 'Loan', label: 'Loan' }
+]
 
 /**
  * Account form.
- * @param {AccountListModel} model
- * @return {JSX.Element|null}
  * @constructor
  */
-let AccountForm = ({ model }) => {
-  if (!model.editItem) return null
+export class AccountForm extends React.Component {
+  /**
+   *
+   * @type {{editItem?: FinancialAccount, balanceCalculatorVisible: boolean, errors: {}}}
+   */
+  state = {
+    editItem: null,
+    balanceCalculatorVisible: false,
+    errors: {}
+  }
 
-  return <div>
-    <div id='dataContainer' className='frm formDataContainer'>
-      <div id='formContainer' data-testid='formContainer' className='formContainer'>
+  /**
+   *
+   * @param {Object} props
+   * @param {FinancialAccount} props.selectedItem
+   * @param {function(FinancialAccount): Promise<void>} props.selectedItem
+   */
+  constructor (props) {
+    super(props)
+    this.state.editItem = props.selectedItem ? { ...props.selectedItem } : null
+  }
 
-        <div className='mb-3'>
-          <label htmlFor='inputShortName' className='form-label'>Short name</label>
-          <input
-            name='shortName'
-            className={classNames(['form-control', { 'is-invalid': model.formErrors.shortName }])}
-            id='inputShortName'
-            value={model.editItem ? model.editItem.shortName : ''}
-            onChange={model.handleChange} />
-          <div className='invalid-feedback'>
-            {model.formErrors.shortName}
+  static getDerivedStateFromProps (props, state) {
+    if (!props.selectedItem) return null
+
+    if (state.editItem && state.editItem.id === props.selectedItem.id) return state
+
+    return { editItem: { ...props.selectedItem } }
+  }
+
+  /**
+   *
+   * @param {{target: HTMLInputElement}} e
+   */
+  handleChange = e => {
+    const editItem = accountsViewModel.handleChange(e.target, this.state.editItem)
+    this.setState({ editItem })
+  }
+
+  handleAmountChange = value => this.setState(
+    { editIetm: Object.assign(this.state.editItem, { openingBalance: value }) })
+
+  handleSaveClick = async e => {
+    const { selectedId, errors } = await accountsViewModel.save(this.state.editItem)
+    if (!utils.hasError(errors)) await this.props.handleSave(selectedId)
+
+    this.setState({ errors })
+  }
+
+  handleCancelClick = e => this.setState({ editItem: { ...this.props.selectedItem }, errors: {} })
+
+  handleBalanceCalculatorCalculateClick = async currentBalance => {
+    const openingBalance = await accountsViewModel.calculateOpeningBalance(currentBalance)
+    this.setState({ balanceCalculatorVisible: false, editItem: { ...this.state.editItem, openingBalance } })
+  }
+
+  handleBalanceCalculatorVisibility = () => {
+    this.setState({ balanceCalculatorVisible: !this.state.balanceCalculatorVisible })
+  }
+
+  render () {
+    console.log(this.props, this.state)
+    if (!this.props.selectedItem) return null
+    const isNew = utils.isNewId(this.state.editItem.id)
+
+    return <div>
+      <div id='dataContainer' className='frm formDataContainer'>
+        <div id='formContainer' data-testid='formContainer' className='formContainer'>
+
+          <InputField
+            label='Short name' id='shortName' handleChange={this.handleChange}
+            value={this.state.editItem.shortName} />
+          <InputField
+            label='Long name' id='fullName' handleChange={this.handleChange}
+            value={this.state.editItem.fullName} />
+          <SelectField
+            id='type' label='Account type' value={this.state.editItem.type} options={typeOptions}
+            handler={this.handleChange} />
+          <div className='mb-3'>
+            <label htmlFor='inputOpeningBalance' className='form-label'>Opening balance</label>
+            <AmountField fieldAmount={this.state.editItem.openingBalance} setValue={this.handleAmountChange} />
           </div>
-        </div>
-        <div className='mb-3'>
-          <label htmlFor='inputFullName' className='form-label'>Full name</label>
-          <input
-            name='fullName'
-            className={classNames(['form-control', { 'is-invalid': model.formErrors.fullName }])}
-            id='inputFullName'
-            value={model.editItem ? model.editItem.fullName : ''}
-            onChange={model.handleChange} />
-          <div className='invalid-feedback'>
-            Please enter a full name.
-          </div>
-        </div>
-        <div className='mb-3'>
-          <label htmlFor='inputType' className='form-label'>Account type</label>
-          <select
-            id='type'
-            name='type'
-            className='form-select'
-            onChange={model.handleChange}
-            value={model.editItem.type}>
-            <option value='Banking'>Banking</option>
-            <option value='Saving'>Saving account</option>
-            <option value='Credit Card'>Credit card</option>
-            <option value='Cash'>Cash</option>
-            <option value='Investment'>Investment</option>
-            <option value='Loan'>Loan</option>
-          </select>
-        </div>
-        <div className='mb-3'>
-          <label htmlFor='inputOpeningBalance' className='form-label'>Opening balance</label>
-          <AmountField fieldAmount={model.editItem.openingBalance} setValue={model.handleAmountChange} />
-        </div>
-        <BalanceCalculator model={model} />
 
-        {!model.balanceCalculatorVisible && <div className='mb-3'>
-          <i
-            onClick={model.handleCalculatorIconClick}
-            data-tip='Calculate opening balance based on the current balance'
-            className='fas fa-calculator' />
-          <Tooltip />
-        </div>}
+          <BalanceCalculator
+            handleVisibility={this.handleBalanceCalculatorVisibility}
+            handleCalculateClick={this.handleBalanceCalculatorCalculateClick}
+            isNew={isNew}
+            visible={this.state.balanceCalculatorVisible}
+            balance={this.state.editItem.balance} />
 
-        <div className='form-check mb-3'>
-          <input
-            name='isDefault'
-            className='form-check-input'
-            type='checkbox'
-            id='isDefault'
-            checked={Boolean(model.editItem.isDefault)}
-            onChange={model.handleChange} />
-          <label className='form-check-label' htmlFor='isDefault'>
-            Default account
-          </label>
-        </div>
-        <div className='form-check mb-3'>
-          <input
-            name='meta.scheduledEnabled'
-            className='form-check-input'
-            type='checkbox'
-            id='scheduledEnabled'
-            checked={Boolean(model.editItem.meta && model.editItem.meta.scheduledEnabled)}
-            onChange={model.handleChange} />
-          <label className='form-check-label' htmlFor='scheduledEnabled'>
-            Enable scheduled transactions
-          </label>
-        </div>
-        <div className='form-check mb-3'>
-          <input
-            name='closed'
-            className='form-check-input'
-            type='checkbox'
-            id='closed'
-            checked={Boolean(model.editItem.closed)}
-            onChange={model.handleChange} />
-          <label className='form-check-label' htmlFor='closed'>
-            Closed account
-          </label>
-        </div>
-        <div className='form-check mb-3'>
-          <input
-            name='visible'
-            className='form-check-input'
-            type='checkbox'
-            id='visible'
-            checked={Boolean(model.editItem.visible)}
-            onChange={model.handleChange} />
-          <label className='form-check-label' htmlFor='visible'>
-            Show this account
-          </label>
-        </div>
-        <div className='form-group'>
-          <label htmlFor='note' className='form-label'>Note</label>
-          <textarea
-            id='note'
-            name='note'
-            data-testid='note'
-            rows={3}
-            className='form-control'
-            placeholder='Notes'
-            onChange={model.handleChange}
-            value={model.editItem.note || ''} />
-        </div>
+          <CheckboxField
+            id='isDefault' label='Default account' value={this.state.editItem.isDefault}
+            errors={this.state.errors} handleChange={this.handleChange} />
+          <CheckboxField
+            id='scheduledEnabled' name='meta.scheduledEnabled' label='Enable scheduled transactions'
+            value={Boolean(this.state.editItem.meta && this.state.editItem.meta.scheduledEnabled)}
+            errors={this.state.errors} handleChange={this.handleChange} />
+          <CheckboxField
+            id='closed' label='Closed account' value={this.state.editItem.closed}
+            errors={this.state.errors} handleChange={this.handleChange} />
+          <CheckboxField
+            id='visible' label='Show this account' value={this.state.editItem.visible}
+            errors={this.state.errors} handleChange={this.handleChange} />
 
-        {!model.balanceCalculatorVisible && <div className='col-form-label-sm'>
-          <div className='mt-4 mb-3'>
-            <div className='form-group mb-3'>
-              <button onClick={model.save} className='btn btn-primary'>
-                Save
-              </button>
-              <button onClick={model.undoEdit} className='btn btn-outline-danger ms-2'>
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>}
+          <NoteField id='note' label='Note' value={this.state.editItem.note || ''} handleChange={this.handleChange} />
+
+          {this.state.errors.formError && <div>this.state.errors.formError</div>}
+
+          {!this.state.balanceCalculatorVisible && <CancelOkButtons okLabel='Save' onOkClick={this.handleSaveClick}
+                                                                    onCancelClick={this.handleCancelClick} />}
+        </div>
       </div>
     </div>
-  </div>
+  }
 }
-AccountForm = observer(AccountForm)
-
-let BalanceCalculator = ({ model }) => {
-  if (!model.balanceCalculatorVisible) return null
-
-  return <div style={{ backgroundColor: '#f6f8fb' }}>
-    <hr />
-    <div className='mb-3'>
-      <label htmlFor='inputCurrentBalance' className='form-label'>Current balance</label>
-      <AmountField fieldAmount={model.currentBalance} setValue={model.handleAmountChange} />
-    </div>
-    <div className='form-group mb-3'>
-      <button onClick={model.handleCalculateBalanceCalculator} className='btn btn-primary'>
-        Calculate
-      </button>
-      <button onClick={model.handleCancelBalanceCalculator} className='btn btn-outline-danger ms-2'>
-        Cancel
-      </button>
-    </div>
-    <hr />
-  </div>
-}
-BalanceCalculator = observer(BalanceCalculator)
-
-export default AccountForm
