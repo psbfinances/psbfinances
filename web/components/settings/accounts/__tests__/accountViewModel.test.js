@@ -1,6 +1,6 @@
 'use strict'
 
-import { accountsViewModel, formFields } from './accountsViewModel.js'
+import { accountsViewModel, formFields } from '../accountsViewModel.js'
 import {it, describe} from 'node:test'
 import * as assert from 'node:assert'
 

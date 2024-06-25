@@ -6,11 +6,16 @@ import classNames from 'classnames'
 /**
  * Input field (HTML <input />)
  * @param {Object} props
+ * @param {string} props.label
+ * @param {string|number} props.value
+ * @param {function} props.handleChange
+ * @param {boolean} props.hidden
+ * @param {[]} props.errors
  * @return {JSX.Element}
  * @constructor
  */
 const InputField = props => {
-  const { label, errors, value, handleChange, hidden, ...others } = props
+  const { label, errors = [], value, handleChange, hidden = false, ...others } = props
   if (hidden) return null
 
   return (

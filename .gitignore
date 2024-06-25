@@ -2,6 +2,7 @@
 architecture
 historyData
 backup
+Notes.md
 
 # local config
 server/config/config.dev.yaml

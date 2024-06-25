@@ -115,7 +115,7 @@ const controller = {
 
     await dataChangeLogic.insert(accountDb.tableName, id, ops.UPDATE, account)
 
-    res.json({ account })
+    res.json(account)
   }
 }
 

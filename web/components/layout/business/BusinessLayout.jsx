@@ -12,16 +12,15 @@ import TransactionList from '../../transactionList/TransactionList.jsx'
 import Dashboard from '../../dashboard/Dashboard.jsx'
 import ReportList from '../../reports/ReportList.jsx'
 import Budget from '../../budget/Budget.jsx'
-import { observer } from 'mobx-react'
 import {
   Settings,
-  AccountList,
   ImportList,
   UserList,
   BusinessList,
   CategoryList,
   ImportRuleList
 } from '../../settings/index.js'
+import { Accounts } from '../../settings/accounts/Accounts.jsx'
 import { ErrorPage } from '../../core/index.js'
 import { useEffect } from 'react'
 import * as api from '../../../../shared/apiClient'
@@ -74,7 +73,7 @@ const MustBeAuthenticated = ({ children }) => {
                     <Route path='reports/year-taxes' element={<BusinessYearTaxes />} />
                     <Route exact path='settings' element={<Settings />} />
                     <Route path='settings/applicationSettings' element={<ApplicationSettingsForm />} />
-                    <Route path='settings/accounts' element={<AccountList />} />
+                    <Route path='settings/accounts' element={<Accounts />} />
                     <Route path='settings/businesses' element={<BusinessList />} />
                     <Route path='settings/categories' element={<CategoryList />} />
                     <Route path='settings/cars' element={<CarList />} />

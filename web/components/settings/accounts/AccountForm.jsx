@@ -1,14 +1,15 @@
 'use strict'
 
 import React from 'react'
-import { AmountField, InputField } from '../../core'
+import AmountField from '../../core/AmountField.jsx'
+import InputField  from '../../core/InputField.jsx'
 import SelectField from '../../core/SelectField.jsx'
 import CheckboxField from '../../core/CheckboxField.jsx'
 import { NoteField } from '../../core/NoteField.jsx'
 import { BalanceCalculator } from './BalanceCalculator.jsx'
 import CancelOkButtons from '../../core/CancelOkButtons.jsx'
-import utils from '@psbfinances/shared/core/utils.js'
 import { accountsViewModel } from './accountsViewModel.js'
+import utils from '@psbfinances/shared/core/utils.js'
 
 const typeOptions = [
   { value: 'Banking', label: 'Banking' },
@@ -38,7 +39,6 @@ export class AccountForm extends React.Component {
    *
    * @param {Object} props
    * @param {FinancialAccount} props.selectedItem
-   * @param {function(FinancialAccount): Promise<void>} props.selectedItem
    */
   constructor (props) {
     super(props)
@@ -84,7 +84,6 @@ export class AccountForm extends React.Component {
   }
 
   render () {
-    console.log(this.props, this.state)
     if (!this.props.selectedItem) return null
     const isNew = utils.isNewId(this.state.editItem.id)
 
@@ -129,7 +128,7 @@ export class AccountForm extends React.Component {
 
           <NoteField id='note' label='Note' value={this.state.editItem.note || ''} handleChange={this.handleChange} />
 
-          {this.state.errors.formError && <div>this.state.errors.formError</div>}
+          {this.state.errors && this.state.errors.formError && <div>this.state.errors.formError</div>}
 
           {!this.state.balanceCalculatorVisible && <CancelOkButtons okLabel='Save' onOkClick={this.handleSaveClick}
                                                                     onCancelClick={this.handleCancelClick} />}

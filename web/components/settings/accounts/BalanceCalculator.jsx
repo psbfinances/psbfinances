@@ -2,7 +2,7 @@
 
 import { Tooltip } from 'react-tooltip'
 import React, { useState } from 'react'
-import { AmountField } from '../../core/index.js'
+import AmountField from '../../core/AmountField.jsx'
 import CancelOkButtons from '../../core/CancelOkButtons.jsx'
 
 /**

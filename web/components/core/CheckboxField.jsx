@@ -5,6 +5,11 @@ import React from 'react'
 /**
  * Input checkbox field (HTML <input />)
  * @param {Object} props
+ * @param {string} props.label
+ * @param {boolean} props.value
+ * @param {function} props.handleChange
+ * @param {Array<string, string>} props.errors
+ * @param {string} props.id
  * @return {JSX.Element}
  * @constructor
  */

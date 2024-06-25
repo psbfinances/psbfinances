@@ -41,7 +41,7 @@ export const accountsViewModel = {
   /**
    *
    * @param {FinancialAccount} account
-   * @return {Promise<{items?: FinancialAccount[], selectedId?: string, errors?: Object}>}
+   * @return {Promise<{selectedId?: string, errors?: Object}>}
    */
   save: async (account) => {
     const errors = accountModel.validate(account)
@@ -56,7 +56,6 @@ export const accountsViewModel = {
       return saveResult.errors
         ? { selectedId: account.id, errors: saveResult.errors }
         : { selectedId: saveResult.id, errors: {} }
-      // return saveResult.errors ? { errors } : {selectedId: saveResult.id}
     } catch (err) {
       return { errors: { formError: 'Something went wrong' } }
     }

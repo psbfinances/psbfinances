@@ -4,6 +4,13 @@ import React, { useEffect, useState } from 'react'
 import CurrencyInput from 'react-currency-input-field'
 import { observer } from 'mobx-react'
 
+/**
+ *
+ * @param {number} fieldAmount
+ * @param {function} setValue
+ * @return {Element}
+ * @constructor
+ */
 let AmountField = ({ fieldAmount, setValue }) => {
   const [amount, setAmount] = useState(fieldAmount)
 

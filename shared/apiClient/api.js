@@ -53,6 +53,12 @@ export class Api {
     return (await this.api.get(itemEndpoint(this.endPoint, id))).data
   }
 
+  /**
+   * Calls `POST` API - update item
+   * @template T
+   * @param {T} data
+   * @return {Promise<T|{errors: {}}>}
+   */
   async post (data) {
     return (await this.api.post(this.endPoint, data)).data
   }

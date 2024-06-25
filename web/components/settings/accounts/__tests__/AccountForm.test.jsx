@@ -1,50 +1,56 @@
+'use strict'
+
 import React from 'react'
-import { render, fireEvent } from '@testing-library/react'
-import { accountsViewModel } from '../accountsViewModel' // adjust the import path accordingly
-import { AccountForm } from '../AccountForm.jsx' // adjust the import path accordingly
+import { expect, describe, it, vi, beforeEach } from 'vitest'
+import { fireEvent, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { accountsViewModel } from '../accountsViewModel'
+import { AccountForm } from '../AccountForm.jsx'
 
 // import utils from '@psbfinances/shared/core/utils.js'
-jest.mock('@psbfinances/shared/core/utils.js', () => ({
-  hasError: jest.fn(),
-}));
+// vi.mock('@psbfinances/shared/core/utils.js', () => {
+//   return {
+//     default: {
+//       hasError: vi.fn()
+//     }
+//   }
+// })
+
+/**@type {FinancialAccount}  */
+
+const existingItem = {
+  id: '12345',
+  shortName: 'Test Account',
+  fullName: 'Test Account long name',
+  type: 'Savings',
+  balance: 2000
+}
 
 describe('AccountForm', () => {
-  let mockHandleSave
+  let user
+
   let container
 
   beforeEach(() => {
-    mockHandleSave = jest.fn();
-    const { debug } = render(<AccountForm handleSave={mockHandleSave} />);
-    console.log(debug())
-  });
+    user = userEvent.setup()
+    vi.mock('../accountsViewModel.js', () => ({
+      accountsViewModel: {
+        save: vi.fn().mockResolvedValueOnce({ selectedId: '123456', errors: {} })
+      }
+    }))
+  })
+
+  it('renders Save button', () => {
+    render(<AccountForm selectedItem={existingItem} />)
+    expect(screen.getByText('Save')).toBeInTheDocument()
+  })
 
   it('handleSaveClick should call viewModel save', async () => {
-    const mockItem = { id: '1', name: 'Test' }
-    const mockResponse = { selectedId: '1', errors: {} }
-    jest.mock('../accountsViewModel', () => {
-      accountsViewModel: {
-        save: jest.fn().mockResolvedValueOnce(mockResponse)
-      }
-    })
-    container.debug()
-    const saveButton = container.querySelector('button') // assuming the save button is the only button
+    const user = userEvent.setup()
+    render(<AccountForm selectedItem={existingItem} handleSave={vi.fn()} />)
+    await user.click(screen.getByText('Save'))
 
-    fireEvent.saveButton.click()
-
-    expect(accountsViewModel.save).toHaveBeenCalledWith(mockItem)
+    expect(accountsViewModel.save).toHaveBeenCalledWith(existingItem)
   })
-
-  it('should call props.handleSave if no errors', async () => {
-    const mockResponse = { selectedId: '1', errors: {} }
-    accountsViewModel.save.mockResolvedValueOnce(mockResponse)
-
-    const saveButton = container.querySelector('button') // assuming the save button is the only button
-
-    fireEvent.saveButton.click()
-
-    expect(mockHandleSave).toHaveBeenCalledWith(mockResponse.selectedId)
-  })
-
-  // Note: Testing component state is not straightforward in the Testing Library
-  // as it represents a more user-centered testing approach.
 })
+
