@@ -17,7 +17,8 @@ export default class Db {
           host: config.mysql.server,
           user: config.mysql.user,
           password: config.mysql.password,
-          database: config.mysql.database
+          database: config.mysql.database,
+          charset: 'utf8mb4'
         },
         pool: { min: 1, max: 10 }
       })
