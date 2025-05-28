@@ -127,7 +127,7 @@ export default class ImportRuleListModel {
       if (rule.adapterId === c.dipAdapters.mint.id) return `${x.field}: (${x.value})`
       if (field === 'Account' && x.value === c.selectId.ALL) return
 
-      if (field === 'Account') value = rootStore.masterDataStore.accounts.get(x.value).shortName
+      if (field === 'Account') value = rootStore.masterDataStore.accounts.get(x.value)?.shortName || 'Unknown account'
       else if (isCurrency(x.value.toString()) && field === 'Amount') value = utils.formatAmount(x.value)
       else value = x.value
       return `${field}: (${value})`
