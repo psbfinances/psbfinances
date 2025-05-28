@@ -240,7 +240,7 @@ const controller = {
       description,
       categoryId,
       businessId,
-      amount: amount * 100,
+      amount: Math.round(amount * 100),
       note
     }
     const transaction = transactionModel.getNewManual(transactionData)
