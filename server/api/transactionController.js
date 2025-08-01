@@ -227,7 +227,7 @@ const controller = {
    * @return {Promise<Transaction>}
    */
   insert: async (req, res) => {
-    let { id, accountId, postedDate, description, businessId, categoryId, amount, note } = req.body
+    let { id, accountId, postedDate, description, businessId, categoryId, amount, note, tripId } = req.body
     const tenantId = req.user.tenantId
     const userId = req.user.id
 
@@ -236,12 +236,14 @@ const controller = {
       id,
       tenantId,
       accountId,
-      postedDate: new Date(postedDate),
+      // postedDate: new Date(postedDate),
+      postedDate,
       description,
       categoryId,
       businessId,
       amount: Math.round(amount * 100),
-      note
+      note,
+      tripId
     }
     const transaction = transactionModel.getNewManual(transactionData)
     const { valid, errors } = await controller.validate(tenantId, transaction)
@@ -270,6 +272,8 @@ const controller = {
     const result = req.body.childTransactions
       ? await controller.updateSplitTransaction(tenantId, userId, id, req.body.childTransactions)
       : await controller.processUpdate(tenantId, userId, id, req.body)
+    console.log('-------')
+    console.log(result)
     res.json(result)
   },
 
@@ -282,7 +286,7 @@ const controller = {
    * @return {Promise<psbf.Transaction|TransactionDataError>}
    */
   async processUpdate (tenantId, userId, id, requestBody) {
-    logger.info('processUpdate', { tenantId, id, userId, requestBody })
+    logger.debug('processUpdate', { tenantId, id, userId, requestBody })
     const transactionDb = new TransactionDb()
     const existingTransaction = await transactionDb.get(id, tenantId)
     if (!existingTransaction) throw new AppError('processUpdate', { message: 'Not found', tenantId, id, userId })
@@ -437,6 +441,7 @@ const controller = {
     } else {
       transactions = await controller.addSplits(tenantId, userId, id, childTransactions, parentTransaction)
     }
+    console.log({ transaction: parentTransaction, children: transactions })
     return Promise.resolve({ transaction: parentTransaction, children: transactions })
   },
 
@@ -616,12 +621,23 @@ const controller = {
     toItem.meta = null
     if (fromItem.tripId) toItem.tripId = fromItem.tripId
     const meta = controller.mergeMetas(fromItem.meta, toItem.meta)
+    const dataChangeLogic = new DataChangeLogic(tenantId, userId)
+
+    // Handle child transactions if the manual transaction has them
+    if (fromItem.hasChildren) {
+      const childTransactions = await transactionDb.listByParentId({ tenantId, parentId: fromItem.id })
+      for (const child of childTransactions) {
+        child.parentId = toItem.id
+        await transactionDb.update({ id: child.id, tenantId, parentId: toItem.id })
+        await dataChangeLogic.insert(transactionDb.tableName, child.id, ops.UPDATE, { parentId: toItem.id })
+      }
+      // Ensure the merged transaction has hasChildren flag set
+      toItem.hasChildren = true
+    }
 
     await transactionDb.delete({id: fromItem.id, tenantId})
     await transactionDb.update({ tenantId, ...toItem })
     await transactionDb.updateMeta(toItem.id, tenantId, meta)
-
-    const dataChangeLogic = new DataChangeLogic(tenantId, userId)
     const attachmentDb = new AttachmentDb()
     /** @type {psbf.Attachment[]} */
     const attachments = await attachmentDb.listByEntity(tenantId, fromItem.id)
