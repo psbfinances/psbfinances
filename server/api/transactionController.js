@@ -299,7 +299,7 @@ const controller = {
     if (!valid) return errors
 
     await transactionDb.update(data)
-    await controller.renameSimilarDescriptions(tenantId, userId, existingTransaction, data.description)
+    // await controller.renameSimilarDescriptions(tenantId, userId, existingTransaction, data.description)
 
     const dataChangeLogic = new DataChangeLogic(tenantId, userId)
     await dataChangeLogic.insert(transactionDb.tableName, id, ops.UPDATE, data)
