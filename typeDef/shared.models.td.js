@@ -68,6 +68,8 @@
  * @property {?Object} meta
  * @property {?boolean} meta.scheduledEnabled
  * @property {?Date} createdAt
+ * @property {number} currentBalance
+ * @property {number} unreconciledCount
  */
 
 /**

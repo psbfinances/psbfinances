@@ -21,18 +21,54 @@ const controller = {
    */
   list: async (req, res) => {
     const db = new AccountDb()
-    let rows = await db.list(req.user.tenantId)
+    const include = req.query.include ? req.query.include.split(',').map(item => item.trim()) : []
+    const includeBalance = include.includes('balance')
+    const includeUnreconciled = include.includes('unreconciled')
+
+    let rows
+    // if (true && includeBalance || includeUnreconciled) {
+    if (true) {
+      // rows = await db.listWithExtras(req.user.tenantId, includeBalance, includeUnreconciled)
+      rows = await db.listWithExtras(req.user.tenantId, true, true)
+    } else {
+      rows = await db.list(req.user.tenantId)
+    }
+
     rows.forEach(x => {
       if (x.meta) x.meta = JSON.parse(x.meta)
       x.openingBalance = x.openingBalance ? x.openingBalance / 100 : 0
+      x.currentBalance = x.balance
       delete x.tenantId
+      delete x.balance
     })
     res.json(rows)
   },
 
   get: async (req, res) => {
+    logger.debug('get', { regQuery: req.query })
     const { tenantId, userId, id } = utils.getBasicRequestData(req)
-    const result = await controller.processGet(tenantId, userId, id, req.query)
+    const include = req.query.include ? req.query.include.split(',').map(item => item.trim()) : []
+    const includeBalance = include.includes('balance')
+    const includeUnreconciled = include.includes('unreconciled')
+
+    let result
+    if (includeBalance || includeUnreconciled) {
+      const db = new AccountDb()
+      const rows = await db.getWithExtras(id, tenantId, includeBalance, includeUnreconciled)
+      result = rows[0]
+      if (result) {
+        if (result.meta) result.meta = JSON.parse(result.meta)
+        result.openingBalance = result.openingBalance ? result.openingBalance / 100 : 0
+        if (!!result.currentBalance) {
+          result.currentBalance = Math.round(result.currentBalance / 100)
+        }
+        delete result.tenantId
+        delete result.balance
+      }
+    } else {
+      result = await controller.processGet(tenantId, userId, id, req.query)
+    }
+
     res.json(result)
   },
 
@@ -59,7 +95,7 @@ const controller = {
   },
 
   /**
-   * Saves a new accounts.
+   * Saves a new account.
    * @property {AppRequest} req
    * @property {FinancialAccount} req.body
    * @property {import('express').Response} res

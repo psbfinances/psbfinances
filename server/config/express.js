@@ -5,6 +5,7 @@ import compression from 'compression'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
 import errorHandler from 'errorhandler'
+import winston from 'winston'
 import expressWinston from 'express-winston'
 import rateLimit from 'express-rate-limit'
 import cors from 'cors'
@@ -23,7 +24,7 @@ const requestLoggerOptions = {
   meta: false,
   msg: 'HTTP {{req.method}} {{req.url}} {{req.params}} BODY {{req.body}}',
   expressFormat: true,
-  colorize: env === c.environments.DEV
+  colorize: true //env === c.environments.DEV
 }
 const rateLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 1000 })
 
@@ -85,7 +86,21 @@ export default (app, routes, auth) => {
   app.use(bodyParser.json())
   app.use(cookieParser())
   app.set('trust proxy', 1)
-  app.use(expressWinston.logger(requestLoggerOptions))
+  // app.use(expressWinston.logger(requestLoggerOptions))
+  app.use(expressWinston.logger({
+    transports: [
+      new winston.transports.Console()
+    ],
+    format: winston.format.combine(
+      winston.format.colorize(),
+      winston.format.json()
+    ),
+    meta: true, // optional: control whether you want to log the meta data about the request (default to true)
+    msg: "HTTP {{req.method}} {{req.url}}", // optional: customize the default logging message. E.g. "{{res.statusCode}} {{req.method}} {{res.responseTime}}ms {{req.url}}"
+    expressFormat: true, // Use the default Express/morgan request formatting. Enabling this will override any msg if true. Will only output colors with colorize set to true
+    colorize: false, // Color the text and status code, using the Express/morgan color palette (text: gray, status: default green, 3XX cyan, 4XX yellow, 5XX red).
+    ignoreRoute: function (req, res) { return false; } // optional: allows to skip some log messages based on request and/or response
+  }))
   app.use(rateLimiter)
   app.use(fileUpload({ limits: { fileSize: 50 * 1024 * 1024 } }))
 

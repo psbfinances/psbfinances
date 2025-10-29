@@ -52,7 +52,7 @@ export default class DashboardDb extends Db {
   }
 
   async listReportExcludedTransactions (tenantId, year) {
-    return this.raw(`SELECT postedDate, accountId, shortName, categoryId, name, description, amount, transactions.note
+    return this.raw(`SELECT transactions.id, postedDate, accountId, shortName, categoryId, name, description, amount, transactions.note
       FROM transactions
       INNER JOIN accounts a on transactions.accountId = a.id
       INNER JOIN categories c on transactions.categoryId = c.id

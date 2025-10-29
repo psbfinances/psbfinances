@@ -1,0 +1,2504 @@
+openapi: 3.0.3
+info:
+  title: psbFinances API
+  version: 1.0.0
+  description: >
+    HTTP API for personal and small business finance management. All authenticated
+    endpoints accept either a `Bearer` JWT in the `Authorization` header or the
+    `psbf` session cookie issued by the authentication routes.
+servers:
+  - url: https://psbfinances.com/api
+    description: Production
+  - url: http://localhost:9000/api
+    description: Local development
+tags:
+  - name: Auth
+  - name: Accounts
+  - name: Application
+  - name: Businesses
+  - name: Budget
+  - name: Categories
+  - name: Cars
+  - name: Dashboard
+  - name: Duplicates
+  - name: Imports
+  - name: Import Rules
+  - name: Reports
+  - name: Transactions
+  - name: Trips
+  - name: Users
+paths:
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Authenticate user credentials
+      operationId: authLogin
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auth/signup:
+    post:
+      tags: [Auth]
+      summary: Register a new tenant and user
+      operationId: authSignup
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupRequest'
+      responses:
+        '200':
+          description: Successful sign-up
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Email already registered or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Revoke the current session token
+      operationId: authLogout
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+      responses:
+        '200':
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+        '401':
+          description: Missing or expired token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auth/password-reset:
+    post:
+      tags: [Auth]
+      summary: Initiate password reset workflow
+      operationId: requestPasswordReset
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+      responses:
+        '202':
+          description: Reset email issued (or masked failure)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auth/token-validate:
+    post:
+      tags: [Auth]
+      summary: Validate reset token
+      operationId: validateResetToken
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenValidateRequest'
+      responses:
+        '200':
+          description: Reset token validation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenValidateResponse'
+  /auth/password:
+    post:
+      tags: [Auth]
+      summary: Complete password reset
+      operationId: savePassword
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordUpdateRequest'
+      responses:
+        '200':
+          description: Password updated result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordUpdateResponse'
+        '400':
+          description: Invalid password or token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordUpdateResponse'
+  /accounts:
+    get:
+      tags: [Accounts]
+      summary: List financial accounts
+      operationId: listAccounts
+      parameters:
+        - in: query
+          name: include
+          schema:
+            type: string
+          description: >
+            Comma separated extras (`balance`, `unreconciled`). Both values are
+            always returned when present.
+      responses:
+        '200':
+          description: Collection of accounts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Account'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+    post:
+      tags: [Accounts]
+      summary: Create an account
+      operationId: createAccount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountInput'
+      responses:
+        '200':
+          description: Account created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '400':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+
+  /accounts/{accountId}:
+    get:
+      tags: [Accounts]
+      summary: Retrieve an account
+      operationId: getAccount
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+        - in: query
+          name: include
+          schema:
+            type: string
+          description: >
+            Comma separated extras (`balance`, `unreconciled`). Both values are
+            always returned when present.
+        - in: query
+          name: currentBalance
+          schema:
+            type: number
+            format: double
+          description: >
+            When supplied, calculates an opening balance that reconciles with the
+            provided current balance.
+      responses:
+        '200':
+          description: Account details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '404':
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+    put:
+      tags: [Accounts]
+      summary: Update an account
+      operationId: updateAccount
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountInput'
+      responses:
+        '200':
+          description: Account updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '400':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /application:
+    get:
+      tags: [Application]
+      summary: Fetch tenant-level application settings
+      operationId: getApplication
+      responses:
+        '200':
+          description: Application settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationSettings'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /application/demo-data:
+    post:
+      tags: [Application]
+      summary: Seed demo data for the current tenant
+      operationId: seedDemoData
+      responses:
+        '200':
+          description: Demo data seeded
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+    delete:
+      tags: [Application]
+      summary: Remove demo data for the current tenant
+      operationId: deleteDemoData
+      responses:
+        '200':
+          description: Demo data removed
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /businesses:
+    get:
+      tags: [Businesses]
+      summary: List registered businesses
+      operationId: listBusinesses
+      responses:
+        '200':
+          description: Business list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Business'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+    post:
+      tags: [Businesses]
+      summary: Create a business
+      operationId: createBusiness
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BusinessInput'
+      responses:
+        '200':
+          description: Business created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Business'
+        '400':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /businesses/{businessId}:
+    put:
+      tags: [Businesses]
+      summary: Update a business
+      operationId: updateBusiness
+      parameters:
+        - $ref: '#/components/parameters/BusinessId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BusinessInput'
+      responses:
+        '200':
+          description: Business updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Business'
+        '400':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /budget:
+    get:
+      tags: [Budget]
+      summary: Retrieve personal budget grid
+      operationId: listBudget
+      parameters:
+        - in: query
+          name: year
+          required: true
+          schema:
+            type: integer
+            minimum: 2000
+          description: Budget year to fetch
+      responses:
+        '200':
+          description: Budget detail and totals
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetGridResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+    post:
+      tags: [Budget]
+      summary: Clone or upsert budget entries
+      operationId: upsertBudget
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/BudgetCloneRequest'
+                - $ref: '#/components/schemas/BudgetBulkUpdateRequest'
+      responses:
+        '200':
+          description: Budget changes accepted
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {}
+        '400':
+          description: Invalid budget payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /categories:
+    get:
+      tags: [Categories]
+      summary: List categories
+      operationId: listCategories
+      responses:
+        '200':
+          description: Category list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+    post:
+      tags: [Categories]
+      summary: Create a category
+      operationId: createCategory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryInput'
+      responses:
+        '200':
+          description: Category created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /categories/{categoryId}:
+    put:
+      tags: [Categories]
+      summary: Update a category
+      operationId: updateCategory
+      parameters:
+        - $ref: '#/components/parameters/CategoryId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryInput'
+      responses:
+        '200':
+          description: Category updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+        '400':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /cars:
+    get:
+      tags: [Cars]
+      summary: List tracked cars
+      operationId: listCars
+      responses:
+        '200':
+          description: Car list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Car'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+    post:
+      tags: [Cars]
+      summary: Register a car
+      operationId: createCar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CarInput'
+      responses:
+        '200':
+          description: Car created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Car'
+        '400':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /cars/{carId}:
+    put:
+      tags: [Cars]
+      summary: Update a car
+      operationId: updateCar
+      parameters:
+        - $ref: '#/components/parameters/CarId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CarInput'
+      responses:
+        '200':
+          description: Car updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Car'
+        '400':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /dashboard:
+    get:
+      tags: [Dashboard]
+      summary: Retrieve dashboard aggregates
+      operationId: getDashboard
+      parameters:
+        - in: query
+          name: period
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 12
+          description: >
+            Month number (1-12). When omitted the latest data is used.
+        - in: query
+          name: year
+          schema:
+            type: integer
+          description: Year to report against.
+        - in: query
+          name: businessId
+          schema:
+            type: string
+          description: Business identifier. Use `p` for personal dashboard context.
+        - in: query
+          name: reconciledOnly
+          schema:
+            type: boolean
+            default: true
+          description: >
+            When true (default) only reconciled transactions are considered in aggregates.
+      responses:
+        '200':
+          description: Dashboard snapshot
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /duplicateTransactions:
+    get:
+      tags: [Duplicates]
+      summary: List duplicate transaction candidates
+      operationId: listDuplicates
+      responses:
+        '200':
+          description: Duplicate summary
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DuplicateSummary'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /duplicateTransactions/{duplicateId}:
+    get:
+      tags: [Duplicates]
+      summary: Fetch duplicate transactions related to a parent
+      operationId: getDuplicateDetails
+      parameters:
+        - $ref: '#/components/parameters/DuplicateId'
+      responses:
+        '200':
+          description: Duplicate detail
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DuplicateDetail'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+    put:
+      tags: [Duplicates]
+      summary: Mark a transaction as duplicate
+      operationId: markDuplicate
+      parameters:
+        - $ref: '#/components/parameters/DuplicateId'
+      responses:
+        '200':
+          description: Duplicate archived
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DuplicatePutResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+    delete:
+      tags: [Duplicates]
+      summary: Permanently remove a duplicate record and restore the transaction
+      operationId: deleteDuplicate
+      parameters:
+        - $ref: '#/components/parameters/DuplicateId'
+      responses:
+        '200':
+          description: Restored transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /duplicateTransactions/{duplicateId}/resolve:
+    patch:
+      tags: [Duplicates]
+      summary: Resolve duplicate candidate flags for a transaction
+      operationId: resolveDuplicate
+      parameters:
+        - $ref: '#/components/parameters/DuplicateId'
+      responses:
+        '200':
+          description: Resolved duplicate candidates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DuplicateResolveResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /duplicateTransactions/{duplicateId}/undo:
+    patch:
+      tags: [Duplicates]
+      summary: Undo a duplicate action
+      operationId: undoDuplicate
+      parameters:
+        - $ref: '#/components/parameters/DuplicateId'
+      responses:
+        '200':
+          description: Restored transaction
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /imports:
+    get:
+      tags: [Imports]
+      summary: List recent file imports
+      operationId: listImports
+      responses:
+        '200':
+          description: Import history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImportSummary'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+    post:
+      tags: [Imports]
+      summary: Upload a bank statement for processing
+      operationId: createImport
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [importFile, formatId]
+              properties:
+                importFile:
+                  type: string
+                  format: binary
+                  description: CSV file to import
+                formatId:
+                  type: string
+                  description: Import adapter identifier
+                accountId:
+                  type: string
+                  description: Optional account override
+      responses:
+        '200':
+          description: Import queued
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportUploadResponse'
+        '400':
+          description: Missing file or invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /imports/{importId}:
+    delete:
+      tags: [Imports]
+      summary: Delete an import and associated transactions
+      operationId: deleteImport
+      parameters:
+        - $ref: '#/components/parameters/ImportId'
+      responses:
+        '200':
+          description: Import deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /importRules:
+    get:
+      tags: ['Import Rules']
+      summary: List data import rules
+      operationId: listImportRules
+      responses:
+        '200':
+          description: Import rules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ImportRule'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+    post:
+      tags: ['Import Rules']
+      summary: Create an import rule
+      operationId: createImportRule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportRuleInput'
+      responses:
+        '200':
+          description: Import rule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportRule'
+        '400':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /importRules/{ruleId}:
+    put:
+      tags: ['Import Rules']
+      summary: Update an import rule
+      operationId: updateImportRule
+      parameters:
+        - $ref: '#/components/parameters/RuleId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportRuleInput'
+      responses:
+        '200':
+          description: Import rule updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportRule'
+        '400':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+    delete:
+      tags: ['Import Rules']
+      summary: Delete an import rule
+      operationId: deleteImportRule
+      parameters:
+        - $ref: '#/components/parameters/RuleId'
+      responses:
+        '200':
+          description: Import rule deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /importRuleTransactions:
+    post:
+      tags: ['Import Rules']
+      summary: Record a transaction-rule association
+      operationId: createImportRuleTransaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportRuleTransactionInput'
+      responses:
+        '200':
+          description: Association stored
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportRuleTransaction'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /reports/year-tax:
+    get:
+      tags: [Reports]
+      summary: Generate Schedule C year tax report
+      operationId: getYearTax
+      parameters:
+        - in: query
+          name: businessId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: year
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Year tax summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/YearTaxResponse'
+        '400':
+          description: Invalid report criteria
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /transactions:
+    get:
+      tags: [Transactions]
+      summary: List transactions
+      operationId: listTransactions
+      parameters:
+        - in: query
+          name: accountId
+          schema:
+            type: string
+          description: Filter by account ID (`-1` for all visible accounts).
+        - in: query
+          name: categoryId
+          schema:
+            type: string
+          description: Filter by category ID.
+        - in: query
+          name: businessId
+          schema:
+            type: string
+          description: Filter by business ID.
+        - in: query
+          name: dateFrom
+          schema:
+            type: string
+            format: date
+          description: Inclusive start date (defaults to 2000-01-01).
+        - in: query
+          name: dateTo
+          schema:
+            type: string
+            format: date
+          description: Inclusive end date (defaults to 2050-01-01).
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: >
+            Free-text search. Prefix with `q:` to request description suggestions.
+        - in: query
+          name: importProcessId
+          schema:
+            type: string
+          description: Filter by import batch id.
+      responses:
+        '200':
+          description: Transaction page or description suggestions
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/TransactionListResponse'
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/TransactionDescription'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+    post:
+      tags: [Transactions]
+      summary: Create a manual transaction
+      operationId: createTransaction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionInput'
+      responses:
+        '200':
+          description: Transaction created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        '400':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /transactions/{transactionId}:
+    patch:
+      tags: [Transactions]
+      summary: Update a transaction
+      operationId: updateTransaction
+      parameters:
+        - $ref: '#/components/parameters/TransactionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/TransactionPatch'
+                - $ref: '#/components/schemas/TransactionSplitUpdateRequest'
+      responses:
+        '200':
+          description: Updated transaction or split details
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/Transaction'
+                  - $ref: '#/components/schemas/TransactionSplitUpdateResponse'
+        '400':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Transaction not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+    delete:
+      tags: [Transactions]
+      summary: Delete a manual transaction
+      operationId: deleteTransaction
+      parameters:
+        - $ref: '#/components/parameters/TransactionId'
+      responses:
+        '200':
+          description: Transaction deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Transaction not found or not deletable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /transactions/{transactionId}/transactions:
+    get:
+      tags: [Transactions]
+      summary: List child transactions for a split
+      operationId: listTransactionChildren
+      parameters:
+        - $ref: '#/components/parameters/TransactionId'
+      responses:
+        '200':
+          description: Child transactions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Transaction'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /transactions/{transactionId}/attachments:
+    get:
+      tags: [Transactions]
+      summary: List attachments for a transaction
+      operationId: listTransactionAttachments
+      parameters:
+        - $ref: '#/components/parameters/TransactionId'
+      responses:
+        '200':
+          description: Attachment metadata
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AttachmentLink'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+    post:
+      tags: [Transactions]
+      summary: Upload an attachment
+      operationId: uploadTransactionAttachment
+      parameters:
+        - $ref: '#/components/parameters/TransactionId'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [attachmentFile]
+              properties:
+                attachmentFile:
+                  type: string
+                  format: binary
+                  description: File to attach
+      responses:
+        '200':
+          description: Attachment uploaded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttachmentUploadResponse'
+        '400':
+          description: Missing file
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /transactions/{transactionId}/attachments/{attachmentId}:
+    delete:
+      tags: [Transactions]
+      summary: Delete an attachment
+      operationId: deleteTransactionAttachment
+      parameters:
+        - $ref: '#/components/parameters/TransactionId'
+        - $ref: '#/components/parameters/AttachmentId'
+      responses:
+        '200':
+          description: Attachment removed
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Attachment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /transactions/{transactionId}/merge:
+    patch:
+      tags: [Transactions]
+      summary: Merge a manual and imported transaction
+      operationId: mergeTransactions
+      parameters:
+        - $ref: '#/components/parameters/TransactionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionMergeRequest'
+      responses:
+        '200':
+          description: Merge result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionMergeResponse'
+        '400':
+          description: Invalid merge request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /trips:
+    get:
+      tags: [Trips]
+      summary: List recorded trips
+      operationId: listTrips
+      responses:
+        '200':
+          description: Trip list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Trip'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+    post:
+      tags: [Trips]
+      summary: Create a trip
+      operationId: createTrip
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TripInput'
+      responses:
+        '200':
+          description: Trip created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+        '400':
+          description: Invalid trip payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /trips/{tripId}:
+    get:
+      tags: [Trips]
+      summary: Retrieve a trip
+      operationId: getTrip
+      parameters:
+        - $ref: '#/components/parameters/TripId'
+      responses:
+        '200':
+          description: Trip details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Trip not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+    patch:
+      tags: [Trips]
+      summary: Update a trip
+      operationId: updateTrip
+      parameters:
+        - $ref: '#/components/parameters/TripId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TripInput'
+      responses:
+        '200':
+          description: Trip updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Trip'
+        '400':
+          description: Invalid trip payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+    delete:
+      tags: [Trips]
+      summary: Delete a trip
+      operationId: deleteTrip
+      parameters:
+        - $ref: '#/components/parameters/TripId'
+      responses:
+        '200':
+          description: Trip deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Trip not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /users:
+    get:
+      tags: [Users]
+      summary: List tenant users
+      operationId: listUsers
+      responses:
+        '200':
+          description: User list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+    post:
+      tags: [Users]
+      summary: Invite a user
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '200':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+  /users/{userId}:
+    put:
+      tags: [Users]
+      summary: Update a user
+      operationId: updateUser
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserInput'
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserUpdateResponse'
+        '400':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: psbf
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  parameters:
+    AccountId:
+      name: accountId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Financial account identifier
+    AttachmentId:
+      name: attachmentId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Attachment identifier
+    BusinessId:
+      name: businessId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Business identifier
+    CarId:
+      name: carId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Car identifier
+    CategoryId:
+      name: categoryId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Category identifier
+    DuplicateId:
+      name: duplicateId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Duplicate transaction identifier
+    ImportId:
+      name: importId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Import identifier
+    RuleId:
+      name: ruleId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Import rule identifier
+    TransactionId:
+      name: transactionId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Transaction identifier
+    TripId:
+      name: tripId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Trip identifier
+    UserId:
+      name: userId
+      in: path
+      required: true
+      schema:
+        type: string
+      description: User identifier
+  schemas:
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+    SignupRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+    LoginResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        token:
+          type: string
+        error:
+          type: string
+          description: Present when the login attempt failed
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        title:
+          type: string
+        invalidParams:
+          type: object
+          additionalProperties:
+            type: string
+      additionalProperties: false
+    PasswordResetRequest:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+    TokenValidateRequest:
+      type: object
+      required: [token]
+      properties:
+        token:
+          type: string
+    TokenValidateResponse:
+      type: object
+      properties:
+        valid:
+          type: boolean
+    PasswordUpdateRequest:
+      type: object
+      required: [token, password]
+      properties:
+        token:
+          type: string
+        password:
+          type: string
+          format: password
+    PasswordUpdateResponse:
+      type: object
+      properties:
+        result:
+          type: boolean
+        error:
+          type: string
+    Account:
+      type: object
+      properties:
+        id:
+          type: string
+        shortName:
+          type: string
+        fullName:
+          type: string
+        type:
+          type: string
+          description: Account type (checking, savings, credit, etc.)
+        openingBalance:
+          type: number
+          format: double
+        currentBalance:
+          type: number
+          format: double
+        isDefault:
+          type: boolean
+        closed:
+          type: boolean
+        visible:
+          type: boolean
+        deleted:
+          type: boolean
+        meta:
+          type: object
+          additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+          nullable: true
+        unreconciledTransactions:
+          type: integer
+          nullable: true
+      required: [id, shortName, fullName, type, openingBalance, visible]
+    AccountInput:
+      type: object
+      required: [shortName, fullName, type]
+      properties:
+        shortName:
+          type: string
+        fullName:
+          type: string
+        type:
+          type: string
+        openingBalance:
+          type: number
+          format: double
+          default: 0
+        isDefault:
+          type: boolean
+          default: false
+        closed:
+          type: boolean
+          default: false
+        visible:
+          type: boolean
+          default: true
+        meta:
+          type: object
+          additionalProperties: true
+    ApplicationSettings:
+      type: object
+      properties:
+        years:
+          type: array
+          items:
+            type: integer
+    Business:
+      type: object
+      properties:
+        id:
+          type: string
+        nickname:
+          type: string
+        fullName:
+          type: string
+      required: [id, nickname, fullName]
+    BusinessInput:
+      type: object
+      required: [nickname, fullName]
+      properties:
+        nickname:
+          type: string
+        fullName:
+          type: string
+    BudgetGridResponse:
+      type: object
+      properties:
+        categoryMonthAmounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetCategoryRow'
+        monthTotals:
+          $ref: '#/components/schemas/BudgetTotals'
+        hasBudget:
+          type: boolean
+    BudgetCategoryRow:
+      type: object
+      properties:
+        categoryId:
+          type: string
+        categoryName:
+          type: string
+        amounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetMonthAmount'
+    BudgetMonthAmount:
+      type: object
+      properties:
+        id:
+          type: string
+          nullable: true
+        month:
+          type: integer
+          minimum: 0
+          maximum: 12
+        amount:
+          type: number
+          description: Amount in whole currency units
+        note:
+          type: string
+          nullable: true
+    BudgetTotals:
+      type: object
+      properties:
+        amounts:
+          type: array
+          description: Index 0 is annual total; indexes 1-12 correspond to months
+          items:
+            type: number
+    BudgetCloneRequest:
+      type: object
+      required: [year]
+      properties:
+        year:
+          type: integer
+    BudgetItem:
+      type: object
+      required: [year, monthNo, categoryId, amount]
+      properties:
+        id:
+          type: string
+          nullable: true
+        year:
+          type: integer
+        monthNo:
+          type: integer
+          minimum: 1
+          maximum: 12
+        categoryId:
+          type: string
+        amount:
+          type: number
+          description: Amount in whole currency units
+        comment:
+          type: string
+          nullable: true
+    BudgetBulkUpdateRequest:
+      type: array
+      items:
+        $ref: '#/components/schemas/BudgetItem'
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        isPersonal:
+          type: boolean
+        type:
+          type: string
+          description: Transaction type (income, expense, transfer)
+      required: [id, name, isPersonal]
+    CategoryInput:
+      type: object
+      required: [name, isPersonal]
+      properties:
+        name:
+          type: string
+        isPersonal:
+          type: boolean
+        type:
+          type: string
+          default: expense
+    Car:
+      type: object
+      properties:
+        id:
+          type: string
+        description:
+          type: string
+        isInUse:
+          type: boolean
+      required: [id, description]
+    CarInput:
+      type: object
+      required: [description]
+      properties:
+        description:
+          type: string
+        isInUse:
+          type: boolean
+          default: true
+    DashboardResponse:
+      type: object
+      properties:
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardAccount'
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardTransaction'
+        reportExcludedTransactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardTransaction'
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardTask'
+        budget:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetCategoryDelta'
+        budgetYear:
+          type: array
+          items:
+            $ref: '#/components/schemas/BudgetCategoryDelta'
+        pl:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ProfitLossSummary'
+        businessPLCurrentMonth:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProfitLossRow'
+        businessPLCurrentYear:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProfitLossRow'
+    DashboardAccount:
+      type: object
+      properties:
+        type:
+          type: string
+        accountId:
+          type: string
+        shortName:
+          type: string
+        openingBalance:
+          type: number
+        total:
+          type: number
+    DashboardTransaction:
+      type: object
+      properties:
+        id:
+          type: string
+        postedDate:
+          type: string
+          format: date
+        accountId:
+          type: string
+        shortName:
+          type: string
+        categoryId:
+          type: string
+        categoryName:
+          type: string
+        description:
+          type: string
+        amount:
+          type: number
+        reconciled:
+          type: boolean
+        note:
+          type: string
+          nullable: true
+    DashboardTask:
+      type: object
+      properties:
+        id:
+          type: string
+        postedDate:
+          type: string
+          format: date
+        accountId:
+          type: string
+        shortName:
+          type: string
+        description:
+          type: string
+        note:
+          type: string
+          nullable: true
+    BudgetCategoryDelta:
+      type: object
+      properties:
+        categoryId:
+          type: string
+        name:
+          type: string
+        amount:
+          type: number
+        budget:
+          type: number
+        delta:
+          type: number
+        comment:
+          type: string
+          nullable: true
+    ProfitLossSummary:
+      type: object
+      properties:
+        income:
+          type: number
+        expenses:
+          type: number
+        profit:
+          type: number
+        newYear:
+          type: boolean
+          nullable: true
+    ProfitLossRow:
+      type: object
+      properties:
+        categoryType:
+          type: string
+        categoryId:
+          type: string
+        name:
+          type: string
+        amount:
+          type: number
+    DuplicateSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        transactionId:
+          type: string
+        postedDate:
+          type: string
+        accountId:
+          type: string
+        description:
+          type: string
+        amount:
+          type: number
+      required: [id, transactionId, postedDate, accountId, description, amount]
+    DuplicateDetail:
+      type: object
+      properties:
+        id:
+          type: string
+        postedDate:
+          type: string
+        description:
+          type: string
+        amount:
+          type: number
+    DuplicatePutResponse:
+      type: object
+      properties:
+        parentTransactionId:
+          type: string
+          nullable: true
+    DuplicateResolveResponse:
+      type: object
+      properties:
+        duplicateCandidateIds:
+          type: array
+          items:
+            type: string
+    ImportSummary:
+      type: object
+      properties:
+        id:
+          type: string
+        processId:
+          type: string
+        formatId:
+          type: string
+        accountId:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+          nullable: true
+        counts:
+          type: object
+          additionalProperties: true
+        stats:
+          type: object
+          additionalProperties: true
+        newData:
+          type: object
+          additionalProperties: true
+    ImportUploadResponse:
+      type: object
+      properties:
+        importId:
+          type: string
+      required: [importId]
+    ImportRule:
+      type: object
+      properties:
+        id:
+          type: string
+        adapterId:
+          type: string
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportRuleCondition'
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportRuleAction'
+        disabled:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+          nullable: true
+      required: [id, conditions, actions]
+    ImportRuleInput:
+      type: object
+      required: [conditions, actions]
+      properties:
+        id:
+          type: string
+          nullable: true
+        adapterId:
+          type: string
+          default: all
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportRuleCondition'
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportRuleAction'
+        disabled:
+          type: boolean
+          default: false
+    ImportRuleCondition:
+      type: object
+      properties:
+        field:
+          type: string
+        condition:
+          type: string
+          description: Comparison operator (=, $ for contains)
+        value:
+          type: string
+      required: [field, value]
+    ImportRuleAction:
+      type: array
+      minItems: 2
+      maxItems: 2
+      items:
+        type: string
+      description: Key/value pair encoded as `[field, value]`
+    ImportRuleTransactionInput:
+      type: object
+      required: [transactionId, ruleId, importId]
+      properties:
+        transactionId:
+          type: string
+        ruleId:
+          type: string
+        importId:
+          type: string
+    ImportRuleTransaction:
+      allOf:
+        - $ref: '#/components/schemas/ImportRuleTransactionInput'
+        - type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+            createdAt:
+              type: string
+              format: date-time
+    YearTaxResponse:
+      type: object
+      properties:
+        year:
+          type: integer
+        businessId:
+          type: string
+        income:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryAmount'
+        expenses:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryAmount'
+        totalIncome:
+          type: number
+        totalExpenses:
+          type: number
+        profit:
+          type: number
+        mileage:
+          type: number
+    CategoryAmount:
+      type: object
+      properties:
+        categoryId:
+          type: string
+        categoryName:
+          type: string
+        amount:
+          type: number
+    TransactionListResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+        openingBalance:
+          type: number
+    TransactionDescription:
+      type: object
+      properties:
+        description:
+          type: string
+    TransactionInput:
+      type: object
+      required: [accountId, postedDate, description, amount]
+      properties:
+        id:
+          type: string
+          nullable: true
+        accountId:
+          type: string
+        postedDate:
+          type: string
+          format: date
+        description:
+          type: string
+        businessId:
+          type: string
+          nullable: true
+        categoryId:
+          type: string
+          nullable: true
+        amount:
+          type: number
+          description: Signed amount in currency units
+        note:
+          type: string
+          nullable: true
+        tripId:
+          type: string
+          nullable: true
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: string
+        tenantId:
+          type: string
+        accountId:
+          type: string
+        postedDate:
+          type: string
+        description:
+          type: string
+        categoryId:
+          type: string
+          nullable: true
+        businessId:
+          type: string
+          nullable: true
+        amount:
+          type: number
+        note:
+          type: string
+          nullable: true
+        originalDescription:
+          type: string
+          nullable: true
+        sourceOriginalDescription:
+          type: string
+          nullable: true
+        scheduled:
+          type: boolean
+        reconciled:
+          type: boolean
+        deleted:
+          type: boolean
+        hasChildren:
+          type: boolean
+        importProcessId:
+          type: string
+          nullable: true
+        hasDuplicates:
+          type: boolean
+        parentId:
+          type: string
+          nullable: true
+        externalUid:
+          type: string
+          nullable: true
+        hasOpenTasks:
+          type: boolean
+          nullable: true
+        source:
+          type: string
+        duplicateCandidateId:
+          type: string
+          nullable: true
+        tripId:
+          type: string
+          nullable: true
+        meta:
+          type: object
+          additionalProperties: true
+          nullable: true
+    TransactionPatch:
+      type: object
+      properties:
+        postedDate:
+          type: string
+          format: date
+        description:
+          type: string
+        categoryId:
+          type: string
+        businessId:
+          type: string
+        amount:
+          type: number
+        note:
+          type: string
+        scheduled:
+          type: boolean
+        reconciled:
+          type: boolean
+        tripId:
+          type: string
+          nullable: true
+    TransactionSplitChild:
+      type: object
+      required: [amount]
+      properties:
+        id:
+          type: string
+          nullable: true
+        amount:
+          type: number
+        categoryId:
+          type: string
+          nullable: true
+        businessId:
+          type: string
+          nullable: true
+        note:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+    TransactionSplitUpdateRequest:
+      type: object
+      required: [childTransactions]
+      properties:
+        childTransactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionSplitChild'
+    TransactionSplitUpdateResponse:
+      type: object
+      properties:
+        transaction:
+          $ref: '#/components/schemas/Transaction'
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+    AttachmentLink:
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+      required: [id, url]
+    AttachmentUploadResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        attachmentId:
+          type: string
+        url:
+          type: string
+    TransactionMergeRequest:
+      type: object
+      required: [mergeId]
+      properties:
+        mergeId:
+          type: string
+    TransactionMergeResponse:
+      type: object
+      properties:
+        transaction:
+          $ref: '#/components/schemas/Transaction'
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttachmentLink'
+        deletedId:
+          type: string
+    Trip:
+      type: object
+      properties:
+        id:
+          type: string
+        description:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        distance:
+          type: number
+        businessId:
+          type: string
+          nullable: true
+        carId:
+          type: string
+          nullable: true
+        transactionId:
+          type: string
+          nullable: true
+      required: [id, description, startDate, endDate, distance]
+    TripInput:
+      type: object
+      required: [description, startDate, endDate, distance]
+      properties:
+        id:
+          type: string
+          nullable: true
+        description:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        distance:
+          type: number
+        businessId:
+          type: string
+          nullable: true
+        carId:
+          type: string
+          nullable: true
+        transactionId:
+          type: string
+          nullable: true
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        nickname:
+          type: string
+        fullName:
+          type: string
+        email:
+          type: string
+          format: email
+        hasAccess:
+          type: boolean
+      required: [id, nickname, fullName, email, hasAccess]
+    UserInput:
+      type: object
+      required: [nickname, fullName, email]
+      properties:
+        nickname:
+          type: string
+        fullName:
+          type: string
+        email:
+          type: string
+          format: email
+        hasAccess:
+          type: boolean
+          default: true
+    UserUpdateResponse:
+      type: object
+      properties:
+        account:
+          $ref: '#/components/schemas/User'

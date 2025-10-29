@@ -26,15 +26,15 @@ const transactionModel = {
       frequency: null,
       scheduled: true,
       completed: true,
-      reconciled: false,
-      deleted: false,
-      hasChildren: false,
+      reconciled: 0,
+      deleted: 0,
+      hasChildren: 0,
       note: '',
       parentId: null,
       externalUid: null,
       dipSourceId: null,
       source: c.sources.MANUAL,
-      hasOpenTasks: false,
+      hasOpenTasks: 0,
       duplicateCandidateId: null
     }
   },
@@ -137,11 +137,12 @@ const transactionModel = {
    * @return {psbf.Transaction}
    */
   getNewManual: (data) => {
-    const { tenantId, postedDate, accountId, categoryId, businessId, amount, description, note } = data
+    const { tenantId, postedDate, accountId, categoryId, businessId, amount, description, note, tripId } = data
     const defaultTransaction = transactionModel.getNew(accountId)
     const transactionData = {
       id: data.id || cuid(),
-      postedDate: new Date(postedDate),
+      // postedDate: new Date(postedDate),
+      postedDate,
       categoryId,
       tenantId,
       businessId,
@@ -149,9 +150,10 @@ const transactionModel = {
       description,
       scheduled: 0,
       note,
-      source: c.sources.MANUAL
+      source: c.sources.MANUAL,
+      tripId
     }
-    transactionData.postedDate.setHours(0, 0, 0, 0)
+    // transactionData.postedDate.setHours(0, 0, 0, 0)
     delete defaultTransaction.duplicateCandidateId
     /** @type {psbf.Transaction} */
     const result = Object.assign(defaultTransaction, transactionData)
@@ -238,9 +240,6 @@ const transactionModel = {
   getFromData (data) {
     let { categoryId, businessId, note, description, amount, postedDate, tripId } = data
 
-    postedDate = postedDate && typeof postedDate === 'string' && postedDate.length > 10
-      ? postedDate : (new Date()).toISOString()
-    postedDate = postedDate.substring(0, 10)
     if (!Boolean(amount)) amount = 0
     amount = Math.round(amount * 100)
 
