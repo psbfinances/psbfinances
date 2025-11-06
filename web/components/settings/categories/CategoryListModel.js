@@ -69,9 +69,11 @@ export default class CategoryListModel {
 
   handleChange = e => {
     const target = e.target
-    const value = target.type === 'checkbox' ? target.checked : target.value
+    let value = target.type === 'checkbox' ? target.checked : target.value
     const name = target.name
     const editItem = this.cloneItem(this.editItem)
+    // Convert empty string to null for classification dropdown
+    if (name === 'classification' && value === '') value = null
     editItem[name] = value
     this.editItem = editItem
   }
