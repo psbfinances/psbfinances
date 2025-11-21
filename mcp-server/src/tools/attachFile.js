@@ -4,10 +4,11 @@
  */
 
 import FormData from 'form-data';
+import { readFileSync } from 'fs';
 
 export const attachFileTool = {
   name: 'attach_file',
-  description: 'Upload and attach a file (such as an invoice, receipt, or document) to a transaction. The file should be provided as base64-encoded data.',
+  description: 'Upload and attach a file (such as an invoice, receipt, or document) to a transaction. Provide EITHER filePath (faster, recommended) OR fileData (base64). If the file was uploaded to Claude, ask Claude to save it to a temporary location and provide the path.',
   inputSchema: {
     type: 'object',
     properties: {
@@ -17,32 +18,48 @@ export const attachFileTool = {
       },
       fileName: {
         type: 'string',
-        description: 'The original filename (e.g., "invoice.pdf")',
+        description: 'The original filename (e.g., "invoice.pdf"). Optional if filePath is provided.',
+      },
+      filePath: {
+        type: 'string',
+        description: 'Absolute path to the file on disk (RECOMMENDED - much faster than base64). Use this if the file is saved locally or was uploaded to Claude.',
       },
       fileData: {
         type: 'string',
-        description: 'Base64-encoded file data',
+        description: 'Base64-encoded file data (alternative to filePath, slower for large files)',
       },
       mimeType: {
         type: 'string',
         description: 'MIME type of the file (e.g., "application/pdf", "image/jpeg"). Optional, will be inferred from filename if not provided.',
       },
     },
-    required: ['transactionId', 'fileName', 'fileData'],
+    required: ['transactionId'],
   },
 };
 
 export async function handleAttachFile(apiClient, args) {
-  const { transactionId, fileName, fileData, mimeType } = args;
+  const { transactionId, fileName, filePath, fileData, mimeType } = args;
 
-  // Decode base64 file data
-  const buffer = Buffer.from(fileData, 'base64');
+  let buffer;
+  let finalFileName;
+
+  if (filePath) {
+    // Read file from disk (MUCH faster)
+    buffer = readFileSync(filePath);
+    finalFileName = fileName || filePath.split('/').pop();
+  } else if (fileData) {
+    // Decode base64 file data (slower)
+    buffer = Buffer.from(fileData, 'base64');
+    finalFileName = fileName || 'attachment';
+  } else {
+    throw new Error('Either filePath or fileData must be provided');
+  }
 
   // Create form data
   const form = new FormData();
   form.append('attachmentFile', buffer, {
-    filename: fileName,
-    contentType: mimeType || getMimeType(fileName),
+    filename: finalFileName,
+    contentType: mimeType || getMimeType(finalFileName),
   });
 
   // Upload file
@@ -62,7 +79,7 @@ export async function handleAttachFile(apiClient, args) {
     content: [
       {
         type: 'text',
-        text: `File "${fileName}" successfully attached to transaction ${transactionId}.\n\n` +
+        text: `File "${finalFileName}" successfully attached to transaction ${transactionId}.\n\n` +
               `Attachment ID: ${attachmentId}\n` +
               `URL: ${url}`,
       },
