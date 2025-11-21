@@ -1,0 +1,4 @@
+{
+  "apiBaseUrl": "http://localhost:3001",
+  "jwtToken": "your-jwt-token-here"
+}

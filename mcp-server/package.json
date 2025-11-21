@@ -1,0 +1,22 @@
+{
+  "name": "@psbfinance/mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for psbFinances transaction management",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "psbfinance-mcp": "src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "keywords": ["mcp", "finance", "transactions"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "axios": "^1.7.9",
+    "form-data": "^4.0.1"
+  }
+}

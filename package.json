@@ -6,7 +6,8 @@
   "workspaces": [
     "web",
     "server",
-    "shared"
+    "shared",
+    "mcp-server"
   ],
   "main": "server/app.js",
   "type": "module",
