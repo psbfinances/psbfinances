@@ -8,7 +8,7 @@ import { readFileSync } from 'fs';
 
 export const attachFileTool = {
   name: 'attach_file',
-  description: 'Upload and attach a file (such as an invoice, receipt, or document) to a transaction. Provide EITHER filePath (faster, recommended) OR fileData (base64). If the file was uploaded to Claude, ask Claude to save it to a temporary location and provide the path.',
+  description: 'Upload and attach a file (such as an invoice, receipt, or document) to a transaction. For files uploaded to Claude Desktop (in /mnt/user-data/uploads/), you MUST use fileData (base64) since those files are in Claude\'s sandbox. Only use filePath for files already on the host filesystem (e.g., user\'s Downloads folder).',
   inputSchema: {
     type: 'object',
     properties: {
@@ -90,7 +90,7 @@ export async function handleAttachFile(apiClient, args) {
 /**
  * Simple MIME type inference from file extension
  */
-function getMimeType(fileName) {
+export function getMimeType(fileName) {
   const ext = fileName.toLowerCase().split('.').pop();
   const mimeTypes = {
     'pdf': 'application/pdf',
