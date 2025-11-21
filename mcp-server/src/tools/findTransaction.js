@@ -37,14 +37,14 @@ export const findTransactionTool = {
 export async function handleFindTransaction(apiClient, args) {
   const { accountId, startDate, endDate, search, limit = 50 } = args;
 
-  // Build query parameters
+  // Build query parameters - API expects dateFrom/dateTo
   const params = {
     accountId,
     limit,
   };
 
-  if (startDate) params.startDate = startDate;
-  if (endDate) params.endDate = endDate;
+  if (startDate) params.dateFrom = startDate;
+  if (endDate) params.dateTo = endDate;
   if (search) params.search = search;
 
   // Call API
