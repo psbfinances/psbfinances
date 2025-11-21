@@ -50,7 +50,8 @@ export async function handleFindTransaction(apiClient, args) {
   // Call API
   const response = await apiClient.get('/api/transactions', { params });
 
-  const transactions = response.data;
+  // API returns { items: [...], openingBalance: 0 }
+  const transactions = response.data.items || [];
 
   // Format response
   const resultText = transactions.length === 0
@@ -60,7 +61,7 @@ export async function handleFindTransaction(apiClient, args) {
         `${idx + 1}. Transaction ID: ${t.id}\n` +
         `   Date: ${t.postedDate}\n` +
         `   Description: ${t.description}\n` +
-        `   Amount: $${(t.amount / 100).toFixed(2)}\n` +
+        `   Amount: $${t.amount.toFixed(2)}\n` +
         `   Account: ${t.accountId}\n` +
         `   Category: ${t.categoryId || 'None'}\n` +
         `   Business: ${t.businessId || 'None'}\n` +
