@@ -1,4 +1,9 @@
 {
   "apiBaseUrl": "http://localhost:9000",
-  "jwtToken": "your-jwt-token-here"
+  "jwtToken": "your-jwt-token-here",
+  "allowedFilePaths": [
+    "/tmp",
+    "/absolute/path/where/Claude/saves/uploads",
+    "/absolute/path/to/this/repo/files"
+  ]
 }

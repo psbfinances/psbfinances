@@ -33,7 +33,12 @@ Edit `config.json` with your settings:
 ```json
 {
   "apiBaseUrl": "http://localhost:3001",
-  "jwtToken": "your-jwt-token-here"
+  "jwtToken": "your-jwt-token-here",
+  "allowedFilePaths": [
+    "/tmp",
+    "/Users/you/Downloads",
+    "/absolute/path/to/psbfinance/files"
+  ]
 }
 ```
 
@@ -44,6 +49,8 @@ Edit `config.json` with your settings:
 3. Open browser DevTools (F12) → Application → Local Storage
 4. Find the `token` or `authToken` key and copy its value
 5. Paste it into `config.json`
+
+**Allowing file uploads:** Claude/ChatGPT needs a safe place to drop uploaded invoices. Add any directories where uploads may appear to `allowedFilePaths` (e.g., `/tmp`, your `Downloads` folder, or the repo's `files` directory). The MCP server will only read attachments from these paths.
 
 ### 3. Add to Claude Desktop
 
