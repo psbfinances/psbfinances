@@ -4,11 +4,12 @@ Model Context Protocol (MCP) server for psbFinances that enables Claude (and oth
 
 ## Features
 
-This MCP server provides three main tools:
+This MCP server provides four main tools:
 
 1. **find_transaction** - Search for transactions by account, date range, and description
-2. **split_transaction** - Split a transaction into multiple child transactions (e.g., separate supplies from inventory)
-3. **attach_file** - Upload and attach files (invoices, receipts) to transactions
+2. **split_transaction** - Split an existing transaction into multiple child transactions (e.g., separate supplies from inventory)
+3. **create_transaction** - Create a new manual transaction, optionally with splits (for processing invoices before bank transactions post)
+4. **attach_file** - Upload and attach files (invoices, receipts) to transactions
 
 ## Installation
 
@@ -143,6 +144,26 @@ Split a transaction into multiple child transactions.
 
 **Note:** The sum of all child amounts must equal the parent transaction amount.
 
+### create_transaction
+
+Create a new manual transaction (source='m'), optionally with splits. Use this when processing invoices before the bank transaction has posted.
+
+**Parameters:**
+- `accountId` (required) - The account ID where this transaction should be created
+- `postedDate` (required) - Transaction date (YYYY-MM-DD format)
+- `description` (required) - Transaction description (max 150 chars)
+- `amount` (optional) - Total transaction amount as decimal (e.g., 200.50). Required unless childTransactions are provided
+- `categoryId` (optional) - Category ID. Omit if using splits
+- `businessId` (optional) - Business ID. Omit or set to null for personal
+- `note` (optional) - Note for the transaction (max 500 chars)
+- `childTransactions` (optional) - Array of splits, each with:
+  - `amount` (required) - Amount as decimal (e.g., 50.00)
+  - `categoryId` (optional) - Category ID
+  - `businessId` (optional) - Business ID (omit for personal)
+  - `note` (optional) - Note for this split (max 500 chars)
+
+**Note:** If childTransactions are provided, the sum must equal the total amount. The transaction will be created and immediately split in one operation.
+
 ### attach_file
 
 Upload and attach a file to a transaction.
@@ -186,7 +207,7 @@ npm run dev
 - **Transport:** stdio (standard input/output for local MCP servers)
 - **Protocol:** Model Context Protocol (MCP) 1.0
 - **API Client:** Axios with JWT bearer authentication
-- **Tools:** Three specialized tools wrapping psbFinances REST API
+- **Tools:** Four specialized tools wrapping psbFinances REST API
 
 ## Security Notes
 
