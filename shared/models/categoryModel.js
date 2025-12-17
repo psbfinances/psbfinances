@@ -14,7 +14,8 @@ const categoryModel = {
       tenantId: '',
       name: '',
       isPersonal: true,
-      type: c.transactionType.EXPENSE
+      type: c.transactionType.EXPENSE,
+      classification: null
     }
   },
 

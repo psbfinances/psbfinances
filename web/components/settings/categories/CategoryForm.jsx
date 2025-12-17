@@ -42,6 +42,21 @@ let CategoryForm = ({ model }) => {
           </select>
         </div>
 
+        <div className='mb-3'>
+          <label htmlFor='classification' className='form-label'>Classification</label>
+          <select
+            id='classification'
+            disabled={readOnly}
+            name='classification'
+            className='form-select'
+            onChange={model.handleChange}
+            value={model.editItem.classification || ''}>
+            <option value=''>None</option>
+            <option value='meal'>Meal</option>
+            <option value='inventory'>Inventory</option>
+          </select>
+        </div>
+
         {!readOnly && <FormButtons model={model} />}
       </div>
     </div>

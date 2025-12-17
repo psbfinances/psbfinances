@@ -68,6 +68,7 @@ let Header = ({}) => <thead>
     <th style={{ width: '200px' }}>Name</th>
     <th style={{ width: '300px' }}>Personal / business</th>
     <th className='otherCol'>Type</th>
+    <th className='otherCol'>Classification</th>
   </tr>
 </thead>
 
@@ -102,6 +103,7 @@ let Row = ({ item, model }) => {
     <td>{item.name}</td>
     <td>{Boolean(item.isPersonal) ? 'Personal' : 'Business'}</td>
     <td>{categoryTypes[item.type]}</td>
+    <td>{item.classification || ''}</td>
   </tr>
 }
 Row = observer(Row)
