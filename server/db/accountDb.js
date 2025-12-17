@@ -11,7 +11,7 @@ export default class AccountDb extends Db {
       type: '',
       shortName: ''
     }
-    Object.keys(this.tCol).forEach(x => this.tCol[x] = x)
+    Object.keys(this.tCol).forEach(x => { this.tCol[x] = x })
   }
 
   async list (tenantId) {
@@ -48,26 +48,43 @@ export default class AccountDb extends Db {
   }
 
   async listWithExtras (tenantId, includeBalance = false, includeUnreconciled = false) {
+    const extras = []
+    if (includeBalance) {
+      extras.push('COALESCE(t_totals.reconciledTotal, 0) + COALESCE(a.openingBalance, 0) as currentBalance')
+    }
+    if (includeUnreconciled) {
+      extras.push('COALESCE(t_totals.unreconciledCount, 0) as unreconciledCount')
+    }
+
     const query = `
-        SELECT
-          a.id,
-          (a.openingBalance + COALESCE(SUM(CASE WHEN t.reconciled = 1 THEN t.amount END), 0)) / 100 as balance,
-          COUNT(CASE WHEN t.reconciled = 0 THEN 1 END) as unreconciledCount
+      SELECT
+        a.*
+        ${extras.length > 0 ? `, ${extras.join(',\n        ')}` : ''}
       FROM accounts a
-      LEFT JOIN transactions t ON a.id = t.accountId
-          AND t.source = 'i'
-          AND t.deleted = 0
-          AND t.parentId IS NULL
+      LEFT JOIN (
+        SELECT
+          accountId,
+          SUM(CASE WHEN reconciled = 1 THEN amount ELSE 0 END) as reconciledTotal,
+          SUM(CASE WHEN reconciled = 0 THEN 1 ELSE 0 END) as unreconciledCount
+        FROM transactions
+        WHERE tenantId = ?
+          AND source = 'i'
+          AND deleted = 0
+          AND parentId IS NULL
+        GROUP BY accountId
+      ) t_totals ON a.id = t_totals.accountId
       WHERE a.tenantId = ?
-          AND a.deleted = 0
-      GROUP BY a.id, a.openingBalance;`
-    return this.raw(query, [tenantId])
+        AND a.deleted = 0
+      ORDER BY a.closed, a.type, a.shortName;
+    `
+
+    return this.raw(query, [tenantId, tenantId])
   }
 
   async getWithExtras (id, tenantId, includeBalance = false, includeUnreconciled = false) {
     let selectClause = 'accounts.*'
     let fromClause = 'accounts'
-    let whereClause = "accounts.tenantId = ? AND accounts.id = ? AND t_balance.reconciled = 1 AND t_balance.source = 'i' "
+    const whereClause = "accounts.tenantId = ? AND accounts.id = ? AND t_balance.reconciled = 1 AND t_balance.source = 'i' "
     let groupByClause = ''
 
     if (includeBalance && includeUnreconciled) {

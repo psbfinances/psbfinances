@@ -21,23 +21,12 @@ const controller = {
    */
   list: async (req, res) => {
     const db = new AccountDb()
-    const include = req.query.include ? req.query.include.split(',').map(item => item.trim()) : []
-    const includeBalance = include.includes('balance')
-    const includeUnreconciled = include.includes('unreconciled')
-
-    let rows
-    // if (true && includeBalance || includeUnreconciled) {
-    if (true) {
-      // rows = await db.listWithExtras(req.user.tenantId, includeBalance, includeUnreconciled)
-      rows = await db.listWithExtras(req.user.tenantId, true, true)
-    } else {
-      rows = await db.list(req.user.tenantId)
-    }
+    const rows = await db.listWithExtras(req.user.tenantId, true, true)
 
     rows.forEach(x => {
       if (x.meta) x.meta = JSON.parse(x.meta)
       x.openingBalance = x.openingBalance ? x.openingBalance / 100 : 0
-      x.currentBalance = x.balance
+      if (x.currentBalance !== undefined) x.currentBalance = x.currentBalance ? x.currentBalance / 100 : 0
       delete x.tenantId
       delete x.balance
     })
@@ -59,7 +48,7 @@ const controller = {
       if (result) {
         if (result.meta) result.meta = JSON.parse(result.meta)
         result.openingBalance = result.openingBalance ? result.openingBalance / 100 : 0
-        if (!!result.currentBalance) {
+        if (result.currentBalance !== undefined && result.currentBalance !== null) {
           result.currentBalance = Math.round(result.currentBalance / 100)
         }
         delete result.tenantId
