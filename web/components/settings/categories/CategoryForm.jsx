@@ -13,7 +13,9 @@ import { observer } from 'mobx-react'
 let CategoryForm = ({ model }) => {
   if (!model.editItem) return null
 
-  const readOnly = !model.editItem.isPersonal
+  // Both personal and business categories are editable: allow editing Name and Classification
+  // (If in future some categories should be locked, add a dedicated flag such as `locked`.)
+  const readOnly = false
 
   return <div>
     <div id='dataContainer' className='frm formDataContainer'>
@@ -46,6 +48,7 @@ let CategoryForm = ({ model }) => {
           <label htmlFor='classification' className='form-label'>Classification</label>
           <select
             id='classification'
+            /* Classification is intended for business categories; enable it when category is NOT personal */
             disabled={readOnly}
             name='classification'
             className='form-select'
