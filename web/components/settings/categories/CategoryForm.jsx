@@ -13,7 +13,7 @@ import { observer } from 'mobx-react'
 let CategoryForm = ({ model }) => {
   if (!model.editItem) return null
 
-  const readOnly = false
+  const readOnly = !model.editItem.isPersonal
 
   return <div>
     <div id='dataContainer' className='frm formDataContainer'>
@@ -46,6 +46,7 @@ let CategoryForm = ({ model }) => {
           <label htmlFor='classification' className='form-label'>Classification</label>
           <select
             id='classification'
+            /* Classification is intended for business categories; enable it when category is NOT personal */
             disabled={readOnly}
             name='classification'
             className='form-select'
