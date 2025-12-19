@@ -51,6 +51,7 @@ export declare namespace psbf {
     name: string
     isPersonal: boolean,
     type?: string
+    classification?: string | null
   }
 
   interface Attachment {

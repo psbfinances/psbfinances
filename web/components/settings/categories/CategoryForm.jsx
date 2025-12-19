@@ -13,7 +13,7 @@ import { observer } from 'mobx-react'
 let CategoryForm = ({ model }) => {
   if (!model.editItem) return null
 
-  const readOnly = !model.editItem.isPersonal
+  const readOnly = false
 
   return <div>
     <div id='dataContainer' className='frm formDataContainer'>
